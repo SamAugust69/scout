@@ -23,9 +23,12 @@
 		"noUncheckedSideEffectImports": true,
 
 		"paths": {
-			"@/*": ["./src/*"]
+			"@/*": ["./src/*"],
+			"@/ui/*": ["./src/components/ui"],
+			"@/context/*": ["./src/lib/context"]
 		},
-		"types": ["node"]
+		"types": ["node"],
+		"rootDir": "src"
 	},
 	"include": ["src"]
 }

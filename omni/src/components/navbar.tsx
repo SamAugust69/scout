@@ -1,32 +1,30 @@
-import { useDarkModeContext } from "@/lib/context/darkmode";
-import { useState } from "react";
-import { AnimatePresence, motion } from "motion/react";
+import { useDarkModeContext } from '@/lib/context/darkModeContext';
+import { useState } from 'react';
+import { AnimatePresence, motion } from 'motion/react';
+import { MatchNavigation } from './MatchNavigation';
+import { ConnectionStatus } from './ConnectionStatus';
 
 export const Navbar = () => {
-  const [open, setOpen] = useState(false);
-  const { setDark, dark } = useDarkModeContext();
+	const [open, setOpen] = useState(false);
+	const { setDark, dark } = useDarkModeContext();
 
-  return (
-    <motion.nav
-      className={`${
-        open ? "w-[40rem]" : "w-20"
-      } dark:bg-[#302E2E] flex flex-col p-2 gap-4`}
-    >
-      {/* <button onClick={() => setDark(!dark)}>dark</button> */}
-      <button onClick={() => setOpen(!open)}>open</button>
+	return (
+		<motion.nav
+			className={` dark:bg-[#302E2E] flex flex-col p-2 gap-4 peer`}
+			animate={{ width: open ? 1000 : 100 }}
+			transition={{ duration: 0.05 }}
+		>
+			<button onClick={() => setOpen(!open)}>open {open ? 'true' : 'false'}</button>
+			{/* <button className="peer-hover:block  hidden">cllose</button> */}
 
-      <AnimatePresence>
-        {open && (
-          <motion.div
-            exit={{ y: 3, opacity: 0 }}
-            transition={{ duration: 0.2 }}
-            className="flex flex-col gap-4"
-          >
-            <div className="p-4 bg-neutral-900/50 "></div>
-            <div className="p-4 bg-neutral-900/50 "></div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </motion.nav>
-  );
+			<ConnectionStatus open={open} />
+
+			<div className="h-full">
+				<AnimatePresence>{open && <MatchNavigation />}</AnimatePresence>
+			</div>
+			<button className=" " onClick={() => setDark(!dark)}>
+				dark
+			</button>
+		</motion.nav>
+	);
 };
