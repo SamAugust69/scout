@@ -66,7 +66,10 @@ const ModalOverlay = ({ children, ...props }: ModalOverlayProps) => {
 
   return (
     <div
-      onClick={close}
+      onClick={(e) => {
+        e.stopPropagation();
+        close();
+      }}
       className="z-10 bg-neutral-950/50 fixed w-full top-0 left-0 h-full flex items-center justify-center overflow-hidden"
       {...props}
     >
@@ -127,7 +130,7 @@ const ModalContent = ({ children, className, onKeyUp }: ModalContentProps) => {
           animate={{ scale: 1, opacity: 1 }}
           transition={{ duration: 0.05 }}
           onClick={(e: React.MouseEvent<HTMLDivElement>) => e.stopPropagation()}
-          className={cn`p-4 bg-neutral-300 dark:bg-neutral-800 rounded-md text-neutral-800  max-w-[26rem]  w-full z-20 shadow-md shadow-neutral-500 dark:shadow-neutral-900 ${className}`}
+          className={cn`p-4 bg-neutral-300 dark:bg-neutral-800 rounded-md text-neutral-800  max-w-[26rem]  w-full z-20 shadow-md shadow-neutral-500 dark:shadow-neutral-900 ${className} cursor-auto`}
         >
           {children}
         </motion.div>

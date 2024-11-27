@@ -82,8 +82,8 @@ export const Navbar = () => {
             <Moon className={`${!dark ? "size-0" : "size-5"} transition-all`} />
           </Button>
         </div>
-        {/* <Settings /> */}
       </div>
+      {/* nav closed settings button */}
       <Button
         onClick={() => setSetttingsOpen(!settingsOpen)}
         className={`opacity-100 ${open ? "opacity-0" : ""}
