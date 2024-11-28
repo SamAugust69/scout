@@ -53,7 +53,7 @@ export const EventSearcher = () => {
   return (
     <div
       className={`relative p-3 rounded dark:bg-[#302E2E] flex flex-col ${
-        !connectionState ? "cursor-not-allowed blur-sm" : ""
+        !connectionState ? "cursor-not-allowed blur-xs" : ""
       }`}
     >
       <Heading>Event Searcher</Heading>
