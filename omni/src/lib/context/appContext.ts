@@ -8,7 +8,7 @@ export type AppContextType = {
 };
 
 export const AppContextContext = createContext<AppContextType | undefined>(
-  undefined
+  undefined,
 );
 
 export const useAppContext = () => {
