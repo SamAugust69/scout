@@ -46,7 +46,7 @@ export const Create = () => {
         </Dialog>
         <Paragraph className="font-bold mb-1">Create Event</Paragraph>
       </div>
-      <span className="h-0.5 w-full rounded-sm mb-4 bg-[#7C8C77]"></span>
+      <span className="h-0.5 w-full rounded mb-4 bg-[#7C8C77]"></span>
       {/* content */}
       <div className=" flex justify-center mx-auto w-full flex-col gap-8">
         <EventSearcher />
