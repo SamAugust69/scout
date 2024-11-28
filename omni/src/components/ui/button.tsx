@@ -13,7 +13,7 @@ import { HTMLAttributes } from "react";
 // 				onClick && onClick(e);
 // 			}}
 // 			className={cn(
-// 				'dark:text-neutral-300 dark:hover:bg-neutral-600 dark:bg-neutral-700 bg-neutral-300 hover:bg-neutral-200 rounded transition-colors',
+// 				'dark:text-neutral-300 dark:hover:bg-neutral-600 dark:bg-neutral-700 bg-neutral-300 hover:bg-neutral-200 rounded-sm transition-colors',
 // 				className
 // 			)}
 // 		>
@@ -23,7 +23,7 @@ import { HTMLAttributes } from "react";
 // };
 
 export const buttonVariants = vs({
-  base: "transition-colors rounded",
+  base: "transition-colors rounded-sm",
   variants: {
     variant: {
       primary:

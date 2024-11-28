@@ -129,7 +129,7 @@ const DropdownContent = ({ children, className }: DropdownContentInterface) => {
           animate={{ opacity: 1 }}
           transition={{ duration: 0.25 }}
           className={cn(
-            "absolute left-1/2 z-30 -translate-x-1/2 mt-1 w-52 bg-neutral-100 rounded border border-neutral-200 shadow-md p-2 flex flex-col ",
+            "absolute left-1/2 z-30 -translate-x-1/2 mt-1 w-52 bg-neutral-100 rounded-sm border border-neutral-200 shadow-md p-2 flex flex-col ",
             className
           )}
           style={style}
@@ -205,7 +205,7 @@ const DropdownRadioButton = ({
 
   return (
     <button
-      className="transition-colors text-left flex hover:bg-neutral-200 text-neutral-800 disabled:text-neutral-600 rounded items-center font-medium h-8 text-sm "
+      className="transition-colors text-left flex hover:bg-neutral-200 text-neutral-800 disabled:text-neutral-600 rounded-sm items-center font-medium h-8 text-sm "
       onClick={() => setState(value)}
       {...props}
     >
@@ -233,7 +233,7 @@ interface DropdownItemInterface extends HTMLAttributes<HTMLButtonElement> {}
 
 const DropdownItem = ({ children }: DropdownItemInterface) => {
   return (
-    <button className="transition-colors text-left flex hover:bg-neutral-200 text-neutral-800 rounded items-center font-medium h-8 text-sm px-2 ">
+    <button className="transition-colors text-left flex hover:bg-neutral-200 text-neutral-800 rounded-sm items-center font-medium h-8 text-sm px-2 ">
       {children}
     </button>
   );

@@ -16,7 +16,7 @@ export const Home = () => {
 	return (
 		<section className="p-4 flex flex-col w-full max-w-xl mx-auto gap-2 min-w-96">
 			<Paragraph className="text-end font-bold mb-1">Home</Paragraph>
-			<span className="h-0.5 w-full rounded mb-4 bg-[#7C8C77]"></span>
+			<span className="h-0.5 w-full rounded-sm mb-4 bg-[#7C8C77]"></span>
 			<div className=" flex justify-center mx-auto w-full flex-col gap-4">
 				<div>
 					<Heading size="lg">Select an Event!</Heading>

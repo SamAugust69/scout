@@ -14,7 +14,7 @@ export const Navbar = () => {
 
   return (
     <motion.nav
-      className={`relative dark:bg-[#302E2E] bg-neutral-100 flex flex-col px-2 py-4 gap-4 group/nav max-w-[100vw] flex-shrink-0 w-[100px] ${
+      className={`relative dark:bg-[#302E2E] bg-neutral-100 flex flex-col px-2 py-4 gap-4 group/nav max-w-[100vw] shrink-0 w-[100px] ${
         !open ? "cursor-pointer" : "cursor-auto"
       }`}
       animate={{ width: open ? "600px" : "100px" }}
@@ -76,7 +76,7 @@ export const Navbar = () => {
           </Button>
           <Button
             onClick={() => setDark(!dark)}
-            className="transition-colors h-8 w-16 rounded flex justify-center items-center"
+            className="transition-colors h-8 w-16 rounded-sm flex justify-center items-center"
           >
             <Sun className={`${dark ? "size-0" : "size-5"} transition-all`} />
             <Moon className={`${!dark ? "size-0" : "size-5"} transition-all`} />
