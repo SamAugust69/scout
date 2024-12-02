@@ -4,12 +4,14 @@ import { AnimatePresence, motion } from "motion/react"
 import { MatchNavigation } from "./MatchNavigation"
 import { ConnectionStatus } from "./ConnectionStatus"
 import { ChevronsLeft, ChevronsRight, Moon, Settings, Sun } from "lucide-react"
-import { Button } from "./ui/button"
+import { Button, buttonVariants } from "./ui/button"
 import { SettingsMenu } from "./Settings"
+import { Link } from "react-router-dom"
+import { cn } from "@/lib/utils"
 
 export const Navbar = () => {
     const [open, setOpen] = useState(false)
-    const [settingsOpen, setSetttingsOpen] = useState<boolean>(true)
+    const [settingsOpen, setSettingsOpen] = useState<boolean>(false)
     const { setDark, dark } = useDarkModeContext()
 
     return (
@@ -63,15 +65,19 @@ export const Navbar = () => {
                     open ? "justify-between" : "justify-center"
                 } gap-1 rounded px-4`}
             >
-                <Button
-                    variant="link"
-                    className={`text-sm ${open ? "" : "hidden"}`}
+                <Link
+                    to={"/help"}
+                    className={cn(
+                        buttonVariants({ variant: "link" }),
+                        `text-sm ${open ? "" : "hidden"}`
+                    )}
+                    onClick={() => setOpen(false)}
                 >
                     Help
-                </Button>
+                </Link>
                 <div className="flex gap-4">
                     <Button
-                        onClick={() => setSetttingsOpen(!settingsOpen)}
+                        onClick={() => setSettingsOpen(!settingsOpen)}
                         className={` ${!open ? "hidden" : "flex"} w-10 items-center justify-center rounded p-1 transition-all`}
                     >
                         <Settings className="w-5" />
@@ -91,15 +97,15 @@ export const Navbar = () => {
             </div>
             {/* nav closed settings button */}
             <Button
-                onClick={() => setSetttingsOpen(!settingsOpen)}
+                onClick={() => setSettingsOpen(!settingsOpen)}
                 className={`opacity-100 ${open ? "opacity-0" : ""} absolute -right-12 bottom-2 flex w-10 items-center justify-center rounded p-1 py-2 transition-all dark:bg-[#302E2E]`}
             >
                 <Settings
                     className="w-5"
-                    onClick={() => setSetttingsOpen(!settingsOpen)}
+                    onClick={() => setSettingsOpen(!settingsOpen)}
                 />
             </Button>
-            <SettingsMenu isOpen={settingsOpen} setIsOpen={setSetttingsOpen} />
+            <SettingsMenu isOpen={settingsOpen} setIsOpen={setSettingsOpen} />
         </motion.nav>
     )
 }

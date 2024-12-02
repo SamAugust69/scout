@@ -1,4 +1,3 @@
-import { EventSearcher } from "@/components/EventSearcher"
 import { Button, buttonVariants } from "@/components/ui/button"
 import {
     Dialog,
@@ -9,13 +8,14 @@ import {
     DialogTitle,
     DialogTrigger,
 } from "@/components/ui/dialog"
+import { Input } from "@/components/ui/input"
 import { Paragraph } from "@/components/ui/paragraph"
 import { cn } from "@/lib/utils"
 import clsx from "clsx"
 import { ChevronLeft } from "lucide-react"
 import { Link } from "react-router-dom"
 
-export const Create = () => {
+export const CreateEventManual = () => {
     return (
         <section className="mx-auto flex w-full max-w-xl flex-col gap-2 p-4">
             <div className="flex justify-between">
@@ -59,19 +59,13 @@ export const Create = () => {
             </div>
             <span className="mb-4 h-0.5 w-full rounded-sm bg-[#7C8C77]"></span>
             {/* content */}
-            <div className="mx-auto flex w-full flex-col justify-center gap-8">
-                <EventSearcher />
-                <Link
-                    to={"/create/manual"}
-                    className={cn(
-                        clsx(
-                            buttonVariants({ variant: "primary", size: "lg" })
-                        ),
-                        "flex w-full items-center justify-center gap-2"
-                    )}
-                >
-                    Create Manually
-                </Link>
+            <div className="mx-auto flex w-full flex-col justify-center gap-4">
+                <Input />
+                <Input />
+                <Input />
+                <div>
+                    <Input />
+                </div>
             </div>
         </section>
     )

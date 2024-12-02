@@ -1,4 +1,3 @@
-import { EventSearcher } from "@/components/EventSearcher"
 import { Button, buttonVariants } from "@/components/ui/button"
 import {
     Dialog,
@@ -10,12 +9,34 @@ import {
     DialogTrigger,
 } from "@/components/ui/dialog"
 import { Paragraph } from "@/components/ui/paragraph"
+import { db } from "@/lib/db"
 import { cn } from "@/lib/utils"
 import clsx from "clsx"
 import { ChevronLeft } from "lucide-react"
-import { Link } from "react-router-dom"
+import { useEffect, useState } from "react"
+import { Link, useLoaderData, useParams } from "react-router-dom"
 
-export const Create = () => {
+export const EventDashboard = () => {
+    const { id } = useParams()
+    if (!id) throw new Error("ID doesnt exist")
+
+    const [eventData, setEventData] = useState<Event | null>(null)
+
+    const getEventData = async () => {
+        const eventData = await db.events
+            .where("id")
+            .equalsIgnoreCase(id)
+            .toArray()
+
+        console.log(eventData[0])
+
+        // setEventData(eventData[0])
+    }
+
+    useEffect(() => {
+        getEventData()
+    }, [])
+
     return (
         <section className="mx-auto flex w-full max-w-xl flex-col gap-2 p-4">
             <div className="flex justify-between">
@@ -59,20 +80,7 @@ export const Create = () => {
             </div>
             <span className="mb-4 h-0.5 w-full rounded-sm bg-[#7C8C77]"></span>
             {/* content */}
-            <div className="mx-auto flex w-full flex-col justify-center gap-8">
-                <EventSearcher />
-                <Link
-                    to={"/create/manual"}
-                    className={cn(
-                        clsx(
-                            buttonVariants({ variant: "primary", size: "lg" })
-                        ),
-                        "flex w-full items-center justify-center gap-2"
-                    )}
-                >
-                    Create Manually
-                </Link>
-            </div>
+            <div className="mx-auto flex w-full flex-col justify-center gap-8"></div>
         </section>
     )
 }
