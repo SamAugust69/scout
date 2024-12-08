@@ -91,7 +91,7 @@ export const EventSearcher = () => {
                     Input year, and search for events
                 </Paragraph>
             </div>
-            <div className="flex w-full gap-3">
+            <div className="relative flex w-full gap-3">
                 <Input
                     placeholder="Year"
                     className="bg-neutral-200"
@@ -99,6 +99,9 @@ export const EventSearcher = () => {
                     type="number"
                     onChange={(e) => setYear(parseInt(e.target.value))}
                 />
+                <span className="absolute -bottom-4 left-1 text-xs">
+                    {settings?.team ?? "No Team Configured"}
+                </span>
                 <Button size="md" variant="secondary" onClick={() => search()}>
                     Search
                 </Button>

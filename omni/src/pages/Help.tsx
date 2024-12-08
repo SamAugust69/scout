@@ -1,10 +1,12 @@
 import { Accordion, AccordionItem } from "@/components/ui/accordion"
-import { buttonVariants } from "@/components/ui/button"
+import { Button, buttonVariants } from "@/components/ui/button"
+import { addNotification, Notifications } from "@/components/ui/notifications"
 
 import { Paragraph } from "@/components/ui/paragraph"
 import { cn } from "@/lib/utils"
 import clsx from "clsx"
 import { ChevronLeft } from "lucide-react"
+import { useEffect } from "react"
 import { Link } from "react-router-dom"
 
 export const Help = () => {

@@ -7,6 +7,7 @@ import { Dot, Plus } from "lucide-react"
 import { Link } from "react-router-dom"
 import { useLiveQuery } from "dexie-react-hooks"
 import { db } from "@/lib/db"
+import { addNotification } from "@/components/ui/notifications"
 
 export const Home = () => {
     const events = useLiveQuery(async () => {
@@ -44,6 +45,13 @@ export const Home = () => {
                         <Paragraph>Select an event and get scouting!</Paragraph>
                     )}
                 </div>
+                <Button
+                    onClick={() =>
+                        addNotification("default", "Hey man, it works", "Test")
+                    }
+                >
+                    addNoticationTest
+                </Button>
                 {events && events?.length > 0 ? (
                     <div className="flex flex-col gap-3 rounded bg-neutral-100 p-2 dark:bg-[#302E2E]">
                         {events?.map((event) => {

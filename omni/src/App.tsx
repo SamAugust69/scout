@@ -13,6 +13,7 @@ import { Settings } from "./lib/types/settings"
 import { CreateEventManual } from "./pages/CreateEventManual"
 import { EventDashboard } from "./pages/EventDashboad"
 import { Help } from "./pages/Help"
+import { Notifications } from "./components/ui/notifications"
 
 function App() {
     const [dark, setDark] = useLocalStorage<boolean>(false, "theme")
@@ -82,6 +83,7 @@ function App() {
                                 element={<Help />}
                             />
                         </Routes>
+                        <Notifications />
                     </BrowserRouter>
                 </AppContextContext.Provider>
             </div>
