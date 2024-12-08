@@ -1,7 +1,7 @@
 import { createContext, useContext, useEffect, useState } from "react"
 
 type ItemType = {
-    index: number
+    id: string
     open: boolean
 }
 
@@ -42,6 +42,7 @@ const Accordion = ({ children }: AccordionInterface) => {
 
     return (
         <AccordionContext.Provider value={{ items, addItem }}>
+            {items.length}
             {children}
         </AccordionContext.Provider>
     )
@@ -55,29 +56,20 @@ interface AccordionItemInterface {
 
 const AccordionItem = ({}: AccordionItemInterface) => {
     const { items, addItem } = useAccordionContext()
-    const [index, setIndex] = useState<number | undefined>(undefined)
+    const [item, setItem] = useState<ItemType | undefined>(undefined)
 
+    const newItem = { id: crypto.randomUUID(), open: false }
     useEffect(() => {
-        // Set the index when the component is mounted
-        const newIndex = items.length
-        setIndex(newIndex)
+        if (!item === undefined && items.find((item) => item.id !== newItem.id))
+            return
 
-        // Add the item to the accordion context once index is determined
-        if (
-            newIndex !== undefined &&
-            !items.find((item) => item.index === newIndex)
-        ) {
-            addItem({ index: newIndex, open: false })
-        }
-    }, [items, addItem])
+        setItem(newItem)
+        addItem(newItem)
 
-    // Ensure index is valid before rendering
-    if (index === undefined) return null
+        console.log(items)
+    }, [])
 
-    // Find the current item state based on index
-    const item = items.find((item) => item.index === index)
-
-    return <div>test</div>
+    return <div>{item?.id}</div>
 }
 
 const AccordionItemContent = ({}) => {
