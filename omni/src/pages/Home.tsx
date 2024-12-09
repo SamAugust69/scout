@@ -47,7 +47,11 @@ export const Home = () => {
                 </div>
                 <Button
                     onClick={() =>
-                        addNotification("default", "Hey man, it works", "Test")
+                        addNotification(
+                            "success",
+                            `Created new event, ${"name"}`,
+                            "Success!"
+                        )
                     }
                 >
                     addNoticationTest

@@ -18,7 +18,7 @@ import { Notifications } from "./components/ui/notifications"
 function App() {
     const [dark, setDark] = useLocalStorage<boolean>(false, "theme")
     const [settings, setSettings] = useLocalStorage<Settings>(
-        { team: "" }, // Default settings value,
+        { team: "", animationsDisabled: false }, // Default settings value,
         "settings"
     )
     const [connected, setConnected] = useState<boolean>(false)

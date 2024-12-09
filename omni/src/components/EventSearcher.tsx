@@ -9,6 +9,7 @@ import { Button } from "./ui/button"
 import { ChevronRight } from "lucide-react"
 import { EventButton } from "./EventButton"
 import { useNavigate } from "react-router-dom"
+import { addNotification } from "./ui/notifications"
 
 const searchEvents = async (
     connectionState: boolean,
@@ -16,6 +17,8 @@ const searchEvents = async (
     year: number
 ): Promise<Event[] | null> => {
     if (!connectionState) return null
+
+    addNotification("default", "This may take a while", "Searching For Events")
     // search for event keys
     var eventKeys = await fetchTBA({
         url: `https://www.thebluealliance.com/api/v3/team/frc${team}/events/${year}/keys`,
@@ -71,8 +74,15 @@ export const EventSearcher = () => {
             }
             db.events
                 .add(newEvent)
-                .then(() =>
+                .then(() => {
+                    addNotification(
+                        "success",
+                        `Created new event ${eventInfo.name}`
+                    )
                     navigate(`/event/${eventInfo.year + eventInfo.event_code}`)
+                })
+                .catch(() =>
+                    addNotification("error", "Couldn't Create Event...")
                 )
         }
         setSelectedEvent(eventInfo)

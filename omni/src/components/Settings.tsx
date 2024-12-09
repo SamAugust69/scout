@@ -4,6 +4,7 @@ import { Modal, ModalContent, ModalFooter } from "./ui/modal"
 import { Input } from "./ui/input"
 import { Settings } from "@/lib/types/settings"
 import { useAppContext } from "@/lib/context/appContext"
+import { Toggle } from "./ui/toggle"
 
 interface SettingsInterface {
     setIsOpen: React.Dispatch<React.SetStateAction<boolean>>
@@ -55,6 +56,7 @@ export const SettingsMenu = ({ isOpen, setIsOpen }: SettingsInterface) => {
                         onChange(formatStringAsNumber(e.target.value), "team")
                     }
                 />
+                <Toggle></Toggle>
                 <ModalFooter className="flex justify-end">
                     <Button size="md" onClick={() => saveSettings()}>
                         Save

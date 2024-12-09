@@ -8,34 +8,13 @@ import { Heading } from "./heading"
 import { Paragraph } from "./paragraph"
 import { X } from "lucide-react"
 
-type NotificationVariants = "warning" | "error" | "default"
+type NotificationVariants = "warning" | "error" | "default" | "success"
 
 type Notification = {
     variant: NotificationVariants
     message?: string
     title?: string
     id: string
-}
-
-type NotificationsContext = {
-    notifications: Notification[]
-    removeNotification: (id: string) => void
-}
-
-const NotificationsContext = createContext<NotificationsContext | undefined>(
-    undefined
-)
-
-const useNotificationContext = () => {
-    const context = useContext(NotificationsContext)
-
-    if (!context) {
-        throw new Error(
-            "useNotificationContext must be used in a Notifications wrapper!"
-        )
-    }
-
-    return context
 }
 
 let addNotification: (
@@ -85,12 +64,13 @@ const Notifications = ({}) => {
 }
 
 const notificationVariants = vs({
-    base: "bg-neutral-100 border-2 rounded p-2",
+    base: "bg-neutral-100 border-2 rounded px-4 py-3",
     variants: {
         variant: {
             default: "border-neutral-400",
             warning: "border-amber-400",
             error: "border-red-400",
+            success: "border-cool-green",
         },
     },
     defaultVariants: {
@@ -118,20 +98,20 @@ const Notification = ({ variant, id, message, title }: Notification) => {
             }}
             className={clsx(
                 notificationVariants({ variant }),
-                "relative flex w-72 flex-col justify-between"
+                "relative flex w-72 flex-col justify-between dark:border-neutral-700 dark:bg-neutral-800"
             )}
         >
             <Heading>
                 {title ?? variant.charAt(0).toUpperCase() + variant.slice(1)}
             </Heading>
-            <Paragraph>{message}</Paragraph>
+            <Paragraph size="sm">{message}</Paragraph>
             <Button
                 onClick={() => {
                     removeNotifications(id)
                 }}
                 variant="secondary"
                 size="none"
-                className="absolute top-2 right-2 ml-2 flex h-6 w-6 items-center justify-center bg-neutral-300"
+                className="absolute top-3 right-4 ml-2 flex h-6 w-6 items-center justify-center bg-neutral-300"
             >
                 <X className="w-4" />
             </Button>
