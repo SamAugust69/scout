@@ -8,11 +8,13 @@ import {
     DialogTitle,
     DialogTrigger,
 } from "@/components/ui/dialog"
+import { Heading } from "@/components/ui/heading"
+import { Loader } from "@/components/ui/loader"
 import { Paragraph } from "@/components/ui/paragraph"
-import { db } from "@/lib/db"
+import { db, Event } from "@/lib/db"
 import { cn } from "@/lib/utils"
 import clsx from "clsx"
-import { ChevronLeft } from "lucide-react"
+import { ChevronLeft, Dot } from "lucide-react"
 import { useEffect, useState } from "react"
 import { Link, useLoaderData, useParams } from "react-router-dom"
 
@@ -28,9 +30,8 @@ export const EventDashboard = () => {
             .equalsIgnoreCase(id)
             .toArray()
 
-        console.log(eventData[0])
-
-        // setEventData(eventData[0])
+        console.log(eventData)
+        setEventData(eventData[0])
     }
 
     useEffect(() => {
@@ -38,49 +39,52 @@ export const EventDashboard = () => {
     }, [])
 
     return (
-        <section className="mx-auto flex w-full max-w-xl flex-col gap-2 p-4">
+        <section className="mx-auto flex w-full max-w-2xl flex-col gap-2 p-4">
             <div className="flex justify-between">
-                <Dialog>
-                    <DialogTrigger>
-                        <Button
-                            variant="link"
-                            className="flex gap-2"
-                            size="none"
-                        >
-                            <ChevronLeft className="w-4" /> Go Home
-                        </Button>
-                    </DialogTrigger>
-                    <DialogContent>
-                        <DialogTitle>Are you sure?</DialogTitle>
-                        <DialogDescription>
-                            You'll lose all your progress
-                        </DialogDescription>
-                        <DialogFooter className="flex justify-between">
-                            <Button size="md">Cancel</Button>
-                            <DialogClose>
-                                <Link
-                                    to={"/"}
-                                    className={cn(
-                                        clsx(
-                                            buttonVariants({
-                                                variant: "primary",
-                                                size: "md",
-                                            })
-                                        ),
-                                        "bg-red-300 dark:bg-red-500"
-                                    )}
-                                >
-                                    Lose Progress
-                                </Link>
-                            </DialogClose>
-                        </DialogFooter>
-                    </DialogContent>
-                </Dialog>
-                <Paragraph className="mb-1 font-bold">Create Event</Paragraph>
+                <Link
+                    to={"/"}
+                    className={cn(
+                        clsx(
+                            buttonVariants({
+                                variant: "link",
+                                size: "none",
+                            }),
+                            "flex items-center gap-2"
+                        )
+                    )}
+                >
+                    <ChevronLeft className="w-4" /> Go Home
+                </Link>
+                <Paragraph className="mb-1 font-bold">
+                    Event Dashboard
+                </Paragraph>
             </div>
             <span className="mb-4 h-0.5 w-full rounded-sm bg-[#7C8C77]"></span>
             {/* content */}
-            <div className="mx-auto flex w-full flex-col justify-center gap-8"></div>
+            <div className="mx-auto flex w-full flex-col justify-center gap-2">
+                <div className="flex rounded bg-neutral-300 p-1">
+                    <Button className="w-full font-bold">Test</Button>
+                    <Button className="w-full bg-neutral-300 font-bold">
+                        Settings
+                    </Button>
+                </div>
+                <div className="rounded bg-neutral-100 p-2">
+                    {!eventData ? (
+                        <Loader />
+                    ) : (
+                        <>
+                            <div>
+                                <Heading>{eventData?.name}</Heading>
+                                <Paragraph size="sm">
+                                    {eventData?.week && (
+                                        <>Week {eventData?.week}</>
+                                    )}
+                                </Paragraph>
+                            </div>
+                        </>
+                    )}
+                </div>
+            </div>
         </section>
     )
 }

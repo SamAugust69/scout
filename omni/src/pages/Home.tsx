@@ -58,9 +58,10 @@ export const Home = () => {
                 </Button>
                 {events && events?.length > 0 ? (
                     <div className="flex flex-col gap-3 rounded bg-neutral-100 p-2 dark:bg-[#302E2E]">
-                        {events?.map((event) => {
+                        {events?.map((event, i) => {
                             return (
                                 <Link
+                                    key={i}
                                     to={`event/${event.id} `}
                                     className={cn(
                                         clsx(
