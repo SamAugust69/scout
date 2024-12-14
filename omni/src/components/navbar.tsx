@@ -77,12 +77,14 @@ export const Navbar = () => {
                 </Link>
                 <div className="flex gap-4">
                     <Button
+                        variant="secondary"
                         onClick={() => setSettingsOpen(!settingsOpen)}
                         className={` ${!open ? "hidden" : "flex"} w-10 items-center justify-center rounded p-1 transition-all`}
                     >
                         <Settings className="w-5" />
                     </Button>
                     <Button
+                        variant="secondary"
                         onClick={() => setDark(!dark)}
                         className="flex h-8 w-16 items-center justify-center rounded-sm transition-colors"
                     >

@@ -98,7 +98,7 @@ const Notification = ({ variant, id, message, title }: Notification) => {
             }}
             className={clsx(
                 notificationVariants({ variant }),
-                "relative flex w-72 flex-col justify-between dark:border-neutral-700 dark:bg-neutral-800"
+                "relative z-50 flex w-72 flex-col justify-between dark:border-neutral-700 dark:bg-neutral-800"
             )}
         >
             <Heading>

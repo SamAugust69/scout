@@ -20,9 +20,9 @@ export const SettingsMenu = ({ isOpen, setIsOpen }: SettingsInterface) => {
     }, [changes])
 
     const saveSettings = () => {
-        setSettings((prev) => {
-            return { ...prev, ...changes }
-        })
+        if (Object.keys(changes).length > 0) {
+            setSettings((prev) => ({ ...prev, ...changes }))
+        }
     }
 
     const formatStringAsNumber = (value: string) => {
@@ -31,7 +31,10 @@ export const SettingsMenu = ({ isOpen, setIsOpen }: SettingsInterface) => {
         return value.replace(/[^0-9]/g, "")
     }
 
-    const onChange = (value: string, key: keyof Partial<Settings>) => {
+    const onChange = <T extends keyof Settings>(
+        value: Settings[T],
+        key: keyof Partial<Settings>
+    ) => {
         // const target = e.target as HTMLInputElement;
         console.log(value)
 
@@ -40,23 +43,40 @@ export const SettingsMenu = ({ isOpen, setIsOpen }: SettingsInterface) => {
 
     return (
         <Modal isOpen={isOpen} setIsOpen={setIsOpen}>
-            <ModalContent>
-                <label
-                    htmlFor="teamInput"
-                    className="text-xs dark:text-neutral-200"
-                >
-                    Team Number
-                </label>
-                <Input
-                    id="teamInput"
-                    defaultValue={settings.team || 0}
-                    placeholder="Team Number"
-                    type="number"
-                    onChange={(e) =>
-                        onChange(formatStringAsNumber(e.target.value), "team")
-                    }
-                />
-                <Toggle></Toggle>
+            <ModalContent className="">
+                <div className="flex flex-col gap-2">
+                    <div className="flex flex-col">
+                        <label
+                            htmlFor="teamInput"
+                            className="text-xs dark:text-neutral-200"
+                        >
+                            Team Number
+                        </label>
+                        <Input
+                            id="teamInput"
+                            defaultValue={settings?.team || 0}
+                            placeholder="Team Number"
+                            type="number"
+                            onChange={(e) =>
+                                onChange(
+                                    formatStringAsNumber(e.target.value),
+                                    "team"
+                                )
+                            }
+                        />
+                    </div>
+                    <Toggle
+                        value={settings?.animationsDisabled || true}
+                        setValue={() =>
+                            onChange(
+                                !settings?.animationsDisabled,
+                                "animationsDisabled"
+                            )
+                        }
+                    >
+                        Toggle Test
+                    </Toggle>
+                </div>
                 <ModalFooter className="flex justify-end">
                     <Button size="md" onClick={() => saveSettings()}>
                         Save

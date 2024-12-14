@@ -122,6 +122,7 @@ export const EventSearcher = () => {
                         <EventButton
                             eventInfo={eventInfo}
                             i={i}
+                            key={i}
                             selectEvent={selectEvent}
                             selectedEvent={selectedEvent}
                         />

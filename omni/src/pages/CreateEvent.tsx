@@ -35,23 +35,23 @@ export const Create = () => {
                             You'll lose all your progress
                         </DialogDescription>
                         <DialogFooter className="flex justify-between">
-                            <Button size="md">Cancel</Button>
                             <DialogClose>
-                                <Link
-                                    to={"/"}
-                                    className={cn(
-                                        clsx(
-                                            buttonVariants({
-                                                variant: "primary",
-                                                size: "md",
-                                            })
-                                        ),
-                                        "bg-red-300 dark:bg-red-500"
-                                    )}
-                                >
-                                    Lose Progress
-                                </Link>
+                                <Button size="md">Cancel</Button>
                             </DialogClose>
+                            <Link
+                                to={"/"}
+                                className={cn(
+                                    clsx(
+                                        buttonVariants({
+                                            variant: "primary",
+                                            size: "md",
+                                        })
+                                    ),
+                                    "bg-red-300 dark:bg-red-500"
+                                )}
+                            >
+                                Lose Progress
+                            </Link>
                         </DialogFooter>
                     </DialogContent>
                 </Dialog>

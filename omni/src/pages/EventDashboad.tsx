@@ -1,3 +1,5 @@
+import { Dashboard } from "@/components/dashboard/Dashboard"
+import { DashboardSettings } from "@/components/dashboard/DashboardSettings"
 import { Button, buttonVariants } from "@/components/ui/button"
 import {
     Dialog,
@@ -10,8 +12,10 @@ import {
 } from "@/components/ui/dialog"
 import { Heading } from "@/components/ui/heading"
 import { Loader } from "@/components/ui/loader"
+import { addNotification } from "@/components/ui/notifications"
 import { Paragraph } from "@/components/ui/paragraph"
 import { db, Event } from "@/lib/db"
+import useMultiForm from "@/lib/useMultiForm"
 import { cn } from "@/lib/utils"
 import clsx from "clsx"
 import { ChevronLeft, Dot } from "lucide-react"
@@ -31,12 +35,20 @@ export const EventDashboard = () => {
             .toArray()
 
         console.log(eventData)
+        if (eventData.length <= 0) addNotification("error", "No Log Found")
         setEventData(eventData[0])
     }
 
     useEffect(() => {
         getEventData()
     }, [])
+
+    const tabs = ["Dashboard", "Logs", "Settings"]
+    const { currentStep, currentStepNumber, goToStep } = useMultiForm([
+        <Dashboard />,
+        <div>logs</div>,
+        <DashboardSettings />,
+    ])
 
     return (
         <section className="mx-auto flex w-full max-w-2xl flex-col gap-2 p-4">
@@ -61,19 +73,26 @@ export const EventDashboard = () => {
             </div>
             <span className="mb-4 h-0.5 w-full rounded-sm bg-[#7C8C77]"></span>
             {/* content */}
-            <div className="mx-auto flex w-full flex-col justify-center gap-2">
-                <div className="flex rounded bg-neutral-300 p-1">
-                    <Button className="w-full font-bold">Test</Button>
-                    <Button className="w-full bg-neutral-300 font-bold">
-                        Settings
-                    </Button>
-                </div>
-                <div className="rounded bg-neutral-100 p-2">
-                    {!eventData ? (
-                        <Loader />
-                    ) : (
-                        <>
-                            <div>
+            <div className="mx-auto flex w-full flex-col justify-center gap-4">
+                {!eventData ? (
+                    <Loader />
+                ) : (
+                    <>
+                        <div className="">
+                            <div className="flex gap-1 rounded bg-neutral-300 p-1">
+                                {tabs.map((tab, i) => {
+                                    return (
+                                        <Button
+                                            className={`w-full font-bold ${currentStepNumber === i ? "bg-neutral-100" : "bg-neutral-300 hover:bg-neutral-200"}`}
+                                            key={i}
+                                            onClick={() => goToStep(i)}
+                                        >
+                                            {tab}
+                                        </Button>
+                                    )
+                                })}
+                            </div>
+                            <div className="flex items-center justify-between">
                                 <Heading>{eventData?.name}</Heading>
                                 <Paragraph size="sm">
                                     {eventData?.week && (
@@ -81,9 +100,12 @@ export const EventDashboard = () => {
                                     )}
                                 </Paragraph>
                             </div>
-                        </>
-                    )}
-                </div>
+                        </div>
+                        <div className="rounded bg-neutral-100 p-2">
+                            {currentStep}
+                        </div>
+                    </>
+                )}
             </div>
         </section>
     )
