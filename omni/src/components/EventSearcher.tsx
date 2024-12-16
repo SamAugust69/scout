@@ -1,5 +1,5 @@
 import { useAppContext } from "@/lib/context/appContext"
-import { db, Event } from "@/lib/db"
+import { db } from "@/lib/db"
 import fetchTBA from "@/lib/fetchTBA"
 import { useState } from "react"
 import { Heading } from "./ui/heading"
@@ -10,6 +10,7 @@ import { ChevronRight } from "lucide-react"
 import { EventButton } from "./EventButton"
 import { useNavigate } from "react-router-dom"
 import { addNotification } from "./ui/notifications"
+import { Event } from "@/lib/types/eventType"
 
 const searchEvents = async (
     connectionState: boolean,
@@ -29,7 +30,11 @@ const searchEvents = async (
 
     var events: Array<any> = []
 
-    if (eventKeys == undefined) return null
+    if (eventKeys.length <= 0) {
+        console.log("none")
+        addNotification("error", "No events found, try again...")
+        return null
+    }
 
     await Promise.all(
         eventKeys.map(async (key) => {
@@ -69,8 +74,8 @@ export const EventSearcher = () => {
                 event_code: eventInfo.event_code,
                 week: eventInfo.week,
                 year: eventInfo.year,
-                logs: [],
                 statistics: [],
+                match_logs: [],
             }
             db.events
                 .add(newEvent)

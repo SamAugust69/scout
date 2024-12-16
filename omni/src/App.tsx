@@ -9,11 +9,12 @@ import { Create } from "./pages/CreateEvent"
 import { ConfigNewDevice } from "./pages/ConfigNewDevice"
 import { handleConnection } from "./lib/checkContectivity"
 import { useEffect, useState } from "react"
-import { Settings } from "./lib/types/settings"
+import { Settings } from "./lib/types/settingsType"
 import { CreateEventManual } from "./pages/CreateEventManual"
 import { EventDashboard } from "./pages/EventDashboad"
 import { Help } from "./pages/Help"
 import { Notifications } from "./components/ui/notifications"
+import { EventScout } from "./pages/EventScout"
 
 function App() {
     const [dark, setDark] = useLocalStorage<boolean>(false, "theme")
@@ -45,7 +46,7 @@ function App() {
                 <AppContextContext.Provider
                     value={{
                         connectionState: connected,
-                        settings: settings || null,
+                        settings: settings,
                         setSettings,
                     }}
                 >
@@ -76,6 +77,11 @@ function App() {
                                 path="/event/:id"
                                 errorElement={<NavigationError />}
                                 element={<EventDashboard />}
+                            />
+                            <Route
+                                path="/event/:id/scout"
+                                errorElement={<NavigationError />}
+                                element={<EventScout />}
                             />
                             <Route
                                 path="/help"

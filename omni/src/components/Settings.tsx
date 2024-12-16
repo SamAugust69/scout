@@ -2,7 +2,7 @@ import { useEffect, useState } from "react"
 import { Button } from "./ui/button"
 import { Modal, ModalContent, ModalFooter } from "./ui/modal"
 import { Input } from "./ui/input"
-import { Settings } from "@/lib/types/settings"
+import { Settings } from "@/lib/types/settingsType"
 import { useAppContext } from "@/lib/context/appContext"
 import { Toggle } from "./ui/toggle"
 
@@ -16,12 +16,14 @@ export const SettingsMenu = ({ isOpen, setIsOpen }: SettingsInterface) => {
     const { settings, setSettings } = useAppContext()
 
     useEffect(() => {
-        console.log(changes)
+        console.log("changes", changes)
+        console.log("settings", settings)
     }, [changes])
 
     const saveSettings = () => {
         if (Object.keys(changes).length > 0) {
             setSettings((prev) => ({ ...prev, ...changes }))
+            setChanges({})
         }
     }
 
@@ -36,7 +38,6 @@ export const SettingsMenu = ({ isOpen, setIsOpen }: SettingsInterface) => {
         key: keyof Partial<Settings>
     ) => {
         // const target = e.target as HTMLInputElement;
-        console.log(value)
 
         setChanges({ ...changes, [key]: value })
     }
@@ -66,10 +67,16 @@ export const SettingsMenu = ({ isOpen, setIsOpen }: SettingsInterface) => {
                         />
                     </div>
                     <Toggle
-                        value={settings?.animationsDisabled || true}
+                        value={
+                            changes.animationsDisabled ??
+                            settings.animationsDisabled
+                        }
                         setValue={() =>
                             onChange(
-                                !settings?.animationsDisabled,
+                                !(
+                                    changes.animationsDisabled ??
+                                    settings.animationsDisabled
+                                ),
                                 "animationsDisabled"
                             )
                         }

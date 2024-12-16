@@ -12,7 +12,7 @@ const getStoredValue = <T>(key: string, initialValue: T) => {
 export function useLocalStorage<T>(
     initialValue: T,
     key: string
-): [T | null, React.Dispatch<React.SetStateAction<T>>] {
+): [T, React.Dispatch<React.SetStateAction<T>>] {
     const [value, setValue] = useState<T>(getStoredValue(key, initialValue))
     useEffect(() => {
         localStorage.setItem(key, JSON.stringify(value))

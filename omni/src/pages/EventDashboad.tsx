@@ -1,26 +1,21 @@
-import { Dashboard } from "@/components/dashboard/Dashboard"
-import { DashboardSettings } from "@/components/dashboard/DashboardSettings"
+import { Dashboard } from "@/components/dashboardTabs/Dashboard"
+import { DashboardLogs } from "@/components/dashboardTabs/DashboardLogs"
+import { DashboardSettings } from "@/components/dashboardTabs/DashboardSettings"
 import { Button, buttonVariants } from "@/components/ui/button"
-import {
-    Dialog,
-    DialogClose,
-    DialogContent,
-    DialogDescription,
-    DialogFooter,
-    DialogTitle,
-    DialogTrigger,
-} from "@/components/ui/dialog"
+
 import { Heading } from "@/components/ui/heading"
 import { Loader } from "@/components/ui/loader"
 import { addNotification } from "@/components/ui/notifications"
 import { Paragraph } from "@/components/ui/paragraph"
-import { db, Event } from "@/lib/db"
+import { db } from "@/lib/db"
+import { Event } from "@/lib/types/eventType"
+
 import useMultiForm from "@/lib/useMultiForm"
 import { cn } from "@/lib/utils"
 import clsx from "clsx"
-import { ChevronLeft, Dot } from "lucide-react"
+import { ChevronLeft } from "lucide-react"
 import { useEffect, useState } from "react"
-import { Link, useLoaderData, useParams } from "react-router-dom"
+import { Link, useParams } from "react-router-dom"
 
 export const EventDashboard = () => {
     const { id } = useParams()
@@ -45,9 +40,9 @@ export const EventDashboard = () => {
 
     const tabs = ["Dashboard", "Logs", "Settings"]
     const { currentStep, currentStepNumber, goToStep } = useMultiForm([
-        <Dashboard />,
-        <div>logs</div>,
-        <DashboardSettings />,
+        <Dashboard eventData={eventData} />,
+        <DashboardLogs eventData={eventData} />,
+        <DashboardSettings eventData={eventData} />,
     ])
 
     return (
@@ -79,6 +74,20 @@ export const EventDashboard = () => {
                 ) : (
                     <>
                         <div className="">
+                            <Link
+                                to={"./scout"}
+                                className={cn(
+                                    clsx(
+                                        buttonVariants({
+                                            variant: "primary",
+                                            size: "default",
+                                        }),
+                                        "flex items-center gap-2"
+                                    )
+                                )}
+                            >
+                                Scout
+                            </Link>
                             <div className="flex gap-1 rounded bg-neutral-300 p-1">
                                 {tabs.map((tab, i) => {
                                     return (

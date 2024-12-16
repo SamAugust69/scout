@@ -1,9 +1,9 @@
 import { createContext, Dispatch, SetStateAction, useContext } from "react"
-import { Settings } from "../types/settings"
+import { Settings } from "../types/settingsType"
 
 export type AppContextType = {
     connectionState: boolean
-    settings: Settings | null
+    settings: Settings
     setSettings: Dispatch<SetStateAction<Settings>>
 }
 

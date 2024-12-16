@@ -45,17 +45,7 @@ export const Home = () => {
                         <Paragraph>Select an event and get scouting!</Paragraph>
                     )}
                 </div>
-                <Button
-                    onClick={() =>
-                        addNotification(
-                            "success",
-                            `Created new event, ${"name"}`,
-                            "Success!"
-                        )
-                    }
-                >
-                    addNoticationTest
-                </Button>
+
                 {events && events?.length > 0 ? (
                     <div className="flex flex-col gap-3 rounded bg-neutral-100 p-2 dark:bg-[#302E2E]">
                         {events?.map((event, i) => {

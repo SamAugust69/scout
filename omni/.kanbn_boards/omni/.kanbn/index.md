@@ -13,6 +13,8 @@ completedColumns:
 - [animation-for-event-search-laoding-thing-pelase](tasks/animation-for-event-search-laoding-thing-pelase.md)
 - [on-add-event-check-for-exisiting-event-id-and-year-and-ask](tasks/on-add-event-check-for-exisiting-event-id-and-year-and-ask.md)
 - [better-loading-animation-for-dashboard](tasks/better-loading-animation-for-dashboard.md)
+- [scouting-mode-only-show-button-to-add-stuff](tasks/scouting-mode-only-show-button-to-add-stuff.md)
+- [settings-you-have-unsaved-changes](tasks/settings-you-have-unsaved-changes.md)
 
 ## Todo
 
