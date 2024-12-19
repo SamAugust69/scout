@@ -2,10 +2,9 @@ import axios from "axios"
 
 interface fetchProps {
     url: string
-    onErr?: Function
 }
 
-const fetchTBA = async ({ url, onErr }: fetchProps): Promise<any> => {
+const fetchTBA = async ({ url }: fetchProps): Promise<any> => {
     const options = {
         method: "GET",
         headers: {
@@ -17,8 +16,7 @@ const fetchTBA = async ({ url, onErr }: fetchProps): Promise<any> => {
         const { data: response } = await axios.get(url, options)
         return response
     } catch (error) {
-        console.log("err")
-        onErr != undefined && onErr
+        throw error
     }
 }
 

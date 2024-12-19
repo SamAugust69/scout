@@ -1,7 +1,7 @@
 import { vs } from "@vtechguys/vs"
 import clsx from "clsx"
 import { AnimatePresence, motion } from "motion/react"
-import { createContext, useContext, useState } from "react"
+import { useState } from "react"
 import { useInterval } from "usehooks-ts"
 import { Button } from "./button"
 import { Heading } from "./heading"
@@ -68,8 +68,8 @@ const notificationVariants = vs({
     variants: {
         variant: {
             default: "border-neutral-400",
-            warning: "border-amber-400",
-            error: "border-red-400",
+            warning: "border-amber-400 dark:border-amber-400",
+            error: "border-red-600 dark:border-red-400",
             success: "border-cool-green",
         },
     },

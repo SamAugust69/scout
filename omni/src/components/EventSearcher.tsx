@@ -6,7 +6,6 @@ import { Heading } from "./ui/heading"
 import { Paragraph } from "./ui/paragraph"
 import { Input } from "./ui/input"
 import { Button } from "./ui/button"
-import { ChevronRight } from "lucide-react"
 import { EventButton } from "./EventButton"
 import { useNavigate } from "react-router-dom"
 import { addNotification } from "./ui/notifications"
@@ -23,7 +22,6 @@ const searchEvents = async (
     // search for event keys
     var eventKeys = await fetchTBA({
         url: `https://www.thebluealliance.com/api/v3/team/frc${team}/events/${year}/keys`,
-        onErr: (e: any) => console.log("issue", e),
     }).then((res: Array<string>) => {
         return res
     })

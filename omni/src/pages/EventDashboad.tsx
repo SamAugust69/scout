@@ -68,31 +68,31 @@ export const EventDashboard = () => {
             </div>
             <span className="mb-4 h-0.5 w-full rounded-sm bg-[#7C8C77]"></span>
             {/* content */}
-            <div className="mx-auto flex w-full flex-col justify-center gap-4">
+            <div className="mx-auto flex w-full flex-col justify-center gap-4 overflow-hidden">
                 {!eventData ? (
                     <Loader />
                 ) : (
                     <>
+                        {/* <Link
+                            to={"./scout"}
+                            className={cn(
+                                clsx(
+                                    buttonVariants({
+                                        variant: "primary",
+                                        size: "default",
+                                    }),
+                                    "flex items-center gap-2"
+                                )
+                            )}
+                        >
+                            Scout
+                        </Link> */}
                         <div className="">
-                            <Link
-                                to={"./scout"}
-                                className={cn(
-                                    clsx(
-                                        buttonVariants({
-                                            variant: "primary",
-                                            size: "default",
-                                        }),
-                                        "flex items-center gap-2"
-                                    )
-                                )}
-                            >
-                                Scout
-                            </Link>
-                            <div className="flex gap-1 rounded bg-neutral-300 p-1">
+                            <div className="flex gap-1 rounded bg-neutral-300 p-1 dark:bg-[#302E2E]">
                                 {tabs.map((tab, i) => {
                                     return (
                                         <Button
-                                            className={`w-full font-bold ${currentStepNumber === i ? "bg-neutral-100" : "bg-neutral-300 hover:bg-neutral-200"}`}
+                                            className={`w-full font-bold ${currentStepNumber === i ? "bg-neutral-100" : "bg-neutral-300 hover:bg-neutral-200 dark:bg-[#302E2E] dark:hover:bg-[#353434]"}`}
                                             key={i}
                                             onClick={() => goToStep(i)}
                                         >
@@ -110,9 +110,7 @@ export const EventDashboard = () => {
                                 </Paragraph>
                             </div>
                         </div>
-                        <div className="rounded bg-neutral-100 p-2">
-                            {currentStep}
-                        </div>
+                        {currentStep}
                     </>
                 )}
             </div>
