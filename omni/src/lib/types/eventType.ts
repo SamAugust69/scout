@@ -1,5 +1,11 @@
 import { Log2024 } from "./log2024Type"
 
+export type MatchInfo = {
+    match_number: number
+    red: string[]
+    blue: string[]
+}
+
 export interface Event {
     id: string
     name: string
@@ -8,6 +14,7 @@ export interface Event {
     event_code: string
     statistics: any
     match_logs: MatchLog[]
+    schedule: MatchInfo[]
 }
 
 export type MatchLog = {

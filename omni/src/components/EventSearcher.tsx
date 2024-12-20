@@ -74,6 +74,7 @@ export const EventSearcher = () => {
                 year: eventInfo.year,
                 statistics: [],
                 match_logs: [],
+                schedule: [],
             }
             db.events
                 .add(newEvent)

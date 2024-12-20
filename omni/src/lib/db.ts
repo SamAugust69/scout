@@ -22,3 +22,7 @@ db.version(2)
                 delete event.logs
             })
     })
+
+db.version(3).stores({
+    events: "id, name, week, year, event_code, match_logs, statistics, schedule",
+})
