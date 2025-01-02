@@ -1,7 +1,20 @@
-import { getLogs } from "@/lib/getLogs"
 import { Event } from "@/lib/types/eventType"
+import { Button } from "../ui/button"
+import { LogsForm } from "../forms/2024/2024Form"
+import { useState } from "react"
 
 export const DashboardLogs = ({ eventData }: { eventData: Event | null }) => {
     if (!eventData) return
-    return <>{getLogs(eventData.match_logs)}</>
+
+    const [isOpen, setIsOpen] = useState<boolean>(true)
+
+    return (
+        <div>
+            <div>logs</div>
+            <Button size="xl" onClick={() => setIsOpen(!isOpen)}>
+                Scout
+            </Button>
+            <LogsForm isOpen={isOpen} setIsOpen={setIsOpen} />
+        </div>
+    )
 }

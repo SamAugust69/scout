@@ -1,6 +1,6 @@
 import { useDarkModeContext } from "@/lib/context/darkModeContext"
 import { useState } from "react"
-import { AnimatePresence, motion } from "motion/react"
+import { AnimatePresence, motion, useDragControls } from "framer-motion"
 import { MatchNavigation } from "./MatchNavigation"
 import { ConnectionStatus } from "./ConnectionStatus"
 import { ChevronsLeft, ChevronsRight, Moon, Settings, Sun } from "lucide-react"
@@ -10,68 +10,72 @@ import { Link } from "react-router-dom"
 import { cn } from "@/lib/utils"
 
 export const Navbar = () => {
-    const [open, setOpen] = useState(false)
+    // const [open, setOpen] = useState(false)
     const [settingsOpen, setSettingsOpen] = useState<boolean>(false)
     const { setDark, dark } = useDarkModeContext()
+    const [width, setWidth] = useState<number>(100)
+
+    const openWidth = 600
+    const closedWidth = 100
+
+    // const handleDrag = (event: any, info: any) => {
+    //     // Check drag direction and distance
+    //     setWidth((prev) => {
+    //         return prev + info.offset.x
+    //     })
+    // }
 
     return (
         <motion.nav
             className={`group/nav relative flex w-[100px] max-w-[100vw] shrink-0 flex-col gap-4 bg-neutral-100 px-2 py-4 dark:bg-[#302E2E] ${
-                !open ? "cursor-pointer" : "cursor-auto"
+                width !== openWidth ? "cursor-pointer" : "cursor-auto"
             }`}
-            animate={{ width: open ? "600px" : "100px" }}
+            animate={{ width: `${width}px` }}
             transition={{ duration: 0.1 }}
-            onClick={() => !open && setOpen(!open)}
+            onClick={() => width === closedWidth && setWidth(openWidth)}
         >
             <Button
-                onClick={() => setOpen(!open)}
+                onClick={() =>
+                    setWidth(width === openWidth ? closedWidth : openWidth)
+                }
                 className={`opacity-0 ${
-                    open ? "group-hover/nav:opacity-100" : null
+                    width === openWidth ? "group-hover/nav:opacity-100" : null
                 } absolute right-2 flex w-8 items-center justify-center p-1 transition-opacity`}
             >
                 <ChevronsLeft />
             </Button>
             <Button
-                onClick={() => setOpen(!open)}
+                onClick={() =>
+                    setWidth(width === openWidth ? closedWidth : openWidth)
+                }
                 className={`opacity-0 ${
-                    !open ? "group-hover/nav:opacity-100" : null
+                    width !== openWidth ? "group-hover/nav:opacity-100" : null
                 } absolute -right-10 flex w-8 items-center justify-center rounded p-1 transition-all dark:bg-[#302E2E]`}
             >
                 <ChevronsRight />
             </Button>
 
-            <ConnectionStatus open={open} />
-            {/* <Link
-        to={"/test"}
-        onClick={(e) => {
-          e.stopPropagation();
-          setOpen(false);
-        }}
-      >
-        navigate somewhere else btn
-      </Link> */}
-
-            {/* <Button className="mx-auto px-3 py-1 text-neutral-800 flex text-sm gap-1 group/home">
-				<Home className="w-5 h-5" />
-				<span className="hidden group-hover/home:block">Home</span>
-			</Button> */}
-
+            <ConnectionStatus open={width === openWidth} />
             <div className="h-full">
-                <AnimatePresence>{open && <MatchNavigation />}</AnimatePresence>
+                <AnimatePresence>
+                    {width === openWidth && <MatchNavigation />}
+                </AnimatePresence>
             </div>
 
             <div
                 className={`flex ${
-                    open ? "justify-between" : "justify-center"
+                    width === openWidth ? "justify-between" : "justify-center"
                 } gap-1 rounded px-4`}
             >
                 <Link
                     to={"/help"}
                     className={cn(
                         buttonVariants({ variant: "link" }),
-                        `text-sm ${open ? "" : "hidden"}`
+                        `text-sm ${width === openWidth ? "" : "hidden"}`
                     )}
-                    onClick={() => setOpen(false)}
+                    onClick={() =>
+                        setWidth(width === openWidth ? closedWidth : openWidth)
+                    }
                 >
                     Help
                 </Link>
@@ -79,7 +83,7 @@ export const Navbar = () => {
                     <Button
                         variant="secondary"
                         onClick={() => setSettingsOpen(!settingsOpen)}
-                        className={` ${!open ? "hidden" : "flex"} w-10 items-center justify-center rounded p-1 transition-all`}
+                        className={` ${width !== openWidth ? "hidden" : "flex"} w-10 items-center justify-center rounded p-1 transition-all`}
                     >
                         <Settings className="w-5" />
                     </Button>
@@ -97,10 +101,10 @@ export const Navbar = () => {
                     </Button>
                 </div>
             </div>
-            {/* nav closed settings button */}
+
             <Button
                 onClick={() => setSettingsOpen(!settingsOpen)}
-                className={`opacity-100 ${open ? "opacity-0" : ""} absolute -right-12 bottom-2 flex w-10 items-center justify-center rounded p-1 py-2 transition-all dark:bg-[#302E2E]`}
+                className={`opacity-100 ${width !== openWidth ? "opacity-0" : ""} absolute -right-12 bottom-2 flex w-10 items-center justify-center rounded p-1 py-2 transition-all dark:bg-[#302E2E]`}
             >
                 <Settings
                     className="w-5"

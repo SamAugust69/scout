@@ -2,47 +2,44 @@ import { Dashboard } from "@/components/dashboardTabs/Dashboard"
 import { DashboardLogs } from "@/components/dashboardTabs/DashboardLogs"
 import { DashboardSettings } from "@/components/dashboardTabs/DashboardSettings"
 import { Button, buttonVariants } from "@/components/ui/button"
+import { Divider } from "@/components/ui/divider"
 
 import { Heading } from "@/components/ui/heading"
 import { Loader } from "@/components/ui/loader"
-import { addNotification } from "@/components/ui/notifications"
 import { Paragraph } from "@/components/ui/paragraph"
 import { db } from "@/lib/db"
-import { Event } from "@/lib/types/eventType"
+import { useLocalStorage } from "@/lib/useLocalStorage"
 
 import useMultiForm from "@/lib/useMultiForm"
 import { cn } from "@/lib/utils"
 import clsx from "clsx"
+import { useLiveQuery } from "dexie-react-hooks"
 import { ChevronLeft } from "lucide-react"
-import { useEffect, useState } from "react"
 import { Link, useParams } from "react-router-dom"
 
 export const EventDashboard = () => {
     const { id } = useParams()
-    if (!id) throw new Error("ID doesnt exist")
+    if (!id) throw new Error("ID doesn't exist")
 
-    const [eventData, setEventData] = useState<Event | null>(null)
+    const events = useLiveQuery(() =>
+        db.events.where("id").equalsIgnoreCase(id).toArray()
+    )
 
-    const getEventData = async () => {
-        const eventData = await db.events
-            .where("id")
-            .equalsIgnoreCase(id)
-            .toArray()
+    const eventData = events !== undefined ? events[0] : null
+    const [match, setMatch] = useLocalStorage<{ [key: string]: any }>(
+        {},
+        "eventsCurrentMatch"
+    )
 
-        console.log(eventData)
-        if (eventData.length <= 0) addNotification("error", "No Log Found")
-        setEventData(eventData[0])
+    const editMatch = (key: string, value: number) => {
+        setMatch({ ...match, [key]: value })
     }
 
-    useEffect(() => {
-        getEventData()
-    }, [])
-
     const tabs = ["Dashboard", "Logs", "Settings"]
-    const { currentStep, currentStepNumber, goToStep } = useMultiForm([
-        <Dashboard eventData={eventData} />,
-        <DashboardLogs eventData={eventData} />,
-        <DashboardSettings eventData={eventData} />,
+    const { CurrentComponent, currentStepNumber, goToStep } = useMultiForm([
+        Dashboard,
+        DashboardLogs,
+        DashboardSettings,
     ])
 
     return (
@@ -66,41 +63,33 @@ export const EventDashboard = () => {
                     Event Dashboard
                 </Paragraph>
             </div>
-            <span className="mb-4 h-0.5 w-full rounded-sm bg-[#7C8C77]"></span>
-            {/* content */}
+            <Divider className="mb-4" />
+
+            {/* Main content */}
             <div className="mx-auto flex w-full flex-col justify-center gap-4 overflow-hidden">
-                {!eventData ? (
+                {events === undefined ? (
                     <Loader />
                 ) : (
                     <>
-                        {/* <Link
-                            to={"./scout"}
-                            className={cn(
-                                clsx(
-                                    buttonVariants({
-                                        variant: "primary",
-                                        size: "default",
-                                    }),
-                                    "flex items-center gap-2"
-                                )
-                            )}
-                        >
-                            Scout
-                        </Link> */}
-                        <div className="">
+                        <div>
+                            {/* Tab navigation */}
                             <div className="flex gap-1 rounded bg-neutral-300 p-1 dark:bg-[#302E2E]">
-                                {tabs.map((tab, i) => {
-                                    return (
-                                        <Button
-                                            className={`w-full font-bold ${currentStepNumber === i ? "bg-neutral-100" : "bg-neutral-300 hover:bg-neutral-200 dark:bg-[#302E2E] dark:hover:bg-[#353434]"}`}
-                                            key={i}
-                                            onClick={() => goToStep(i)}
-                                        >
-                                            {tab}
-                                        </Button>
-                                    )
-                                })}
+                                {tabs.map((tab, i) => (
+                                    <Button
+                                        className={`w-full font-bold ${
+                                            currentStepNumber === i
+                                                ? "bg-neutral-100"
+                                                : "bg-neutral-300 hover:bg-neutral-200 dark:bg-[#302E2E] dark:hover:bg-[#353434]"
+                                        }`}
+                                        key={i}
+                                        onClick={() => goToStep(i)}
+                                    >
+                                        {tab}
+                                    </Button>
+                                ))}
                             </div>
+
+                            {/* Event Info */}
                             <div className="flex items-center justify-between">
                                 <Heading>{eventData?.name}</Heading>
                                 <Paragraph size="sm">
@@ -110,7 +99,13 @@ export const EventDashboard = () => {
                                 </Paragraph>
                             </div>
                         </div>
-                        {currentStep}
+
+                        {/* Render current step */}
+                        <CurrentComponent
+                            eventData={eventData}
+                            currentMatch={match}
+                            editCurrentMatch={editMatch}
+                        />
                     </>
                 )}
             </div>

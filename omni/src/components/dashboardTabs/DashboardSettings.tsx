@@ -6,9 +6,11 @@ import { Button } from "../ui/button"
 import fetchTBA from "@/lib/fetchTBA"
 import { addNotification } from "../ui/notifications"
 import { useEffect, useState } from "react"
-import { Search, View } from "lucide-react"
+import { Link, Search, View } from "lucide-react"
 import { useAppContext } from "@/lib/context/appContext"
 import { db } from "@/lib/db"
+import { Divider } from "../ui/divider"
+import { StyledLink } from "../StyledLink"
 
 const pullSchedules = async (key: string): Promise<MatchInfo[] | null> => {
     const data: any[] | null = await fetchTBA({
@@ -48,6 +50,7 @@ export const DashboardSettings = ({
     if (!eventData) return
 
     const [schedule, setSchedule] = useState<MatchInfo[]>(eventData.schedule)
+
     const { connectionState } = useAppContext()
 
     const getScheduleFromAPI = async () => {
@@ -59,58 +62,53 @@ export const DashboardSettings = ({
         }
     }
 
-    useEffect(() => {
-        console.log(eventData.schedule)
-    }, [])
-
     return (
         <>
-            <div className="rounded bg-neutral-100 px-4 py-3 dark:bg-[#302E2E]">
-                <Heading>User Settings</Heading>
-                <div className="py-2">
-                    <Paragraph size="sm">Tablet Number</Paragraph>
-                    <Input className="bg-neutral-300"></Input>
-                </div>
-                <span className="bg-cool-green my-2 block h-0.5 w-full rounded"></span>
-                <Heading className="mb-2">Event Settings</Heading>
-                <Paragraph size="sm">Schedule</Paragraph>
-                <div
-                    className={`flex items-center justify-between rounded ${schedule?.length <= 0 ? "border-2" : ""} border-red-400 bg-neutral-300 px-3 py-2 dark:bg-neutral-800`}
-                >
-                    {schedule?.length} Matches
-                    <div className="flex gap-4">
-                        <Button onClick={() => getScheduleFromAPI()}>
-                            <Search className="w-5" />
-                        </Button>
-                        <Button>
-                            <View className="w-5" />
-                        </Button>
+            <div className="rounded bg-neutral-100 p-4 dark:bg-[#302E2E]">
+                <div className="flex flex-col gap-2">
+                    <Heading>User Settings</Heading>
+                    <div>
+                        <Paragraph size="sm">Tablet Number</Paragraph>
+                        <Input className="bg-neutral-300"></Input>
                     </div>
                 </div>
-            </div>
-            <div className="flex flex-col gap-2 overflow-y-scroll rounded bg-neutral-100 px-4 py-3 dark:bg-[#302E2E]">
-                {schedule?.map((match, i) => {
-                    return (
+                <Divider className="my-4" />
+                <div className="flex flex-col gap-2">
+                    <Heading>Event Settings</Heading>
+                    <div>
+                        <Paragraph size="sm">Schedule</Paragraph>
                         <div
-                            className="rounded bg-neutral-200 dark:bg-[#272424]"
-                            key={i}
+                            className={`flex items-center justify-between rounded ${schedule?.length <= 0 ? "border-2" : ""} border-red-400 bg-neutral-300 px-3 py-2 dark:bg-neutral-800`}
                         >
-                            <div className="border-b-2 border-neutral-400 px-3 py-2 dark:border-neutral-900/50">
-                                Qualifier {match.match_number}
-                            </div>
-                            <div className="grid h-12 grid-cols-3 border-b-2 border-[#774B4C] bg-[#9A6364] px-3 py-2">
-                                <p>{match.red[0]}</p>
-                                <p className="text-center">{match.red[1]}</p>
-                                <p className="text-right">{match.red[2]}</p>
-                            </div>
-                            <div className="grid h-12 grid-cols-3 rounded-b bg-[#63769A] px-3 py-2">
-                                <p>{match.blue[0]}</p>
-                                <p className="text-center">{match.blue[1]}</p>
-                                <p className="text-right">{match.blue[2]}</p>
+                            {schedule?.length} Matches
+                            <div className="flex gap-4">
+                                <Button
+                                    onClick={() => getScheduleFromAPI()}
+                                    disabled={!connectionState}
+                                >
+                                    <Search className="w-5" />
+                                </Button>
+                                <StyledLink to={"./schedule"}>
+                                    <View className="w-5" />
+                                </StyledLink>
                             </div>
                         </div>
-                    )
-                })}
+                    </div>
+                    <div className="">
+                        <Paragraph size="sm">Name</Paragraph>
+                        <Input
+                            className="bg-neutral-300"
+                            placeholder={eventData.name}
+                        />
+                    </div>
+                    <div className="">
+                        <Paragraph size="sm">Code</Paragraph>
+                        <Input
+                            className="bg-neutral-300"
+                            placeholder={eventData.event_code}
+                        />
+                    </div>
+                </div>
             </div>
         </>
     )

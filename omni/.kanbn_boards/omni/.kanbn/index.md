@@ -16,6 +16,7 @@ completedColumns:
 - [scouting-mode-only-show-button-to-add-stuff](tasks/scouting-mode-only-show-button-to-add-stuff.md)
 - [settings-you-have-unsaved-changes](tasks/settings-you-have-unsaved-changes.md)
 - [schedule-view-only-load-as-you-scroll-down](tasks/schedule-view-only-load-as-you-scroll-down.md)
+- [form-render-all-inputs-always-insures-that-it-cannot-be-invalid](tasks/form-render-all-inputs-always-insures-that-it-cannot-be-invalid.md)
 
 ## Todo
 

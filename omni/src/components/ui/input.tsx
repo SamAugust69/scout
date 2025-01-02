@@ -11,7 +11,7 @@ export const Input = ({
         <input
             {...props}
             className={cn(
-                "w-full rounded-sm border-neutral-200 bg-neutral-100 px-4 py-2 placeholder-neutral-500 outline-hidden invalid:border-red-500 focus:ring-2 dark:border-neutral-800 dark:bg-neutral-900 dark:text-neutral-300 dark:placeholder-neutral-300",
+                "w-full rounded-sm border-neutral-200 bg-neutral-100 px-4 py-2 placeholder-neutral-500 outline-hidden invalid:border-red-500 focus:ring-2 dark:border-neutral-800 dark:bg-neutral-900 dark:text-neutral-300 dark:placeholder-neutral-400",
                 className
             )}
         />

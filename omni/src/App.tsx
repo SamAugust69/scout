@@ -11,10 +11,11 @@ import { handleConnection } from "./lib/checkContectivity"
 import { useEffect, useState } from "react"
 import { Settings } from "./lib/types/settingsType"
 import { CreateEventManual } from "./pages/CreateEventManual"
-import { EventDashboard } from "./pages/EventDashboad"
+import { EventDashboard } from "./pages/event/EventDashboad"
 import { Help } from "./pages/Help"
 import { Notifications } from "./components/ui/notifications"
-import { EventScout } from "./pages/EventScout"
+import { EventScout } from "./pages/event/EventScout"
+import { EventSchedule } from "./pages/event/EventSchedule"
 
 function App() {
     const [dark, setDark] = useLocalStorage<boolean>(false, "theme")
@@ -82,6 +83,11 @@ function App() {
                                 path="/event/:id/scout"
                                 errorElement={<NavigationError />}
                                 element={<EventScout />}
+                            />
+                            <Route
+                                path="/event/:id/schedule"
+                                errorElement={<NavigationError />}
+                                element={<EventSchedule />}
                             />
                             <Route
                                 path="/help"

@@ -1,40 +1,32 @@
 import { useState } from "react"
 
-const useMultiForm = (formSteps: Array<React.ReactElement>) => {
-    const [formStep, setFormStep] = useState(0)
-
+const useMultiForm = (formSteps: Array<React.ComponentType<any>>) => {
+    const [currentStep, setCurrentStep] = useState<number>(0)
     const forwards = () => {
-        setFormStep((prevStep) => {
-            if (prevStep < formSteps.length - 1) {
-                return prevStep + 1
-            }
-            return prevStep
-        })
+        setCurrentStep((prevStep) =>
+            Math.min(prevStep + 1, formSteps.length - 1)
+        )
     }
 
     const backwards = () => {
-        setFormStep((prevStep) => {
-            if (prevStep > 0) {
-                return prevStep - 1
-            }
-            return prevStep
-        })
+        setCurrentStep((prevStep) => Math.max(prevStep - 1, 0))
     }
 
     const goToStep = (step: number) => {
-        setFormStep(step)
+        if (step >= 0 && step < formSteps.length) {
+            setCurrentStep(step)
+        }
     }
 
     return {
-        formSteps,
-        currentStep: formSteps[formStep],
-        currentStepNumber: formStep,
+        CurrentComponent: formSteps[currentStep],
+        currentStepNumber: currentStep,
         length: formSteps.length,
         forwards,
         backwards,
         goToStep,
-        isFirstStep: formStep === 0,
-        isLastStep: formStep === formSteps.length - 1,
+        isFirstStep: currentStep === 0,
+        isLastStep: currentStep === formSteps.length - 1,
     }
 }
 
