@@ -1,13 +1,17 @@
 import { useDarkModeContext } from "@/lib/context/darkModeContext"
 import { useState } from "react"
-import { AnimatePresence, motion, useDragControls } from "framer-motion"
-import { MatchNavigation } from "./MatchNavigation"
+import { AnimatePresence, motion } from "framer-motion"
 import { ConnectionStatus } from "./ConnectionStatus"
 import { ChevronsLeft, ChevronsRight, Moon, Settings, Sun } from "lucide-react"
 import { Button, buttonVariants } from "./ui/button"
 import { SettingsMenu } from "./Settings"
-import { Link } from "react-router-dom"
+import { Link, useParams } from "react-router-dom"
 import { cn } from "@/lib/utils"
+import { useLiveQuery } from "dexie-react-hooks"
+import { db } from "@/lib/db"
+import { ScheduleMatchView } from "./ScheduleMatchView"
+import { useAppContext } from "@/lib/context/appContext"
+import { MatchNavigation } from "./MatchNavigation"
 
 export const Navbar = () => {
     // const [open, setOpen] = useState(false)
@@ -15,7 +19,7 @@ export const Navbar = () => {
     const { setDark, dark } = useDarkModeContext()
     const [width, setWidth] = useState<number>(100)
 
-    const openWidth = 600
+    const openWidth = 400
     const closedWidth = 100
 
     // const handleDrag = (event: any, info: any) => {
@@ -25,9 +29,23 @@ export const Navbar = () => {
     //     })
     // }
 
+    const { id } = useParams()
+
+    console.log(id)
+    const events = id
+        ? useLiveQuery(() =>
+              db.events.where("id").equalsIgnoreCase(id).toArray()
+          )
+        : null
+
+    const eventData =
+        events !== null ? (events !== undefined ? events[0] : null) : null
+
+    console.log(eventData)
+
     return (
         <motion.nav
-            className={`group/nav relative flex w-[100px] max-w-[100vw] shrink-0 flex-col gap-4 bg-neutral-100 px-2 py-4 dark:bg-[#302E2E] ${
+            className={`group/nav relative flex h-full max-w-[100vw] shrink-0 flex-col gap-4 bg-neutral-100 px-2 py-4 dark:bg-[#302E2E] ${
                 width !== openWidth ? "cursor-pointer" : "cursor-auto"
             }`}
             animate={{ width: `${width}px` }}
@@ -56,11 +74,9 @@ export const Navbar = () => {
             </Button>
 
             <ConnectionStatus open={width === openWidth} />
-            <div className="h-full">
-                <AnimatePresence>
-                    {width === openWidth && <MatchNavigation />}
-                </AnimatePresence>
-            </div>
+            <AnimatePresence>
+                {width === openWidth && <MatchNavigation />}
+            </AnimatePresence>
 
             <div
                 className={`flex ${

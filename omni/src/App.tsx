@@ -16,6 +16,7 @@ import { Help } from "./pages/Help"
 import { Notifications } from "./components/ui/notifications"
 import { EventScout } from "./pages/event/EventScout"
 import { EventSchedule } from "./pages/event/EventSchedule"
+import { MatchInfo } from "./lib/types/eventType"
 
 function App() {
     const [dark, setDark] = useLocalStorage<boolean>(false, "theme")
@@ -23,6 +24,7 @@ function App() {
         { team: "", animationsDisabled: false }, // Default settings value,
         "settings"
     )
+    const [schedule, setSchedule] = useState<MatchInfo[] | null>(null)
     const [connected, setConnected] = useState<boolean>(false)
 
     useEffect(() => {
@@ -49,6 +51,8 @@ function App() {
                         connectionState: connected,
                         settings: settings,
                         setSettings,
+                        schedule,
+                        setSchedule,
                     }}
                 >
                     <BrowserRouter>

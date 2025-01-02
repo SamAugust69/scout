@@ -6,6 +6,7 @@ import { Paragraph } from "../ui/paragraph"
 import { StyledLink } from "../StyledLink"
 import { ChevronRight } from "lucide-react"
 import { Button } from "../ui/button"
+import { useAppContext } from "@/lib/context/appContext"
 
 export const Dashboard = ({
     eventData,
@@ -18,8 +19,11 @@ export const Dashboard = ({
 }) => {
     if (!eventData || !currentMatch) return
 
+    const { setSchedule } = useAppContext()
+
     useEffect(() => {
         !currentMatch[eventData.id] && editCurrentMatch(eventData?.id, 0)
+        setSchedule(eventData.schedule)
     }, [])
     return (
         <>
