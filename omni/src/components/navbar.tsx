@@ -45,7 +45,7 @@ export const Navbar = () => {
 
     return (
         <motion.nav
-            className={`group/nav relative flex h-full max-w-[100vw] shrink-0 flex-col gap-4 bg-neutral-100 px-2 py-4 dark:bg-[#302E2E] ${
+            className={`group/nav relative grid h-full max-h-screen shrink-0 grid-rows-[auto_1fr_auto] gap-4 bg-neutral-100 px-2 py-4 dark:bg-[#302E2E] ${
                 width !== openWidth ? "cursor-pointer" : "cursor-auto"
             }`}
             animate={{ width: `${width}px` }}
@@ -75,7 +75,15 @@ export const Navbar = () => {
 
             <ConnectionStatus open={width === openWidth} />
             <AnimatePresence>
-                {width === openWidth && <MatchNavigation />}
+                <motion.div
+                    initial={{ y: 5, opacity: 0 }}
+                    animate={{ y: 0, opacity: 1 }}
+                    exit={{ y: 5, opacity: 0 }}
+                    transition={{ duration: 1 }}
+                    className="flex h-full flex-col"
+                >
+                    {width === openWidth && <MatchNavigation />}
+                </motion.div>
             </AnimatePresence>
 
             <div
