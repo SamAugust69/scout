@@ -1,6 +1,6 @@
 import { Event } from "@/lib/types/eventType"
 import { Button } from "../ui/button"
-import { LogsForm } from "../forms/2024/2024Form"
+import { LogForm } from "../forms/2024/Form"
 import { useState } from "react"
 
 export const DashboardLogs = ({ eventData }: { eventData: Event | null }) => {
@@ -14,7 +14,11 @@ export const DashboardLogs = ({ eventData }: { eventData: Event | null }) => {
             <Button size="xl" onClick={() => setIsOpen(!isOpen)}>
                 Scout
             </Button>
-            <LogsForm isOpen={isOpen} setIsOpen={setIsOpen} />
+            <LogForm
+                isOpen={isOpen}
+                setIsOpen={setIsOpen}
+                year={eventData.year}
+            />
         </div>
     )
 }

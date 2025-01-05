@@ -1,4 +1,4 @@
-import { Auto, Finishing, StartLogInfo, Teleop } from "./FormPages"
+import { Auto, Finishing, StartLogInfo, Teleop } from "./FormPages2024"
 import { useState } from "react"
 import { Button } from "../../ui/button"
 import { Log2024 } from "@/lib/types/log2024Type"
@@ -12,12 +12,34 @@ import {
 } from "@/components/ui/form"
 import { Modal, ModalContent } from "@/components/ui/modal"
 
-const LogsForm = ({
+const yearInfo = [
+    {
+        year: 2024,
+        steps: [
+            { title: "Info", component: StartLogInfo },
+            { title: "Auto", component: Auto },
+            { title: "Teleop", component: Teleop },
+            { title: "Notes", component: Finishing },
+        ],
+    },
+    {
+        year: 2025,
+        steps: [
+            { title: "Info", component: StartLogInfo },
+            { title: "Auto", component: Auto },
+            { title: "Teleop", component: Teleop },
+        ],
+    },
+]
+
+const LogForm = ({
     isOpen,
     setIsOpen,
+    year,
 }: {
     isOpen: boolean
     setIsOpen: React.Dispatch<React.SetStateAction<boolean>>
+    year: number
 }) => {
     const [formChanges, setFormChanges] = useState<Partial<Log2024>>({}) // form keeps track of changes, updates input values occordingly
 
@@ -54,9 +76,21 @@ const LogsForm = ({
         console.log(formChanges)
     }
 
+    const getYearInfo = (year: number) => {
+        const titles: string[] = []
+        const components: any = []
+        yearInfo
+            .filter((info) => info.year === year)[0]
+            .steps.map((step) => {
+                titles.push(step.title)
+                components.push(step.component)
+            })
+
+        return { titles, components }
+    }
+
     // form pages, create those yourselfs
-    const formPages = [StartLogInfo, Auto, Teleop, Finishing]
-    const formTitles = ["Info", "Auto", "Teleop", "Notes/Finishing"] // step titles
+    const { titles, components } = getYearInfo(year)
 
     const {
         CurrentComponent,
@@ -66,7 +100,7 @@ const LogsForm = ({
         backwards,
         isLastStep,
         isFirstStep,
-    } = useMultiForm(formPages) // handles multipageform. {currentStep} renders current page
+    } = useMultiForm(components) // handles multipageform. {currentStep} renders current page
 
     const formNav = (e: KeyboardEvent) => {
         // handles keyboard input navigation. arrow keys and allat
@@ -110,7 +144,7 @@ const LogsForm = ({
         >
             <ModalContent className="m-2 grid h-full max-h-[52rem] w-full max-w-[900px] grid-cols-9 grid-rows-6 gap-4 bg-neutral-900/75">
                 <div className="hidden-small col-span-9 row-span-1 flex flex-col items-center gap-4 rounded-md border border-neutral-600 bg-neutral-800 py-8 md:col-span-3 md:row-span-6">
-                    {formTitles.map((title, i) => {
+                    {titles.map((title, i) => {
                         return (
                             <button
                                 className="group flex w-44 items-center gap-3"
@@ -153,10 +187,12 @@ const LogsForm = ({
                                 <FormParagraph>ELLO </FormParagraph>
                             </FormHeader>
 
-                            <CurrentComponent
-                                handleChange={handleChange}
-                                formChanges={formChanges}
-                            />
+                            {CurrentComponent ? (
+                                <CurrentComponent
+                                    handleChange={handleChange}
+                                    formChanges={formChanges}
+                                />
+                            ) : null}
                             <FormSubmit>test</FormSubmit>
                         </Form>
 
@@ -182,4 +218,4 @@ const LogsForm = ({
     )
 }
 
-export { LogsForm }
+export { LogForm }

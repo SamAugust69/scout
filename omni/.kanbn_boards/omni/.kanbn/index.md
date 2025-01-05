@@ -17,6 +17,7 @@ completedColumns:
 - [settings-you-have-unsaved-changes](tasks/settings-you-have-unsaved-changes.md)
 - [schedule-view-only-load-as-you-scroll-down](tasks/schedule-view-only-load-as-you-scroll-down.md)
 - [form-render-all-inputs-always-insures-that-it-cannot-be-invalid](tasks/form-render-all-inputs-always-insures-that-it-cannot-be-invalid.md)
+- [make-form-common-have-pages-swap-out-for-each-year-boss](tasks/make-form-common-have-pages-swap-out-for-each-year-boss.md)
 
 ## Todo
 
