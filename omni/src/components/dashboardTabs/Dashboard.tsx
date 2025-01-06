@@ -7,22 +7,21 @@ import { StyledLink } from "../StyledLink"
 import { ChevronRight } from "lucide-react"
 import { Button } from "../ui/button"
 import { useAppContext } from "@/lib/context/appContext"
+import { EventSettings } from "@/lib/types/eventSettings"
 
 export const Dashboard = ({
     eventData,
-    currentMatch,
-    editCurrentMatch,
+    eventUserSettings,
 }: {
     eventData: Event | null
-    currentMatch: { [key: string]: any }
-    editCurrentMatch: (id: string, match: number) => void
+    eventUserSettings: { [key: string]: EventSettings }
+    editEventUserSettings: (key: string, value: Partial<EventSettings>) => void
 }) => {
-    if (!eventData || !currentMatch) return
+    if (!eventData || !eventUserSettings[eventData.id]) return
 
     const { setSchedule } = useAppContext()
 
     useEffect(() => {
-        !currentMatch[eventData.id] && editCurrentMatch(eventData?.id, 0)
         setSchedule(eventData.schedule)
     }, [])
     return (
@@ -32,7 +31,7 @@ export const Dashboard = ({
                     <Heading>Matches Scouted</Heading>
                     <Paragraph>
                         {eventData.schedule.length > 0
-                            ? `${currentMatch[eventData.id]}/${eventData.schedule.length}`
+                            ? `${eventUserSettings[eventData.id].currentMatch}/${eventData.schedule.length}`
                             : "test"}
                     </Paragraph>
                 </div>
@@ -53,7 +52,11 @@ export const Dashboard = ({
                     </StyledLink>
                 </div>
                 <ScheduleMatchView
-                    match={eventData?.schedule[currentMatch[eventData.id]]}
+                    match={
+                        eventData?.schedule[
+                            eventUserSettings[eventData.id].currentMatch
+                        ]
+                    }
                 />
                 <Button size="lg">Scout Now</Button>
             </div>

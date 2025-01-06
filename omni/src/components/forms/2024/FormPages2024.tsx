@@ -16,7 +16,7 @@ interface PageInterface {
     formChanges: Partial<Log2024>
 }
 
-const Auto = ({ handleChange, formChanges }: PageInterface) => {
+const Auto2024 = ({ handleChange, formChanges }: PageInterface) => {
     return (
         <>
             <FormField>
@@ -62,7 +62,7 @@ const Auto = ({ handleChange, formChanges }: PageInterface) => {
     )
 }
 
-const StartLogInfo = ({ handleChange, formChanges }: PageInterface) => {
+const StartLogInfo2024 = ({ handleChange, formChanges }: PageInterface) => {
     return (
         <>
             <FormField>
@@ -99,7 +99,7 @@ const StartLogInfo = ({ handleChange, formChanges }: PageInterface) => {
     )
 }
 
-const Teleop = ({ handleChange, formChanges }: PageInterface) => {
+const Teleop2024 = ({ handleChange, formChanges }: PageInterface) => {
     return (
         <>
             <FormField>
@@ -181,7 +181,7 @@ const Teleop = ({ handleChange, formChanges }: PageInterface) => {
     )
 }
 
-const Finishing = ({}: PageInterface) => {
+const Finishing2024 = ({}: PageInterface) => {
     return (
         <FormField>
             <FormFieldTextArea />
@@ -189,4 +189,4 @@ const Finishing = ({}: PageInterface) => {
     )
 }
 
-export { StartLogInfo, Auto, Teleop, Finishing }
+export { StartLogInfo2024, Auto2024, Teleop2024, Finishing2024 }

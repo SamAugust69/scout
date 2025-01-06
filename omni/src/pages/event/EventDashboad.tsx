@@ -8,6 +8,7 @@ import { Heading } from "@/components/ui/heading"
 import { Loader } from "@/components/ui/loader"
 import { Paragraph } from "@/components/ui/paragraph"
 import { db } from "@/lib/db"
+import { EventSettings, eventSettingsDefault } from "@/lib/types/eventSettings"
 import { useLocalStorage } from "@/lib/useLocalStorage"
 
 import useMultiForm from "@/lib/useMultiForm"
@@ -15,6 +16,7 @@ import { cn } from "@/lib/utils"
 import clsx from "clsx"
 import { useLiveQuery } from "dexie-react-hooks"
 import { ChevronLeft } from "lucide-react"
+import { useEffect } from "react"
 import { Link, useParams } from "react-router-dom"
 
 export const EventDashboard = () => {
@@ -26,14 +28,31 @@ export const EventDashboard = () => {
     )
 
     const eventData = events !== undefined ? events[0] : null
-    const [match, setMatch] = useLocalStorage<{ [key: string]: any }>(
-        {},
-        "eventsCurrentMatch"
-    )
+    const [eventUserSettings, setEventUserSettings] = useLocalStorage<{
+        [key: string]: EventSettings
+    }>({}, "eventUserSettings")
 
-    const editMatch = (key: string, value: number) => {
-        setMatch({ ...match, [key]: value })
+    const editEventUserSettings = (
+        key: string,
+        value: Partial<EventSettings>
+    ) => {
+        // fun thing i learned here! this is an example of an impliset function.!!
+
+        // typicaly, in an explisit function, you need to explesitly state what you're returning,
+        // while an implisit function uses the () to assume the value of whatevers in the function {}
+        // is the reutrn thingy jig...
+        setEventUserSettings((prev) => ({
+            ...prev,
+            [key]: { ...prev[key], ...value },
+        }))
     }
+    useEffect(() => {
+        // if theres no event settings, replace with default values...
+
+        eventData &&
+            !eventUserSettings[eventData.id] &&
+            editEventUserSettings(eventData?.id, eventSettingsDefault)
+    }, [eventData])
 
     const tabs = ["Dashboard", "Logs", "Settings"]
     const { CurrentComponent, currentStepNumber, goToStep } = useMultiForm([
@@ -103,8 +122,8 @@ export const EventDashboard = () => {
                         {/* Render current step */}
                         <CurrentComponent
                             eventData={eventData}
-                            currentMatch={match}
-                            editCurrentMatch={editMatch}
+                            eventUserSettings={eventUserSettings}
+                            editEventUserSettings={editEventUserSettings}
                         />
                     </>
                 )}

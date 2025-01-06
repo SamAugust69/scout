@@ -1,6 +1,5 @@
-import { Auto, Finishing, StartLogInfo, Teleop } from "./FormPages2024"
 import { useState } from "react"
-import { Button } from "../../ui/button"
+import { Button } from "../ui/button"
 import { Log2024 } from "@/lib/types/log2024Type"
 import useMultiForm from "@/lib/useMultiForm"
 import {
@@ -11,26 +10,8 @@ import {
     FormSubmit,
 } from "@/components/ui/form"
 import { Modal, ModalContent } from "@/components/ui/modal"
-
-const yearInfo = [
-    {
-        year: 2024,
-        steps: [
-            { title: "Info", component: StartLogInfo },
-            { title: "Auto", component: Auto },
-            { title: "Teleop", component: Teleop },
-            { title: "Notes", component: Finishing },
-        ],
-    },
-    {
-        year: 2025,
-        steps: [
-            { title: "Info", component: StartLogInfo },
-            { title: "Auto", component: Auto },
-            { title: "Teleop", component: Teleop },
-        ],
-    },
-]
+import { formConfig } from "./formConfig"
+import { v4 as uuidv4 } from "uuid"
 
 const LogForm = ({
     isOpen,
@@ -73,13 +54,13 @@ const LogForm = ({
 
     const submitForm = () => {
         // submission logic
-        console.log(formChanges)
+        console.log({ ...formChanges, id: uuidv4() })
     }
 
     const getYearInfo = (year: number) => {
         const titles: string[] = []
         const components: any = []
-        yearInfo
+        formConfig
             .filter((info) => info.year === year)[0]
             .steps.map((step) => {
                 titles.push(step.title)

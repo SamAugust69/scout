@@ -92,7 +92,7 @@ const InputLabel = ({ children, ...props }: InputLabelInterface) => {
 
     return (
         <label
-            className={`peer-invalid: pointer-events-none text-xs transition-all duration-75 peer-placeholder-shown:top-1/2 peer-placeholder-shown:text-sm ${
+            className={`peer-invalid: pointer-events-none text-xs transition-all duration-75 peer-placeholder-shown:top-1/2 peer-placeholder-shown:text-sm peer-invalid:text-red-400 ${
                 incrementButtons ? "top-0 left-20" : "top-0 left-2"
             } absolute z-20 -translate-y-1/2 transform text-neutral-300/75`}
             {...props}

@@ -5,12 +5,14 @@ import { Paragraph } from "../ui/paragraph"
 import { Button } from "../ui/button"
 import fetchTBA from "@/lib/fetchTBA"
 import { addNotification } from "../ui/notifications"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Search, View } from "lucide-react"
 import { useAppContext } from "@/lib/context/appContext"
 import { db } from "@/lib/db"
 import { Divider } from "../ui/divider"
 import { StyledLink } from "../StyledLink"
+import { Toggle } from "../ui/toggle"
+import { EventSettings } from "@/lib/types/eventSettings"
 
 const pullSchedules = async (key: string): Promise<MatchInfo[] | null> => {
     const data: any[] | null = await fetchTBA({
@@ -44,10 +46,16 @@ const pullSchedules = async (key: string): Promise<MatchInfo[] | null> => {
 
 export const DashboardSettings = ({
     eventData,
+    eventUserSettings,
+    editEventUserSettings,
 }: {
     eventData: Event | null
+    eventUserSettings: { [key: string]: EventSettings }
+    editEventUserSettings: (key: string, value: Partial<EventSettings>) => void
 }) => {
     if (!eventData) return
+
+    // Schedule stuff
 
     const [schedule, setSchedule] = useState<MatchInfo[]>(eventData.schedule)
 
@@ -62,38 +70,96 @@ export const DashboardSettings = ({
         }
     }
 
+    // user settings stuff
+
+    const [eventUserChanges, setEventUserChanges] = useState<
+        Partial<EventSettings>
+    >({})
+
+    useEffect(() => {
+        console.log("changes", eventUserChanges)
+    }, [eventUserChanges])
+
+    const onChange = <T extends keyof EventSettings>(
+        key: keyof Partial<EventSettings>,
+        value: EventSettings[T]
+    ) => {
+        // const target = e.target as HTMLInputElement;
+
+        setEventUserChanges((prev) => ({ ...prev, [key]: value }))
+    }
+
+    const saveEventUserSettings = () => {
+        setEventUserChanges({})
+        editEventUserSettings(eventData.id, eventUserChanges)
+    }
+
     return (
         <>
             <div className="rounded bg-neutral-100 p-4 dark:bg-[#302E2E]">
-                <div className="flex flex-col gap-2">
-                    <Heading>User Settings</Heading>
-                    <div>
-                        <Paragraph size="sm">Tablet Number</Paragraph>
-                        <Input className="bg-neutral-300"></Input>
+                <div className="flex flex-col">
+                    <Heading>Schedule</Heading>
+                    <div
+                        className={`flex items-center justify-between rounded ${schedule?.length <= 0 ? "border-2" : ""} border-red-400 bg-neutral-300 px-3 py-2 dark:bg-neutral-800`}
+                    >
+                        {schedule?.length} Matches
+                        <div className="flex gap-4">
+                            <Button
+                                onClick={() => getScheduleFromAPI()}
+                                disabled={!connectionState}
+                            >
+                                <Search className="w-5" />
+                            </Button>
+                            <StyledLink to={"./schedule"}>
+                                <View className="w-5" />
+                            </StyledLink>
+                        </div>
                     </div>
                 </div>
                 <Divider className="my-4" />
                 <div className="flex flex-col gap-2">
-                    <Heading>Event Settings</Heading>
+                    <Heading>User Settings</Heading>
                     <div>
-                        <Paragraph size="sm">Schedule</Paragraph>
-                        <div
-                            className={`flex items-center justify-between rounded ${schedule?.length <= 0 ? "border-2" : ""} border-red-400 bg-neutral-300 px-3 py-2 dark:bg-neutral-800`}
-                        >
-                            {schedule?.length} Matches
-                            <div className="flex gap-4">
-                                <Button
-                                    onClick={() => getScheduleFromAPI()}
-                                    disabled={!connectionState}
-                                >
-                                    <Search className="w-5" />
-                                </Button>
-                                <StyledLink to={"./schedule"}>
-                                    <View className="w-5" />
-                                </StyledLink>
-                            </div>
-                        </div>
+                        <Paragraph size="sm">Tablet Number</Paragraph>
+                        <Input
+                            className="bg-neutral-300"
+                            type="number"
+                            defaultValue={
+                                eventUserSettings[eventData.id].tabletNumber
+                            }
+                            onChange={(e) =>
+                                onChange(
+                                    "tabletNumber",
+                                    parseInt(e.target.value)
+                                )
+                            }
+                        ></Input>
                     </div>
+                    <div>
+                        <Paragraph size="sm">Current Match</Paragraph>
+                        <Input
+                            className="bg-neutral-300"
+                            type="number"
+                            defaultValue={
+                                eventUserSettings[eventData.id].currentMatch
+                            }
+                            onChange={(e) =>
+                                onChange(
+                                    "currentMatch",
+                                    parseInt(e.target.value)
+                                )
+                            }
+                        ></Input>
+                    </div>
+                    <div>{/* <Toggle>Test</Toggle> */}</div>
+                    {Object.keys(eventUserChanges).length > 0 ? (
+                        <Button onClick={saveEventUserSettings}>Save</Button>
+                    ) : null}
+                </div>
+                <Divider className="my-4" />
+                <div className="flex flex-col gap-2">
+                    <Heading>Event Settings</Heading>
+
                     <div className="">
                         <Paragraph size="sm">Name</Paragraph>
                         <Input
@@ -109,6 +175,9 @@ export const DashboardSettings = ({
                         />
                     </div>
                 </div>
+            </div>
+            <div className="rounded bg-neutral-100 p-4 dark:bg-[#302E2E]">
+                export stuff here
             </div>
         </>
     )

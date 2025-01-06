@@ -1,6 +1,6 @@
 import { Event } from "@/lib/types/eventType"
 import { Button } from "../ui/button"
-import { LogForm } from "../forms/2024/Form"
+import { LogForm } from "../forms/Form"
 import { useState } from "react"
 
 export const DashboardLogs = ({ eventData }: { eventData: Event | null }) => {

@@ -9,18 +9,16 @@ import { Link, useParams } from "react-router-dom"
 import { cn } from "@/lib/utils"
 import { useLiveQuery } from "dexie-react-hooks"
 import { db } from "@/lib/db"
-import { ScheduleMatchView } from "./ScheduleMatchView"
-import { useAppContext } from "@/lib/context/appContext"
 import { MatchNavigation } from "./MatchNavigation"
 
 export const Navbar = () => {
     // const [open, setOpen] = useState(false)
     const [settingsOpen, setSettingsOpen] = useState<boolean>(false)
     const { setDark, dark } = useDarkModeContext()
-    const [width, setWidth] = useState<number>(100)
 
     const openWidth = 400
-    const closedWidth = 100
+    const closedWidth = 110
+    const [width, setWidth] = useState<number>(closedWidth)
 
     // const handleDrag = (event: any, info: any) => {
     //     // Check drag direction and distance
@@ -28,20 +26,6 @@ export const Navbar = () => {
     //         return prev + info.offset.x
     //     })
     // }
-
-    const { id } = useParams()
-
-    console.log(id)
-    const events = id
-        ? useLiveQuery(() =>
-              db.events.where("id").equalsIgnoreCase(id).toArray()
-          )
-        : null
-
-    const eventData =
-        events !== null ? (events !== undefined ? events[0] : null) : null
-
-    console.log(eventData)
 
     return (
         <motion.nav
@@ -58,7 +42,7 @@ export const Navbar = () => {
                 }
                 className={`opacity-0 ${
                     width === openWidth ? "group-hover/nav:opacity-100" : null
-                } absolute right-2 flex w-8 items-center justify-center p-1 transition-opacity`}
+                } absolute top-2 right-2 flex w-8 items-center justify-center p-1 transition-opacity`}
             >
                 <ChevronsLeft />
             </Button>
@@ -68,7 +52,7 @@ export const Navbar = () => {
                 }
                 className={`opacity-0 ${
                     width !== openWidth ? "group-hover/nav:opacity-100" : null
-                } absolute -right-10 flex w-8 items-center justify-center rounded p-1 transition-all dark:bg-[#302E2E]`}
+                } absolute top-2 -right-10 flex w-8 items-center justify-center rounded p-1 transition-all dark:bg-[#302E2E]`}
             >
                 <ChevronsRight />
             </Button>
@@ -80,7 +64,7 @@ export const Navbar = () => {
                     animate={{ y: 0, opacity: 1 }}
                     exit={{ y: 5, opacity: 0 }}
                     transition={{ duration: 1 }}
-                    className="flex h-full flex-col"
+                    className="row-span-11 flex h-full flex-col gap-1"
                 >
                     {width === openWidth && <MatchNavigation />}
                 </motion.div>
@@ -128,7 +112,7 @@ export const Navbar = () => {
 
             <Button
                 onClick={() => setSettingsOpen(!settingsOpen)}
-                className={`opacity-100 ${width !== openWidth ? "opacity-0" : ""} absolute -right-12 bottom-2 flex w-10 items-center justify-center rounded p-1 py-2 transition-all dark:bg-[#302E2E]`}
+                className={`absolute -right-12 bottom-2 flex w-10 items-center justify-center rounded p-1 py-2 opacity-100 transition-all dark:bg-[#302E2E]`}
             >
                 <Settings
                     className="w-5"
