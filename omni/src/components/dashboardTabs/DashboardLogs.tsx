@@ -6,7 +6,7 @@ import { useState } from "react"
 export const DashboardLogs = ({ eventData }: { eventData: Event | null }) => {
     if (!eventData) return
 
-    const [isOpen, setIsOpen] = useState<boolean>(true)
+    const [isOpen, setIsOpen] = useState<boolean>(false)
 
     return (
         <div>
@@ -17,7 +17,7 @@ export const DashboardLogs = ({ eventData }: { eventData: Event | null }) => {
             <LogForm
                 isOpen={isOpen}
                 setIsOpen={setIsOpen}
-                year={eventData.year}
+                eventData={eventData}
             />
         </div>
     )

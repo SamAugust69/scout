@@ -12,15 +12,17 @@ import {
 import { Modal, ModalContent } from "@/components/ui/modal"
 import { formConfig } from "./formConfig"
 import { v4 as uuidv4 } from "uuid"
+import { Event } from "@/lib/types/eventType"
+import { db } from "@/lib/db"
 
 const LogForm = ({
     isOpen,
     setIsOpen,
-    year,
+    eventData,
 }: {
     isOpen: boolean
     setIsOpen: React.Dispatch<React.SetStateAction<boolean>>
-    year: number
+    eventData: Event
 }) => {
     const [formChanges, setFormChanges] = useState<Partial<Log2024>>({}) // form keeps track of changes, updates input values occordingly
 
@@ -54,7 +56,7 @@ const LogForm = ({
 
     const submitForm = () => {
         // submission logic
-        console.log({ ...formChanges, id: uuidv4() })
+        db.events.update(eventData, { ...eventData })
     }
 
     const getYearInfo = (year: number) => {
@@ -71,7 +73,7 @@ const LogForm = ({
     }
 
     // form pages, create those yourselfs
-    const { titles, components } = getYearInfo(year)
+    const { titles, components } = getYearInfo(eventData.year)
 
     const {
         CurrentComponent,

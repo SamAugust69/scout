@@ -41,15 +41,15 @@ export const Dashboard = ({
             <div className="flex flex-col gap-3 rounded bg-neutral-100 p-3 dark:bg-[#302E2E]">
                 <div className="flex justify-between">
                     <Heading>Next Match</Heading>
-                    <StyledLink
+                    {/* <StyledLink
                         variant="link"
                         to={"./schedule"}
                         size="none"
-                        className="group relative left-4 gap-1 text-sm transition-all hover:left-0"
+                        className="group relative left-3 gap-1 text-sm transition-all hover:left-0"
                     >
                         View Full Schedule
                         <ChevronRight className="relative right-4 w-4 opacity-0 transition-opacity group-hover:right-0 group-hover:opacity-100" />
-                    </StyledLink>
+                    </StyledLink> */}
                 </div>
                 <ScheduleMatchView
                     match={

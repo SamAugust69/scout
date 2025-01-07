@@ -5,10 +5,8 @@ import { ConnectionStatus } from "./ConnectionStatus"
 import { ChevronsLeft, ChevronsRight, Moon, Settings, Sun } from "lucide-react"
 import { Button, buttonVariants } from "./ui/button"
 import { SettingsMenu } from "./Settings"
-import { Link, useParams } from "react-router-dom"
+import { Link } from "react-router-dom"
 import { cn } from "@/lib/utils"
-import { useLiveQuery } from "dexie-react-hooks"
-import { db } from "@/lib/db"
 import { MatchNavigation } from "./MatchNavigation"
 
 export const Navbar = () => {

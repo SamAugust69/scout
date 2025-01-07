@@ -85,7 +85,7 @@ export const EventDashboard = () => {
             <Divider className="mb-4" />
 
             {/* Main content */}
-            <div className="mx-auto flex w-full flex-col justify-center gap-4 overflow-hidden">
+            <div className="mx-auto flex w-full flex-col gap-4 overflow-y-scroll">
                 {events === undefined ? (
                     <Loader />
                 ) : (
