@@ -27,7 +27,7 @@ export const MatchNavigation = () => {
                             <ScheduleMatchView
                                 match={match}
                                 key={i}
-                                className="bg-neutral-400/50 dark:bg-neutral-700/50"
+                                className="bg-neutral-100 dark:bg-neutral-700/50"
                             />
                         )
                     })

@@ -2,6 +2,7 @@ import { Event } from "@/lib/types/eventType"
 import { Button } from "../ui/button"
 import { LogForm } from "../forms/Form"
 import { useState } from "react"
+import { Heading } from "../ui/heading"
 
 export const DashboardLogs = ({ eventData }: { eventData: Event | null }) => {
     if (!eventData) return
@@ -9,16 +10,17 @@ export const DashboardLogs = ({ eventData }: { eventData: Event | null }) => {
     const [isOpen, setIsOpen] = useState<boolean>(false)
 
     return (
-        <div>
-            <div>logs</div>
-            <Button size="xl" onClick={() => setIsOpen(!isOpen)}>
-                Scout
-            </Button>
+        <>
             <LogForm
                 isOpen={isOpen}
                 setIsOpen={setIsOpen}
                 eventData={eventData}
             />
-        </div>
+            <div className="rounded bg-neutral-100 px-4 py-3 dark:bg-[#302E2E]">
+                <Heading>Match</Heading>
+
+                <div className="rounded bg-neutral-700 p-2"></div>
+            </div>
+        </>
     )
 }
