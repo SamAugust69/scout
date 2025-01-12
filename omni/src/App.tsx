@@ -43,7 +43,7 @@ function App() {
     return (
         <DarkModeContext.Provider value={{ dark: dark || false, setDark }}>
             <div
-                className="font-host-grotesk flex h-screen bg-neutral-200 dark:bg-[#272424] dark:text-neutral-300"
+                className="font-host-grotesk flex h-screen bg-neutral-200 dark:bg-[#272424] dark:text-neutral-300 dark:scheme-dark"
                 data-mode={dark ? "dark" : "light"}
             >
                 <AppContextContext.Provider

@@ -1,6 +1,6 @@
 import { useState } from "react"
 import { Button } from "../ui/button"
-import { Log2024 } from "@/lib/types/log2024Type"
+import { Log2024, scoreAuto } from "@/lib/types/log2024Type"
 import useMultiForm from "@/lib/useMultiForm"
 import {
     Form,
@@ -12,8 +12,9 @@ import {
 import { Modal, ModalContent } from "@/components/ui/modal"
 import { formConfig } from "./formConfig"
 import { v4 as uuidv4 } from "uuid"
-import { Event } from "@/lib/types/eventType"
+import { Event, MatchInfo, MatchLog } from "@/lib/types/eventType"
 import { db } from "@/lib/db"
+import { addNotification } from "../ui/notifications"
 
 const LogForm = ({
     isOpen,
@@ -54,9 +55,34 @@ const LogForm = ({
         }
     }
 
+    const generateStatistics = () => {
+        scoreAuto(formChanges)
+    }
+
     const submitForm = () => {
         // submission logic
-        db.events.update(eventData, { ...eventData })
+        // db.events.update(eventData, { ...eventData })
+
+        generateStatistics()
+        if (!formChanges.match || !formChanges.team) {
+            addNotification(
+                "error",
+                `Missing match and/or team`,
+                "Form Invalid"
+            )
+            return
+        }
+
+        // goal: filter current eventData.match_logs for current match to be submitted, add log, update statistics
+        const matchInfo: MatchLog = eventData.match_logs.filter(
+            (match) => match.matchNumber === formChanges.match
+        )[0] || {
+            match_number: formChanges.match,
+            logs: [formChanges],
+            statistics: [],
+        }
+
+        console.log(matchInfo)
     }
 
     const getYearInfo = (year: number) => {

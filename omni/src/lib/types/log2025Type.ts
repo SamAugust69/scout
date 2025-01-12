@@ -4,7 +4,7 @@
 import { LogCommon } from "./logCommonType"
 
 // Form values
-export type Log2024 = LogCommon & {
+export type Log2025 = LogCommon & {
     auto: {}
     teleop: {}
 }

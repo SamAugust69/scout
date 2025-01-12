@@ -1,8 +1,8 @@
 import { Event } from "@/lib/types/eventType"
-import { Button } from "../ui/button"
 import { LogForm } from "../forms/Form"
 import { useState } from "react"
 import { Heading } from "../ui/heading"
+import { Button } from "../ui/button"
 
 export const DashboardLogs = ({ eventData }: { eventData: Event | null }) => {
     if (!eventData) return
@@ -21,6 +21,7 @@ export const DashboardLogs = ({ eventData }: { eventData: Event | null }) => {
 
                 <div className="rounded bg-neutral-700 p-2"></div>
             </div>
+            <Button onClick={() => setIsOpen(!isOpen)}>Scout</Button>
         </>
     )
 }

@@ -6,10 +6,6 @@
     --font-host-grotesk: Host Grotesk, sans-serif;
 
     --color-cool-green: #7c8c77;
-
-    --border-custom-dashed: {
-        background-image: url("data:image/svg+xml,%3csvg width='100%25' height='100%25' xmlns='http://www.w3.org/2000/svg'%3e%3crect width='100%25' height='100%25' fill='none' stroke='%23333' stroke-width='4' stroke-dasharray='10%2c 15' stroke-dashoffset='0' stroke-linecap='square'/%3e%3c/svg%3e");
-    };
 }
 
 /*
@@ -27,5 +23,12 @@
     ::backdrop,
     ::file-selector-button {
         border-color: var(--color-gray-200, currentColor);
+    }
+}
+
+@layer utilities {
+    --scroll-bar-0 {
+        -ms-overflow-style: none; /* IE and Edge */
+        scrollbar-width: none; /* Firefox */
     }
 }

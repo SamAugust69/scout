@@ -161,7 +161,7 @@ const FormInputNumber = ({
             <input
                 placeholder=""
                 pattern="[0-9]+"
-                type="text"
+                type="number"
                 ref={inputRef}
                 className={`peer flex h-10 w-full px-2 outline-none placeholder:text-sm invalid:border-red-400 disabled:pointer-events-none ${
                     !incrementButtons ? "rounded" : null

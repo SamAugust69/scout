@@ -19,6 +19,7 @@ const pullSchedules = async (key: string): Promise<MatchInfo[] | null> => {
         url: `https://www.thebluealliance.com/api/v3/event/${key}/matches/simple`,
     }).catch(() => addNotification("error", "SAMUEL"))
 
+    console.log(data)
     if (!data) return null
     addNotification("success", "Search complete")
 

@@ -27,7 +27,7 @@ export const Navbar = () => {
 
     return (
         <motion.nav
-            className={`group/nav relative grid h-full max-h-screen shrink-0 grid-rows-[auto_1fr_auto] gap-4 bg-neutral-100 px-2 py-4 dark:bg-[#302E2E] ${
+            className={`group/nav scroll-bar-0 relative grid h-full max-h-screen shrink-0 grid-rows-[auto_1fr_auto] gap-4 bg-neutral-100 px-2 py-4 dark:bg-[#302E2E] ${
                 width !== openWidth ? "cursor-pointer" : "cursor-auto"
             }`}
             animate={{ width: `${width}px` }}

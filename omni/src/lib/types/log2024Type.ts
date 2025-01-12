@@ -29,3 +29,10 @@ export type Log2024 = LogCommon & {
 }
 
 // make scoring map.
+
+export const scoreAuto = (log: Partial<Log2024>) => {
+    const { auto } = log
+
+    if (!auto) return
+    console.log(auto)
+}

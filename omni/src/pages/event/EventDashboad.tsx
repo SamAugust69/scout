@@ -85,7 +85,7 @@ export const EventDashboard = () => {
             <Divider className="mb-4" />
 
             {/* Main content */}
-            <div className="mx-auto flex w-full flex-col gap-4 overflow-y-scroll">
+            <div className="mx-auto flex w-full flex-col gap-4 overflow-hidden">
                 {events === undefined ? (
                     <Loader />
                 ) : (
@@ -120,11 +120,13 @@ export const EventDashboard = () => {
                         </div>
 
                         {/* Render current step */}
-                        <CurrentComponent
-                            eventData={eventData}
-                            eventUserSettings={eventUserSettings}
-                            editEventUserSettings={editEventUserSettings}
-                        />
+                        <div className="scroll-bar-none flex flex-col gap-4 overflow-y-scroll">
+                            <CurrentComponent
+                                eventData={eventData}
+                                eventUserSettings={eventUserSettings}
+                                editEventUserSettings={editEventUserSettings}
+                            />
+                        </div>
                     </>
                 )}
             </div>
