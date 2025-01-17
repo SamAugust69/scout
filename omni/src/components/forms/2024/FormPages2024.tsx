@@ -10,11 +10,7 @@ import {
     InputLabel,
 } from "@/components/ui/form"
 import { Log2024 } from "@/lib/types/log2024Type"
-
-interface PageInterface {
-    handleChange: (e: React.ChangeEvent<HTMLInputElement>) => void
-    formChanges: Partial<Log2024>
-}
+import { PageInterface } from "../formConfig"
 
 const Auto2024 = ({ handleChange, formChanges }: PageInterface) => {
     return (

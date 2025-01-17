@@ -1,6 +1,7 @@
 // This is our 2024 config file.
 // This contains all the types declerations for 2024.
 
+import { Log2025 } from "./log2025Type"
 import { LogCommon } from "./logCommonType"
 
 // Form values
@@ -30,8 +31,8 @@ export type Log2024 = LogCommon & {
 
 // make scoring map.
 
-export const scoreAuto = (log: Partial<Log2024>) => {
-    const { auto } = log
+export const scoreAuto = (formChanges: Partial<Log2024 | Log2025>) => {
+    const { auto } = formChanges
 
     if (!auto) return
     console.log(auto)

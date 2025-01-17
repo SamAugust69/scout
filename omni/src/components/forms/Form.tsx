@@ -10,11 +10,31 @@ import {
     FormSubmit,
 } from "@/components/ui/form"
 import { Modal, ModalContent } from "@/components/ui/modal"
-import { formConfig } from "./formConfig"
+import { DeepKeyOf, formConfig, Log } from "./formConfig"
 import { v4 as uuidv4 } from "uuid"
 import { Event, MatchInfo, MatchLog } from "@/lib/types/eventType"
 import { db } from "@/lib/db"
 import { addNotification } from "../ui/notifications"
+import { Log2025 } from "@/lib/types/log2025Type"
+
+const getAllKeys = <T extends {}>(obj: T): string[] => {
+    let keys: string[] = []
+
+    const iterate = (o: any, parentKey: string = "") => {
+        for (const key in o) {
+            if (o.hasOwnProperty(key)) {
+                const newKey = parentKey ? `${parentKey}.${key}` : key
+                keys.push(newKey)
+                if (typeof o[key] === "object" && o[key] !== null) {
+                    iterate(o[key], newKey) // Recurse into nested object
+                }
+            }
+        }
+    }
+
+    iterate(obj)
+    return keys
+}
 
 const LogForm = ({
     isOpen,
@@ -27,36 +47,57 @@ const LogForm = ({
 }) => {
     const [formChanges, setFormChanges] = useState<Partial<Log2024>>({}) // form keeps track of changes, updates input values occordingly
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const { name, value, type, checked } = e.target
-        const fieldValue = type === "checkbox" ? checked : value
+    const getYearInfo = (year: number) => {
+        const titles: string[] = []
+        const components: any = []
+        const filtered = formConfig.filter((info) => info.year === year)[0]
 
-        const keys = name.split(".") as [keyof Log2024, string]
+        filtered.steps.map((step) => {
+            titles.push(step.title)
+            components.push(step.component)
+        })
 
-        if (keys.length === 2) {
-            // nested, only 2 depth unfortunately
-            const [parent, child] = keys
-
-            setFormChanges((prevState) => ({
-                ...prevState,
-                [parent]: {
-                    ...(prevState[parent] as any),
-                    [child]: fieldValue,
-                },
-            }))
-        } else {
-            // non-nested
-            const key = keys[0] as keyof Log2024
-
-            setFormChanges((prevState) => ({
-                ...prevState,
-                [key]: fieldValue,
-            }))
-        }
+        return { titles, components, scoringFunction: filtered.scoringFunction }
     }
 
+    const handleChange = <Year extends number>(
+        year: Year,
+        key: string,
+        value: any
+    ) => {
+        console.log(value)
+        console.log(key)
+
+        
+        setFormChanges((prev) => {
+            const keys = key.split(".") as [keyof Log<Year>, string]
+        if (keys.length === 2) {
+            // Nested structure
+            const [parentKey, childKey] = keys
+
+            
+            return {
+                ...prev,
+                [parentKey]: {
+                    ...(prev[parentKey] as any),
+                    [childKey]: value,
+                },
+            }
+        } else {
+            // Non-nested, direct assignment
+            return {
+                ...prev,
+                [key]: value,
+            }
+        }
+    )
+
+        console.log(parent, child)
+    }
+    const { titles, components, scoringFunction } = getYearInfo(eventData.year)
+
     const generateStatistics = () => {
-        scoreAuto(formChanges)
+        scoringFunction(formChanges)
     }
 
     const submitForm = () => {
@@ -85,21 +126,7 @@ const LogForm = ({
         console.log(matchInfo)
     }
 
-    const getYearInfo = (year: number) => {
-        const titles: string[] = []
-        const components: any = []
-        formConfig
-            .filter((info) => info.year === year)[0]
-            .steps.map((step) => {
-                titles.push(step.title)
-                components.push(step.component)
-            })
-
-        return { titles, components }
-    }
-
     // form pages, create those yourselfs
-    const { titles, components } = getYearInfo(eventData.year)
 
     const {
         CurrentComponent,

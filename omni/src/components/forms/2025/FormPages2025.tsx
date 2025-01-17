@@ -9,15 +9,41 @@ import {
     FormInputToggle,
     InputLabel,
 } from "@/components/ui/form"
-import { Log2024 } from "@/lib/types/log2024Type"
-
-interface PageInterface {
-    handleChange: (e: React.ChangeEvent<HTMLInputElement>) => void
-    formChanges: Partial<Log2024>
-}
+import { PageInterface } from "../formConfig"
 
 const Auto2025 = ({ handleChange, formChanges }: PageInterface) => {
-    return <></>
+    return (
+        <>
+            <FormField>
+                <FormInputToggle
+                    name="auto.left"
+                    onChange={(e) =>
+                        handleChange(
+                            2025,
+                            "auto.coralL1",
+                            e.currentTarget.checked
+                        )
+                    }
+                    defaultChecked={formChanges.auto?.left}
+                >
+                    <FormInputTitle>Left Starting Line</FormInputTitle>
+                    <FormInputDescription>
+                        Did your robot score during auto?
+                    </FormInputDescription>
+                </FormInputToggle>
+            </FormField>
+
+            <FormField>
+                <FormInputNumber
+                    onChange={(e) =>
+                        handleChange(2025, "team", e.currentTarget.checked)
+                    }
+                    defaultValue={formChanges.team}
+                    placeholder="Team"
+                />
+            </FormField>
+        </>
+    )
 }
 
 const StartLogInfo2025 = ({ handleChange, formChanges }: PageInterface) => {

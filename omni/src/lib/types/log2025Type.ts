@@ -1,12 +1,60 @@
 // This is our 2024 config file.
 // This contains all the types declerations for 2024.
 
+import { Log2024 } from "./log2024Type"
 import { LogCommon } from "./logCommonType"
 
 // Form values
 export type Log2025 = LogCommon & {
-    auto: {}
-    teleop: {}
+    auto: {
+        left: boolean
+        coralL1: number
+        coralL2: number
+        coralL3: number
+        coralL4: number
+        algae: number
+        net: number
+    }
+    teleop: {
+        coralL1: number
+        coralL2: number
+        coralL3: number
+        coralL4: number
+        algae: number
+        net: number
+    }
+    end: {
+        parked: boolean
+        shallowHang: boolean
+        deepHang: boolean
+    }
 }
 
 // make scoring map.
+
+const scoringMap2025: { [key: string]: number } = {
+    "auto.left": 3,
+    "auto.coralL1": 3,
+    "auto.coralL2": 4,
+    "auto.coralL3": 6,
+    "auto.coralL4": 7,
+    "auto.algae": 6,
+    "auto.net": 4,
+
+    // Teleop Scoring
+    "teleop.coralL1": 2,
+    "teleop.coralL2": 3,
+    "teleop.coralL3": 4,
+    "teleop.coralL4": 5,
+    "teleop.algae": 6,
+    "teleop.net": 4,
+
+    // Endgame Scoring
+    "end.parked": 2,
+    "end.shallowHang": 6,
+    "end.deepHang": 12,
+}
+
+export const scoreLog = (formChanges: Partial<Log2025 | Log2024>) => {
+    console.log(formChanges)
+}
