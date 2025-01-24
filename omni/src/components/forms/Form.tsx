@@ -1,6 +1,5 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Button } from "../ui/button"
-import { Log2024, scoreAuto } from "@/lib/types/log2024Type"
 import useMultiForm from "@/lib/useMultiForm"
 import {
     Form,
@@ -10,42 +9,22 @@ import {
     FormSubmit,
 } from "@/components/ui/form"
 import { Modal, ModalContent } from "@/components/ui/modal"
-import { DeepKeyOf, formConfig, Log } from "./formConfig"
-import { v4 as uuidv4 } from "uuid"
-import { Event, MatchInfo, MatchLog } from "@/lib/types/eventType"
-import { db } from "@/lib/db"
+import { formConfig } from "./formConfig"
+import { Event, MatchLog } from "@/lib/types/eventType"
 import { addNotification } from "../ui/notifications"
-import { Log2025 } from "@/lib/types/log2025Type"
+import { Log, logConfig } from "@/lib/types/logTypes"
 
-const getAllKeys = <T extends {}>(obj: T): string[] => {
-    let keys: string[] = []
-
-    const iterate = (o: any, parentKey: string = "") => {
-        for (const key in o) {
-            if (o.hasOwnProperty(key)) {
-                const newKey = parentKey ? `${parentKey}.${key}` : key
-                keys.push(newKey)
-                if (typeof o[key] === "object" && o[key] !== null) {
-                    iterate(o[key], newKey) // Recurse into nested object
-                }
-            }
-        }
-    }
-
-    iterate(obj)
-    return keys
-}
-
-const LogForm = ({
-    isOpen,
-    setIsOpen,
-    eventData,
-}: {
+interface LogFormInterface {
     isOpen: boolean
     setIsOpen: React.Dispatch<React.SetStateAction<boolean>>
     eventData: Event
-}) => {
-    const [formChanges, setFormChanges] = useState<Partial<Log2024>>({}) // form keeps track of changes, updates input values occordingly
+}
+
+const LogForm = ({ isOpen, setIsOpen, eventData }: LogFormInterface) => {
+    const Year = eventData.year as keyof typeof logConfig
+    const [formChanges, setFormChanges] = useState<Log<typeof Year>>(
+        {} as Log<typeof Year>
+    )
 
     const getYearInfo = (year: number) => {
         const titles: string[] = []
@@ -60,45 +39,41 @@ const LogForm = ({
         return { titles, components, scoringFunction: filtered.scoringFunction }
     }
 
-    const handleChange = <Year extends number>(
-        year: Year,
-        key: string,
-        value: any
-    ) => {
-        console.log(value)
-        console.log(key)
-
-        
+    const handleChange = (key: string, value: any) => {
         setFormChanges((prev) => {
-            const keys = key.split(".") as [keyof Log<Year>, string]
-        if (keys.length === 2) {
-            // Nested structure
-            const [parentKey, childKey] = keys
+            const keys = key.split(".") as [keyof Log<typeof Year>, never]
+            if (keys.length === 2) {
+                // for nested
+                const [parentKey, childKey] = keys
+                const parentValue = prev[parentKey] || {} // ensures that the parent value is always an object, and it spreadable
 
-            
-            return {
-                ...prev,
-                [parentKey]: {
-                    ...(prev[parentKey] as any),
-                    [childKey]: value,
-                },
-            }
-        } else {
-            // Non-nested, direct assignment
-            return {
-                ...prev,
-                [key]: value,
-            }
-        }
-    )
+                console.log(prev[parentKey][childKey])
 
-        console.log(parent, child)
+                return {
+                    ...prev,
+                    [parentKey]: {
+                        ...parentValue,
+                        [childKey]: value,
+                    },
+                }
+            } else {
+                // for non-nested, direct assignment
+                return {
+                    ...prev,
+                    [key]: value,
+                }
+            }
+        })
     }
     const { titles, components, scoringFunction } = getYearInfo(eventData.year)
 
     const generateStatistics = () => {
         scoringFunction(formChanges)
     }
+
+    useEffect(() => {
+        console.log(formChanges)
+    }, [formChanges])
 
     const submitForm = () => {
         // submission logic

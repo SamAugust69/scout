@@ -9,20 +9,16 @@ import {
     FormInputToggle,
     InputLabel,
 } from "@/components/ui/form"
-import { PageInterface } from "../formConfig"
+import { FormPageInterface } from "../formConfig"
 
-const Auto2025 = ({ handleChange, formChanges }: PageInterface) => {
+const Auto2025 = ({ handleChange, formChanges }: FormPageInterface) => {
     return (
         <>
             <FormField>
                 <FormInputToggle
                     name="auto.left"
                     onChange={(e) =>
-                        handleChange(
-                            2025,
-                            "auto.coralL1",
-                            e.currentTarget.checked
-                        )
+                        handleChange("auto.coralL1", e.currentTarget.checked)
                     }
                     defaultChecked={formChanges.auto?.left}
                 >
@@ -36,7 +32,7 @@ const Auto2025 = ({ handleChange, formChanges }: PageInterface) => {
             <FormField>
                 <FormInputNumber
                     onChange={(e) =>
-                        handleChange(2025, "team", e.currentTarget.checked)
+                        handleChange("team", parseInt(e.currentTarget.value))
                     }
                     defaultValue={formChanges.team}
                     placeholder="Team"
@@ -46,13 +42,14 @@ const Auto2025 = ({ handleChange, formChanges }: PageInterface) => {
     )
 }
 
-const StartLogInfo2025 = ({ handleChange, formChanges }: PageInterface) => {
+const StartLogInfo2025 = ({ handleChange, formChanges }: FormPageInterface) => {
     return (
         <>
             <FormField>
                 <FormInputNumber
-                    name="match"
-                    onChange={handleChange}
+                    onChange={(e) =>
+                        handleChange("match", parseInt(e.currentTarget.value))
+                    }
                     defaultValue={formChanges.match}
                     required
                     placeholder="Match Number"
@@ -62,8 +59,9 @@ const StartLogInfo2025 = ({ handleChange, formChanges }: PageInterface) => {
 
             <FormField>
                 <FormInputNumber
-                    name="team"
-                    onChange={handleChange}
+                    onChange={(e) =>
+                        handleChange("team", parseInt(e.currentTarget.value))
+                    }
                     defaultValue={formChanges.team}
                     required
                     placeholder="Team Number"
@@ -74,7 +72,9 @@ const StartLogInfo2025 = ({ handleChange, formChanges }: PageInterface) => {
             <FormField>
                 <FormInputText
                     name="scout"
-                    onChange={handleChange}
+                    onChange={(e) =>
+                        handleChange("scout", e.currentTarget.value)
+                    }
                     defaultValue={formChanges.scout}
                 />
                 <InputLabel>Scout</InputLabel>
@@ -83,11 +83,11 @@ const StartLogInfo2025 = ({ handleChange, formChanges }: PageInterface) => {
     )
 }
 
-const Teleop2025 = ({ handleChange, formChanges }: PageInterface) => {
+const Teleop2025 = ({ handleChange, formChanges }: FormPageInterface) => {
     return <></>
 }
 
-const Finishing2025 = ({}: PageInterface) => {
+const Finishing2025 = ({}: FormPageInterface) => {
     return <></>
 }
 

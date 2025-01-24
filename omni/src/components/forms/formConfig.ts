@@ -1,4 +1,4 @@
-import { Log2024, scoreAuto } from "@/lib/types/log2024Type"
+import { scoreAuto } from "@/lib/types/log2024Type"
 import {
     Auto2024,
     Finishing2024,
@@ -6,32 +6,28 @@ import {
     Teleop2024,
 } from "./2024/FormPages2024"
 import { Auto2025, StartLogInfo2025, Teleop2025 } from "./2025/FormPages2025"
-import { Log2025, scoreLog } from "@/lib/types/log2025Type"
+import { scoreLog } from "@/lib/types/log2025Type"
+import { Log, logConfig } from "@/lib/types/logTypes"
 
-export type Log<T extends number> = T extends 2024
-    ? Log2024
-    : T extends 2025
-      ? Log2025
-      : never
-
-export interface PageInterface {
+export interface FormPageInterface {
     // handleChange: (e: React.ChangeEvent<HTMLInputElement>) => void
-    handleChange: <Year extends number>(
-        year: Year,
-        key: any,
-        value: any
-    ) => void
+    handleChange: (key: any, value: any) => void
     formChanges: Partial<any>
 }
 
-export const formConfig: {
-    year: number
-    scoringFunction: (formChanges: Partial<Log2024 | Log2025>) => void
+interface FormConfig<Y extends keyof typeof logConfig> {
+    year: Y
+    scoringFunction: (formChanges: Partial<Log<Y>>) => void
     steps: {
         title: string
-        component: ({ handleChange, formChanges }: PageInterface) => JSX.Element
+        component: ({
+            handleChange,
+            formChanges,
+        }: FormPageInterface) => JSX.Element
     }[]
-}[] = [
+}
+
+export const formConfig: FormConfig<keyof typeof logConfig>[] = [
     {
         year: 2024,
         scoringFunction: scoreAuto,
