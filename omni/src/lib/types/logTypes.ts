@@ -1,10 +1,19 @@
 // Log common, shouldn't need to be edited
+
+import { MatchStatistics } from "./eventType"
+
+export type LogStatistics = {
+    teleopScore: number
+    autoScore: number
+}
+
 export type LogCommon = {
     id: string
     match: number
     team: number
     scout: string
     dateSubmitted: Date
+    statistics: LogStatistics
 }
 
 export type Log2024 = LogCommon & {
@@ -62,3 +71,28 @@ export const logConfig = {
 } as const
 
 export type Log<T extends keyof typeof logConfig> = (typeof logConfig)[T]
+
+// Scoring maps
+
+export const scoringMap2025: { [key: string]: number } = {
+    "auto.left": 3,
+    "auto.coralL1": 3,
+    "auto.coralL2": 4,
+    "auto.coralL3": 6,
+    "auto.coralL4": 7,
+    "auto.algae": 6,
+    "auto.net": 4,
+
+    // Teleop Scoring
+    "teleop.coralL1": 2,
+    "teleop.coralL2": 3,
+    "teleop.coralL3": 4,
+    "teleop.coralL4": 5,
+    "teleop.algae": 6,
+    "teleop.net": 4,
+
+    // Endgame Scoring
+    "end.parked": 2,
+    "end.shallowHang": 6,
+    "end.deepHang": 12,
+}

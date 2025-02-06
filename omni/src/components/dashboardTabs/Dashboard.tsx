@@ -32,7 +32,7 @@ export const Dashboard = ({
                     <Paragraph>
                         {eventData.schedule.length > 0
                             ? `${eventUserSettings[eventData.id].currentMatch}/${eventData.schedule.length}`
-                            : "test"}
+                            : "Not Matches Loaded"}
                     </Paragraph>
                 </div>
                 <div className="rounded bg-neutral-100 px-4 py-3 dark:bg-[#302E2E]"></div>

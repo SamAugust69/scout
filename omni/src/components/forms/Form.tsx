@@ -10,9 +10,12 @@ import {
 } from "@/components/ui/form"
 import { Modal, ModalContent } from "@/components/ui/modal"
 import { formConfig } from "./formConfig"
-import { Event, MatchLog } from "@/lib/types/eventType"
+import { Event, MatchLog, MatchStatistics } from "@/lib/types/eventType"
 import { addNotification } from "../ui/notifications"
-import { Log, logConfig } from "@/lib/types/logTypes"
+import { Log, logConfig, scoringMap2025 } from "@/lib/types/logTypes"
+import { db } from "@/lib/db"
+import { match } from "assert"
+import { scoreLog } from "@/lib/types/logCommonType"
 
 interface LogFormInterface {
     isOpen: boolean
@@ -36,7 +39,7 @@ const LogForm = ({ isOpen, setIsOpen, eventData }: LogFormInterface) => {
             components.push(step.component)
         })
 
-        return { titles, components, scoringFunction: filtered.scoringFunction }
+        return { titles, components, scoringMap: filtered.scoringMap }
     }
 
     const handleChange = (key: string, value: any) => {
@@ -46,8 +49,6 @@ const LogForm = ({ isOpen, setIsOpen, eventData }: LogFormInterface) => {
                 // for nested
                 const [parentKey, childKey] = keys
                 const parentValue = prev[parentKey] || {} // ensures that the parent value is always an object, and it spreadable
-
-                console.log(prev[parentKey][childKey])
 
                 return {
                     ...prev,
@@ -65,38 +66,69 @@ const LogForm = ({ isOpen, setIsOpen, eventData }: LogFormInterface) => {
             }
         })
     }
-    const { titles, components, scoringFunction } = getYearInfo(eventData.year)
-
-    const generateStatistics = () => {
-        scoringFunction(formChanges)
-    }
-
-    useEffect(() => {
-        console.log(formChanges)
-    }, [formChanges])
+    const { titles, components, scoringMap } = getYearInfo(eventData.year)
 
     const submitForm = () => {
         // submission logic
         // db.events.update(eventData, { ...eventData })
 
-        generateStatistics()
         if (!formChanges.match || !formChanges.team) {
             addNotification(
                 "error",
                 `Missing match and/or team`,
                 "Form Invalid"
             )
+            goToStep(0)
             return
+        }
+        const statistics: MatchStatistics = scoreLog(formChanges, scoringMap)
+
+        const newMatch: MatchLog = {
+            matchNumber: formChanges.match,
+            logs: [formChanges],
+            statistics: statistics,
         }
 
         // goal: filter current eventData.match_logs for current match to be submitted, add log, update statistics
         const matchInfo: MatchLog = eventData.match_logs.filter(
             (match) => match.matchNumber === formChanges.match
-        )[0] || {
-            match_number: formChanges.match,
-            logs: [formChanges],
-            statistics: [],
+        )[0]
+
+        if (matchInfo === undefined) {
+            // there is no match present, create a new match
+            console.log("No match data found")
+            return db.events.update(eventData, {
+                ...eventData,
+                match_logs: [...eventData.match_logs, newMatch],
+            })
         }
+        console.log("Match data found")
+
+        matchInfo.logs.push(formChanges)
+
+        // generate new stats
+
+        const newStats: MatchStatistics = { autoAverage: 0, teleopAverage: 0 }
+        matchInfo.logs.map((match) => {
+            const stats = scoreLog(match, scoringMap)
+
+            newStats.autoAverage = +stats.autoAverage
+            newStats.teleopAverage = +stats.teleopAverage
+        })
+        newStats.autoAverage = newStats.autoAverage / matchInfo.logs.length
+        newStats.teleopAverage = newStats.teleopAverage / matchInfo.logs.length
+
+        matchInfo.statistics = newStats
+        // matchInfo.logs.push(newMatch)
+        db.events.update(eventData, {
+            ...eventData,
+            match_logs: [
+                ...eventData.match_logs.filter(
+                    (match) => match.matchNumber !== formChanges.match
+                ),
+                matchInfo,
+            ],
+        })
 
         console.log(matchInfo)
     }

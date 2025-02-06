@@ -59,7 +59,7 @@ const FormField = ({ children, ...props }: FormFieldInterface) => {
                 setIncrementButtons,
             }}
         >
-            <div className="relative" {...props}>
+            <div className="relative flex" {...props}>
                 {children}
             </div>
         </FormFieldContext.Provider>
@@ -92,7 +92,7 @@ const InputLabel = ({ children, ...props }: InputLabelInterface) => {
 
     return (
         <label
-            className={`peer-invalid: pointer-events-none text-xs transition-all duration-75 peer-placeholder-shown:top-1/2 peer-placeholder-shown:text-sm peer-invalid:text-red-400 ${
+            className={`pointer-events-none text-xs transition-all duration-75 peer-placeholder-shown:top-1/2 peer-placeholder-shown:text-sm ${
                 incrementButtons ? "top-0 left-20" : "top-0 left-2"
             } absolute z-20 -translate-y-1/2 transform text-neutral-300/75`}
             {...props}
@@ -123,7 +123,7 @@ const FormInputNumber = ({
 
     useEffect(() => {
         if (incrementButton) setIncrementButtons(true)
-    })
+    }, [])
 
     const increment = (amount: number) => {
         if (!inputRef.current) return
@@ -138,18 +138,17 @@ const FormInputNumber = ({
         // manual onchange event
         if (props.onChange) {
             props.onChange({
-                target: {
-                    name: inputRef.current.name,
-                    value: newValue,
-                    type: inputRef.current.type,
-                    checked: inputRef.current.checked,
+                currentTarget: {
+                    value: newValue.toString(),
+                    type: inputRef.current?.type || "number",
+                    checked: inputRef.current?.checked || false,
                 },
             } as React.ChangeEvent<HTMLInputElement>)
         }
     }
 
     return (
-        <div className="flex">
+        <>
             {incrementButtons ? (
                 <Button
                     className="rounded-r-none px-8"
@@ -166,6 +165,7 @@ const FormInputNumber = ({
                 className={`peer flex h-10 w-full px-2 outline-none placeholder:text-sm invalid:border-red-400 disabled:pointer-events-none ${
                     !incrementButtons ? "rounded" : null
                 } relative border border-neutral-600 bg-neutral-700 text-neutral-300 placeholder-neutral-400`}
+                defaultValue={props.defaultValue || 0}
                 {...props}
             />
             {incrementButtons ? (
@@ -176,7 +176,7 @@ const FormInputNumber = ({
                     +
                 </Button>
             ) : null}
-        </div>
+        </>
     )
 }
 

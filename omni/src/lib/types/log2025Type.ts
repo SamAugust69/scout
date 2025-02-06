@@ -1,6 +1,7 @@
 // This is our 2024 config file.
 // This contains all the types declerations for 2024.
 
+import { MatchStatistics } from "./eventType"
 import { Log2024 } from "./log2024Type"
 import { LogCommon } from "./logCommonType"
 
@@ -55,6 +56,31 @@ const scoringMap2025: { [key: string]: number } = {
     "end.deepHang": 12,
 }
 
-export const scoreLog = (formChanges: Partial<Log2025 | Log2024>) => {
+export const scoreLog = (formChanges: Partial<Log2025>): MatchStatistics => {
     console.log(formChanges)
+
+    // formChanges.map(() => {
+    //     console.log(formChanges)
+    // })
+    // console.log(Object.keys(formChanges))
+    // console.log(Object.entries(formChanges))
+
+    var scores: { [key: string]: number } = {}
+
+    Object.entries(formChanges).map(([section, values]) => {
+        if (typeof values === "object" && values !== null) {
+            // is object
+
+            Object.entries(values).map(([key, value]) => {
+                // console.log(`${section}.${key}`)
+                const prevScore = scores[section] || 0
+
+                scores[section] =
+                    prevScore + value * scoringMap2025[`${section}.${key}`]
+            })
+        }
+    })
+
+    console.log(scores)
+    return { autoAverage: scores?.auto, teleopAverage: scores?.teleop }
 }

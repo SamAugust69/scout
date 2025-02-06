@@ -25,5 +25,6 @@ export type MatchLog = {
 }
 
 export type MatchStatistics = {
-    overallScore: number
+    autoAverage: number
+    teleopAverage: number
 }

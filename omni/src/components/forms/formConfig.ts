@@ -7,7 +7,8 @@ import {
 } from "./2024/FormPages2024"
 import { Auto2025, StartLogInfo2025, Teleop2025 } from "./2025/FormPages2025"
 import { scoreLog } from "@/lib/types/log2025Type"
-import { Log, logConfig } from "@/lib/types/logTypes"
+import { Log, logConfig, scoringMap2025 } from "@/lib/types/logTypes"
+import { MatchStatistics } from "@/lib/types/eventType"
 
 export interface FormPageInterface {
     // handleChange: (e: React.ChangeEvent<HTMLInputElement>) => void
@@ -17,7 +18,7 @@ export interface FormPageInterface {
 
 interface FormConfig<Y extends keyof typeof logConfig> {
     year: Y
-    scoringFunction: (formChanges: Partial<Log<Y>>) => void
+    scoringMap: { [key: string]: number }
     steps: {
         title: string
         component: ({
@@ -30,7 +31,7 @@ interface FormConfig<Y extends keyof typeof logConfig> {
 export const formConfig: FormConfig<keyof typeof logConfig>[] = [
     {
         year: 2024,
-        scoringFunction: scoreAuto,
+        scoringMap: scoringMap2025,
         steps: [
             {
                 title: "Info",
@@ -43,7 +44,7 @@ export const formConfig: FormConfig<keyof typeof logConfig>[] = [
     },
     {
         year: 2025,
-        scoringFunction: scoreLog,
+        scoringMap: scoringMap2025,
         steps: [
             { title: "Info", component: StartLogInfo2025 },
             { title: "Auto", component: Auto2025 },

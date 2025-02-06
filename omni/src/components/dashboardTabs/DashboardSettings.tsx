@@ -175,6 +175,28 @@ export const DashboardSettings = ({
                             placeholder={eventData.event_code}
                         />
                     </div>
+                    <div className="flex justify-center gap-2">
+                        <Button
+                            size="lg"
+                            variant="secondary"
+                            className="relative flex flex-col items-center justify-center"
+                            onClick={() =>
+                                db.events.update(eventData, {
+                                    ...eventData,
+                                    match_logs: [],
+                                })
+                            }
+                        >
+                            Delete All Logs{" "}
+                            <span className="absolute bottom-0.5 text-xs font-bold dark:text-neutral-400">
+                                {eventData.match_logs.length} Logs
+                            </span>
+                        </Button>
+                        {/* <Button size="lg" variant="secondary">
+                            Delete All Logs{" "}
+                            <span>{eventData.match_logs.length}</span>
+                        </Button> */}
+                    </div>
                 </div>
             </div>
             <div className="rounded bg-neutral-100 p-4 dark:bg-[#302E2E]">
