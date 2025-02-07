@@ -1,16 +1,31 @@
-import { Event } from "@/lib/types/eventType"
+import { Event, MatchLog } from "@/lib/types/eventType"
 import { Button } from "../ui/button"
 import { LogForm } from "../forms/Form"
 import { useState } from "react"
 import { Heading } from "../ui/heading"
 import { Paragraph } from "../ui/paragraph"
-import { Log } from "../Log"
+import { Log, logConfig } from "@/lib/types/logTypes"
+import { LogElement } from "../LogElement"
+
+const getAllLogs = <Y extends keyof typeof logConfig>(
+    matchLogs: MatchLog[]
+): Partial<Log<Y>>[] => {
+    const logs: Partial<Log<Y>>[] = []
+
+    matchLogs.map((match) => {
+        logs.push(...match.logs)
+    })
+
+    return logs
+}
 
 export const DashboardLogs = ({ eventData }: { eventData: Event | null }) => {
     if (!eventData) return
 
     const [isOpen, setIsOpen] = useState<boolean>(false)
     const [renderList, setRenderList] = useState<boolean>(false) // controls wether or not the list displays as a match group or a list
+
+    getAllLogs(eventData.match_logs)
 
     return (
         <>
@@ -20,8 +35,14 @@ export const DashboardLogs = ({ eventData }: { eventData: Event | null }) => {
                 eventData={eventData}
             />
             <div className="flex justify-end gap-2">
-                <Button onClick={() => setRenderList(false)}></Button>
-                <Button onClick={() => setRenderList(true)}></Button>
+                <Button
+                    className={`${renderList ? "" : "dark:bg-neutral-300"}`}
+                    onClick={() => setRenderList(false)}
+                ></Button>
+                <Button
+                    className={`${renderList ? "dark:bg-neutral-300" : ""}`}
+                    onClick={() => setRenderList(true)}
+                ></Button>
             </div>
             <div className="flex flex-col gap-4 rounded bg-neutral-100 p-4 dark:bg-[#302E2E]">
                 <div className="">
@@ -32,7 +53,7 @@ export const DashboardLogs = ({ eventData }: { eventData: Event | null }) => {
                 <div className="rounded bg-neutral-700 p-2"></div>
             </div>
             {eventData.match_logs.map(() => {
-                return <Log renderAsListElement={renderList} />
+                return <LogElement renderAsListElement={renderList} />
             })}
             <Button onClick={() => setIsOpen(!isOpen)}>Scout</Button>
         </>

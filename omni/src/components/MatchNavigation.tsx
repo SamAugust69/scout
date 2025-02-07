@@ -9,7 +9,7 @@ export const MatchNavigation = () => {
     const containerRef = useRef<HTMLDivElement>(null)
 
     useEffect(() => {
-        containerRef.current?.children[3].scrollIntoView()
+        // containerRef.current?.children[3].scrollIntoView()
     }, [])
 
     return (

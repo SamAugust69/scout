@@ -28,12 +28,8 @@ export const Dashboard = ({
         <>
             <div className="grid grid-cols-2 gap-2">
                 <div className="rounded bg-neutral-100 px-4 py-3 dark:bg-[#302E2E]">
-                    <Heading>Matches Scouted</Heading>
-                    <Paragraph>
-                        {eventData.schedule.length > 0
-                            ? `${eventUserSettings[eventData.id].currentMatch}/${eventData.schedule.length}`
-                            : "Not Matches Loaded"}
-                    </Paragraph>
+                    <Paragraph>Matches Scouted</Paragraph>
+                    <Heading>{`${eventUserSettings[eventData.id].currentMatch} / ${eventData.schedule.length > 0 ? eventData.schedule.length : "?"}`}</Heading>
                 </div>
                 <div className="rounded bg-neutral-100 px-4 py-3 dark:bg-[#302E2E]"></div>
                 <div className="col-span-2 rounded bg-neutral-100 px-4 py-3 dark:bg-[#302E2E]"></div>
