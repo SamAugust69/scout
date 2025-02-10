@@ -25,7 +25,7 @@ export const DashboardLogs = ({ eventData }: { eventData: Event | null }) => {
     const [isOpen, setIsOpen] = useState<boolean>(false)
     const [renderList, setRenderList] = useState<boolean>(false) // controls wether or not the list displays as a match group or a list
 
-    getAllLogs(eventData.match_logs)
+    const allLogs = getAllLogs(eventData.match_logs)
 
     return (
         <>
@@ -52,9 +52,19 @@ export const DashboardLogs = ({ eventData }: { eventData: Event | null }) => {
 
                 <div className="rounded bg-neutral-700 p-2"></div>
             </div>
-            {eventData.match_logs.map(() => {
-                return <LogElement renderAsListElement={renderList} />
-            })}
+
+            {renderList
+                ? allLogs.map((log) => {
+                      return (
+                          <div className="bg-neutral-700">
+                              {log.match} {log.team}
+                          </div>
+                      )
+                  })
+                : eventData.match_logs.map(() => {
+                      return <LogElement renderAsListElement={renderList} />
+                  })}
+
             <Button onClick={() => setIsOpen(!isOpen)}>Scout</Button>
         </>
     )

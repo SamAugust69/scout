@@ -3,5 +3,9 @@ interface LogElementInterface {
 }
 
 export const LogElement = ({ renderAsListElement }: LogElementInterface) => {
-    return <div className="bg-white p-2"></div>
+    return (
+        <div
+            className={`p-2 ${renderAsListElement ? "bg-white" : "bg-red-400"}`}
+        ></div>
+    )
 }
