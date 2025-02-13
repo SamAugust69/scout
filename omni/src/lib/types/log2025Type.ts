@@ -2,8 +2,7 @@
 // This contains all the types declerations for 2024.
 
 import { MatchStatistics } from "./eventType"
-import { Log2024 } from "./log2024Type"
-import { LogCommon } from "./logCommonType"
+import { LogCommon } from "./logTypes"
 
 // Form values
 export type Log2025 = LogCommon & {
@@ -58,12 +57,6 @@ const scoringMap2025: { [key: string]: number } = {
 
 export const scoreLog = (formChanges: Partial<Log2025>): MatchStatistics => {
     console.log(formChanges)
-
-    // formChanges.map(() => {
-    //     console.log(formChanges)
-    // })
-    // console.log(Object.keys(formChanges))
-    // console.log(Object.entries(formChanges))
 
     var scores: { [key: string]: number } = {}
 

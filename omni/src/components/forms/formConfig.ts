@@ -1,4 +1,3 @@
-import { scoreAuto } from "@/lib/types/log2024Type"
 import {
     Auto2024,
     Finishing2024,
@@ -6,9 +5,7 @@ import {
     Teleop2024,
 } from "./2024/FormPages2024"
 import { Auto2025, StartLogInfo2025, Teleop2025 } from "./2025/FormPages2025"
-import { scoreLog } from "@/lib/types/log2025Type"
-import { Log, logConfig, scoringMap2025 } from "@/lib/types/logTypes"
-import { MatchStatistics } from "@/lib/types/eventType"
+import { logConfig, scoringMap2025 } from "@/lib/types/logTypes"
 
 export interface FormPageInterface {
     // handleChange: (e: React.ChangeEvent<HTMLInputElement>) => void

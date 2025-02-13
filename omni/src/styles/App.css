@@ -32,3 +32,11 @@
         scrollbar-width: none; /* Firefox */
     }
 }
+
+@layer utilities {
+    .scrollbar-hidden {
+        -ms-overflow-style: none; /* IE and Edge */
+        scrollbar-gutter: stable both-edges;
+        scrollbar-width: thin;
+    }
+}

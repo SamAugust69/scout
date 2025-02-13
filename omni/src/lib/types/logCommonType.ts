@@ -19,8 +19,6 @@ export const scoreLog = <Y extends keyof typeof logConfig>(
     formChanges: Partial<Log<Y>>,
     scoringMap: { [key: string]: number }
 ): MatchStatistics => {
-    console.log(formChanges)
-
     var scores: { [key: string]: number } = {}
 
     Object.entries(formChanges).map(([section, values]) => {
@@ -30,10 +28,13 @@ export const scoreLog = <Y extends keyof typeof logConfig>(
             Object.entries(values).map(([key, value]) => {
                 // console.log(`${section}.${key}`)
                 const prevScore = scores[section] || 0
-
-                scores[section] =
+                const newScore =
                     prevScore +
                     (value as number) * scoringMap[`${section}.${key}`]
+
+                console.log(newScore)
+
+                scores[section] = newScore
             })
         }
     })

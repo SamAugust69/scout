@@ -60,9 +60,34 @@ export const CreateEventManual = () => {
             <span className="mb-4 h-0.5 w-full rounded-sm bg-[#7C8C77]"></span>
             {/* content */}
             <div className="mx-auto flex w-full flex-col justify-center gap-4">
-                <Input />
-                <Input />
-                <Input />
+                <div className="">
+                    <Paragraph size="sm">Name</Paragraph>
+                    <Input
+                        className="bg-neutral-300"
+                        placeholder={eventData.name}
+                    />
+                </div>
+                <div className="">
+                    <Paragraph size="sm">Name</Paragraph>
+                    <Input
+                        className="bg-neutral-300"
+                        placeholder={eventData.name}
+                    />
+                </div>
+                <div className="">
+                    <Paragraph size="sm">Name</Paragraph>
+                    <Input
+                        className="bg-neutral-300"
+                        placeholder={eventData.name}
+                    />
+                </div>
+                <div className="">
+                    <Paragraph size="sm">Name</Paragraph>
+                    <Input
+                        className="bg-neutral-300"
+                        placeholder={eventData.name}
+                    />
+                </div>
                 <div>
                     <Input />
                 </div>

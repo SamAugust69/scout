@@ -2,7 +2,6 @@
 // This contains all the types declerations for 2024.
 
 import { Log2025 } from "./log2025Type"
-import { LogCommon } from "./logCommonType"
 
 // Form values
 export type Log2024 = LogCommon & {

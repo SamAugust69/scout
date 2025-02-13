@@ -11,7 +11,6 @@ import { useAppContext } from "@/lib/context/appContext"
 import { db } from "@/lib/db"
 import { Divider } from "../ui/divider"
 import { StyledLink } from "../StyledLink"
-import { Toggle } from "../ui/toggle"
 import { EventSettings } from "@/lib/types/eventSettings"
 
 const pullSchedules = async (key: string): Promise<MatchInfo[] | null> => {

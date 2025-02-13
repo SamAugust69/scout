@@ -31,7 +31,11 @@ export const Dashboard = ({
                     <Paragraph>Matches Scouted</Paragraph>
                     <Heading>{`${eventUserSettings[eventData.id].currentMatch} / ${eventData.schedule.length > 0 ? eventData.schedule.length : "?"}`}</Heading>
                 </div>
-                <div className="rounded bg-neutral-100 px-4 py-3 dark:bg-[#302E2E]"></div>
+                <div className="relative rounded bg-neutral-100 px-4 py-3 dark:bg-[#302E2E]">
+                    <Paragraph>Best Scored Team</Paragraph>
+                    <Heading>155</Heading>
+                    <ChevronRight className="absolute right-3.5 bottom-3.5 w-5" />
+                </div>
                 <div className="col-span-2 rounded bg-neutral-100 px-4 py-3 dark:bg-[#302E2E]"></div>
             </div>
             <div className="flex flex-col gap-3 rounded bg-neutral-100 p-3 dark:bg-[#302E2E]">

@@ -185,8 +185,50 @@ const LogForm = ({ isOpen, setIsOpen, eventData }: LogFormInterface) => {
             isOpen={isOpen}
             setIsOpen={setIsOpen}
         >
-            <ModalContent className="m-2 grid h-full max-h-[52rem] w-full max-w-[900px] grid-cols-9 grid-rows-6 gap-4 bg-neutral-900/75">
-                <div className="hidden-small col-span-9 row-span-1 flex flex-col items-center gap-4 rounded-md border border-neutral-600 bg-neutral-800 py-8 md:col-span-3 md:row-span-6">
+            <ModalContent className="m-4 grid h-full max-h-screen w-full max-w-[900px] grid-cols-1 grid-rows-9 gap-2 bg-neutral-200 md:grid-cols-6 md:grid-rows-9 dark:bg-[#272424] dark:text-white">
+                <div className="row-span-1 flex justify-center gap-4 rounded bg-neutral-900/75 p-4 md:col-span-2 md:row-span-9 md:flex-col md:justify-start md:py-8">
+                    {new Array(4).fill("fart").map((title, i) => {
+                        return (
+                            <button
+                                className="group flex justify-center gap-4 md:mx-auto md:w-36 md:items-center md:justify-start"
+                                onClick={() => goToStep(i)}
+                                key={i}
+                            >
+                                <div
+                                    className={`${
+                                        currentStepNumber === i
+                                            ? "bg-neutral-600"
+                                            : "bg-neutral-500 text-neutral-900"
+                                    } flex h-10 w-10 items-center justify-center rounded-full border border-neutral-400 font-semibold transition-colors duration-100 group-hover:bg-neutral-600`}
+                                >
+                                    {i + 1}
+                                </div>
+                                <div className="hidden md:block">
+                                    <h3 className="text-left text-xs font-bold text-neutral-400 sm:text-sm">
+                                        Step {i + 1}
+                                    </h3>
+                                    <p className="text-left text-sm font-medium text-neutral-300 sm:text-base">
+                                        {title}
+                                    </p>
+                                </div>
+                            </button>
+                        )
+                    })}
+                </div>
+                <div className="row-span-7 flex flex-col gap-2 overflow-y-scroll rounded bg-neutral-900/75 p-4 md:col-span-4 md:row-span-8">
+                    {CurrentComponent ? (
+                        <CurrentComponent
+                            handleChange={handleChange}
+                            formChanges={formChanges}
+                        />
+                    ) : null}
+                </div>
+                <div className="row-span-1 rounded bg-neutral-900/75 p-4 md:col-span-4 md:row-span-1">
+                    footer
+                </div>
+            </ModalContent>
+            {/* <ModalContent className="m-2 grid h-full max-h-[52rem] w-full max-w-[900px] grid-cols-9 grid-rows-6 gap-4 bg-neutral-900/75">
+                <div className="hidden-small col-span-9 row-span-1 flex items-center gap-4 rounded-md border border-neutral-600 bg-neutral-800 py-8 md:col-span-3 md:row-span-6">
                     {titles.map((title, i) => {
                         return (
                             <button
@@ -203,7 +245,7 @@ const LogForm = ({ isOpen, setIsOpen, eventData }: LogFormInterface) => {
                                 >
                                     {i + 1}
                                 </div>
-                                <div>
+                                <div className="hidden md:visible">
                                     <h3 className="text-left text-xs font-bold text-neutral-400 sm:text-sm">
                                         Step {i + 1}
                                     </h3>
@@ -256,7 +298,7 @@ const LogForm = ({ isOpen, setIsOpen, eventData }: LogFormInterface) => {
                         )}
                     </div>
                 </div>
-            </ModalContent>
+            </ModalContent> */}
         </Modal>
     )
 }

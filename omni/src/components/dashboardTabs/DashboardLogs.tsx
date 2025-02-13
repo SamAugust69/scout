@@ -44,14 +44,6 @@ export const DashboardLogs = ({ eventData }: { eventData: Event | null }) => {
                     onClick={() => setRenderList(true)}
                 ></Button>
             </div>
-            <div className="flex flex-col gap-4 rounded bg-neutral-100 p-4 dark:bg-[#302E2E]">
-                <div className="">
-                    <Heading>Quailifier 1</Heading>
-                    <Paragraph>123, 13</Paragraph>
-                </div>
-
-                <div className="rounded bg-neutral-700 p-2"></div>
-            </div>
 
             {renderList
                 ? allLogs.map((log) => {
@@ -61,8 +53,8 @@ export const DashboardLogs = ({ eventData }: { eventData: Event | null }) => {
                           </div>
                       )
                   })
-                : eventData.match_logs.map(() => {
-                      return <LogElement renderAsListElement={renderList} />
+                : eventData.match_logs.map((log) => {
+                      return <LogElement logInfo={log} />
                   })}
 
             <Button onClick={() => setIsOpen(!isOpen)}>Scout</Button>

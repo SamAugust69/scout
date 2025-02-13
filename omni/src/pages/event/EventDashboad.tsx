@@ -120,7 +120,7 @@ export const EventDashboard = () => {
                         </div>
 
                         {/* Render current step */}
-                        <div className="scroll-bar-none flex flex-col gap-4 overflow-y-scroll">
+                        <div className="scrollbar-hidden flex flex-col gap-4 overflow-y-scroll">
                             <CurrentComponent
                                 eventData={eventData}
                                 eventUserSettings={eventUserSettings}
