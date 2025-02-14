@@ -1,7 +1,6 @@
 "use client"
 
 import {
-    ButtonHTMLAttributes,
     createContext,
     HTMLAttributes,
     InputHTMLAttributes,
@@ -204,7 +203,7 @@ const FormInputToggle = ({
         setShowChildren(toggled)
     })
 
-    const onClick = (e: React.MouseEvent) => {
+    const onClick = () => {
         if (!inputRef.current) return
         inputRef.current.click()
         const newValue = inputRef.current.checked

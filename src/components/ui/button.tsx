@@ -3,7 +3,7 @@ import { GetVariantProps, vs } from "@vtechguys/vs"
 import clsx from "clsx"
 
 import { motion, MotionProps } from "motion/react"
-import { ButtonHTMLAttributes, HTMLAttributes } from "react"
+import { ButtonHTMLAttributes } from "react"
 
 // export const Button = ({ children, onClick, className }: HTMLAttributes<HTMLButtonElement>) => {
 // 	return (

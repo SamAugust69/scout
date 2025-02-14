@@ -1,67 +1,57 @@
-import {
-    FieldChildren,
-    FormField,
-    FormFieldTextArea,
-    FormInputDescription,
-    FormInputNumber,
-    FormInputText,
-    FormInputTitle,
-    FormInputToggle,
-    InputLabel,
-} from "@/components/ui/form"
-import { Log2024 } from "@/lib/types/log2024Type"
-import { PageInterface } from "../formConfig"
+import { FormField, FormFieldTextArea } from "@/components/ui/form"
+import { FormPageInterface } from "../formConfig"
 
-const Auto2024 = ({ handleChange, formChanges }: PageInterface) => {
+const Auto2024 = ({}: FormPageInterface) => {
     return (
-        <>
-            <FormField>
-                <FormInputToggle>
-                    <FormInputTitle>Left Starting Zone</FormInputTitle>
-                    <FormInputDescription>
-                        Did your robot leave during auto?
-                    </FormInputDescription>
-                </FormInputToggle>
-            </FormField>
-            <FormField>
-                <FormInputToggle
-                    name="auto.scored"
-                    onChange={handleChange}
-                    defaultChecked={formChanges.auto?.scored}
-                >
-                    <FormInputTitle>Auto Scored</FormInputTitle>
-                    <FormInputDescription>
-                        Did your robot score during auto?
-                    </FormInputDescription>
-                </FormInputToggle>
+        // <>
+        //     <FormField>
+        //         <FormInputToggle>
+        //             <FormInputTitle>Left Starting Zone</FormInputTitle>
+        //             <FormInputDescription>
+        //                 Did your robot leave during auto?
+        //             </FormInputDescription>
+        //         </FormInputToggle>
+        //     </FormField>
+        //     <FormField>
+        //         <FormInputToggle
+        //             name="auto.scored"
+        //             onChange={handleChange}
+        //             defaultChecked={formChanges.auto?.scored}
+        //         >
+        //             <FormInputTitle>Auto Scored</FormInputTitle>
+        //             <FormInputDescription>
+        //                 Did your robot score during auto?
+        //             </FormInputDescription>
+        //         </FormInputToggle>
 
-                <FieldChildren>
-                    <FormField>
-                        <FormInputNumber
-                            name={"auto.ampScore"}
-                            defaultValue={formChanges.auto?.ampScore}
-                            onChange={handleChange}
-                        />
-                        <InputLabel>Amp Notes Scored</InputLabel>
-                    </FormField>
-                    <FormField>
-                        <FormInputNumber
-                            name={"auto.speakerScore"}
-                            defaultValue={formChanges.auto?.speakerScore}
-                            onChange={handleChange}
-                        />
-                        <InputLabel>Speaker Notes Scored</InputLabel>
-                    </FormField>
-                </FieldChildren>
-            </FormField>
-        </>
+        //         <FieldChildren>
+        //             <FormField>
+        //                 <FormInputNumber
+        //                     name={"auto.ampScore"}
+        //                     defaultValue={formChanges.auto?.ampScore}
+        //                     onChange={handleChange}
+        //                 />
+        //                 <InputLabel>Amp Notes Scored</InputLabel>
+        //             </FormField>
+        //             <FormField>
+        //                 <FormInputNumber
+        //                     name={"auto.speakerScore"}
+        //                     defaultValue={formChanges.auto?.speakerScore}
+        //                     onChange={handleChange}
+        //                 />
+        //                 <InputLabel>Speaker Notes Scored</InputLabel>
+        //             </FormField>
+        //         </FieldChildren>
+        //     </FormField>
+        // </>
+        <></>
     )
 }
 
-const StartLogInfo2024 = ({ handleChange, formChanges }: PageInterface) => {
+const StartLogInfo2024 = ({}: FormPageInterface) => {
     return (
         <>
-            <FormField>
+            {/* <FormField>
                 <FormInputNumber
                     name="match"
                     onChange={handleChange}
@@ -90,15 +80,15 @@ const StartLogInfo2024 = ({ handleChange, formChanges }: PageInterface) => {
                     defaultValue={formChanges.scout}
                 />
                 <InputLabel>Scout</InputLabel>
-            </FormField>
+            </FormField> */}
         </>
     )
 }
 
-const Teleop2024 = ({ handleChange, formChanges }: PageInterface) => {
+const Teleop2024 = ({}: FormPageInterface) => {
     return (
         <>
-            <FormField>
+            {/* <FormField>
                 <FormInputNumber
                     name="teleop.speakerScore"
                     onChange={handleChange}
@@ -172,12 +162,12 @@ const Teleop2024 = ({ handleChange, formChanges }: PageInterface) => {
                         </FormInputToggle>
                     </FormField>
                 </FieldChildren>
-            </FormField>
+            </FormField> */}
         </>
     )
 }
 
-const Finishing2024 = ({}: PageInterface) => {
+const Finishing2024 = ({}: FormPageInterface) => {
     return (
         <FormField>
             <FormFieldTextArea />

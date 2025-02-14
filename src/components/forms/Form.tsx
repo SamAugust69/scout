@@ -1,21 +1,15 @@
-import { useEffect, useState } from "react"
-import { Button } from "../ui/button"
+import { useState } from "react"
 import useMultiForm from "@/lib/useMultiForm"
-import {
-    Form,
-    FormHeader,
-    FormHeading,
-    FormParagraph,
-    FormSubmit,
-} from "@/components/ui/form"
+
 import { Modal, ModalContent } from "@/components/ui/modal"
 import { formConfig } from "./formConfig"
 import { Event, MatchLog, MatchStatistics } from "@/lib/types/eventType"
 import { addNotification } from "../ui/notifications"
-import { Log, logConfig, scoringMap2025 } from "@/lib/types/logTypes"
+import { Log, logConfig } from "@/lib/types/logTypes"
 import { db } from "@/lib/db"
-import { match } from "assert"
 import { scoreLog } from "@/lib/types/logCommonType"
+import { Paragraph } from "../ui/paragraph"
+import { Button } from "../ui/button"
 
 interface LogFormInterface {
     isOpen: boolean
@@ -66,7 +60,7 @@ const LogForm = ({ isOpen, setIsOpen, eventData }: LogFormInterface) => {
             }
         })
     }
-    const { titles, components, scoringMap } = getYearInfo(eventData.year)
+    const { components, scoringMap, titles } = getYearInfo(eventData.year)
 
     const submitForm = () => {
         // submission logic
@@ -180,14 +174,14 @@ const LogForm = ({ isOpen, setIsOpen, eventData }: LogFormInterface) => {
     // you shouldn't need to modify anything below, but if you want, go ahead
     return (
         <Modal
-            // onOpen={() => window.addEventListener("keyup", formNav)}
-            // onClose={() => window.removeEventListener("keyup", formNav)}
+            onOpen={() => window.addEventListener("keyup", formNav)}
+            onClose={() => window.removeEventListener("keyup", formNav)}
             isOpen={isOpen}
             setIsOpen={setIsOpen}
         >
-            <ModalContent className="m-4 grid h-full max-h-screen w-full max-w-[900px] grid-cols-1 grid-rows-9 gap-2 bg-neutral-200 md:grid-cols-6 md:grid-rows-9 dark:bg-[#272424] dark:text-white">
-                <div className="row-span-1 flex justify-center gap-4 rounded bg-neutral-900/75 p-4 md:col-span-2 md:row-span-9 md:flex-col md:justify-start md:py-8">
-                    {new Array(4).fill("fart").map((title, i) => {
+            <ModalContent className="m-4 grid h-full max-h-screen w-full max-w-[900px] grid-cols-1 grid-rows-[auto_1fr_auto] gap-2 bg-neutral-200 md:grid-cols-6 md:grid-rows-[1fr_auto] dark:bg-[#272424] dark:text-white">
+                <div className="row-span-1 flex justify-center gap-4 rounded bg-neutral-900/75 p-4 md:col-span-2 md:row-span-2 md:flex-col md:justify-start md:py-8">
+                    {titles.map((title, i) => {
                         return (
                             <button
                                 className="group flex justify-center gap-4 md:mx-auto md:w-36 md:items-center md:justify-start"
@@ -215,7 +209,21 @@ const LogForm = ({ isOpen, setIsOpen, eventData }: LogFormInterface) => {
                         )
                     })}
                 </div>
-                <div className="row-span-7 flex flex-col gap-2 overflow-y-scroll rounded bg-neutral-900/75 p-4 md:col-span-4 md:row-span-8">
+                <div className="row-span-1 flex flex-col gap-2 overflow-y-auto rounded bg-neutral-900/75 p-4 md:col-span-4 md:row-span-1">
+                    <div className="flex gap-3">
+                        <Paragraph>
+                            Team{" "}
+                            <span className="px-1">
+                                {formChanges.team || "_ "}
+                            </span>
+                        </Paragraph>
+                        <Paragraph>
+                            Match{" "}
+                            <span className="px-1">
+                                {formChanges.match || "_ "}
+                            </span>
+                        </Paragraph>
+                    </div>
                     {CurrentComponent ? (
                         <CurrentComponent
                             handleChange={handleChange}
@@ -223,8 +231,19 @@ const LogForm = ({ isOpen, setIsOpen, eventData }: LogFormInterface) => {
                         />
                     ) : null}
                 </div>
-                <div className="row-span-1 rounded bg-neutral-900/75 p-4 md:col-span-4 md:row-span-1">
-                    footer
+                <div className="row-span-1 flex justify-between rounded bg-neutral-900/75 p-4 md:col-span-4 md:col-start-3 md:row-span-1">
+                    <Button
+                        onClick={backwards}
+                        variant={"link"}
+                        className={`${isFirstStep ? "invisible" : null}`}
+                    >
+                        Back
+                    </Button>
+                    {isLastStep ? (
+                        <Button onClick={submitForm}>Submit</Button>
+                    ) : (
+                        <Button onClick={forwards}>Next</Button>
+                    )}
                 </div>
             </ModalContent>
             {/* <ModalContent className="m-2 grid h-full max-h-[52rem] w-full max-w-[900px] grid-cols-9 grid-rows-6 gap-4 bg-neutral-900/75">

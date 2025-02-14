@@ -40,5 +40,8 @@ export const scoreLog = <Y extends keyof typeof logConfig>(
     })
 
     console.log(scores)
-    return { autoAverage: scores?.auto, teleopAverage: scores?.teleop }
+    return {
+        autoAverage: scores?.auto || 0,
+        teleopAverage: scores?.teleop || 0,
+    }
 }

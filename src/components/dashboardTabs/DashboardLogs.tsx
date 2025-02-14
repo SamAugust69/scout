@@ -2,8 +2,6 @@ import { Event, MatchLog } from "@/lib/types/eventType"
 import { Button } from "../ui/button"
 import { LogForm } from "../forms/Form"
 import { useState } from "react"
-import { Heading } from "../ui/heading"
-import { Paragraph } from "../ui/paragraph"
 import { Log, logConfig } from "@/lib/types/logTypes"
 import { LogElement } from "../LogElement"
 
@@ -13,7 +11,7 @@ const getAllLogs = <Y extends keyof typeof logConfig>(
     const logs: Partial<Log<Y>>[] = []
 
     matchLogs.map((match) => {
-        logs.push(...match.logs)
+        logs.push(...(match.logs as any))
     })
 
     return logs

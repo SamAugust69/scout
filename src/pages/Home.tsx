@@ -1,4 +1,4 @@
-import { Button, buttonVariants } from "@/components/ui/button"
+import { buttonVariants } from "@/components/ui/button"
 import { Heading } from "@/components/ui/heading"
 import { Paragraph } from "@/components/ui/paragraph"
 import { cn } from "@/lib/utils"
@@ -7,7 +7,6 @@ import { Dot, Plus } from "lucide-react"
 import { Link } from "react-router-dom"
 import { useLiveQuery } from "dexie-react-hooks"
 import { db } from "@/lib/db"
-import { addNotification } from "@/components/ui/notifications"
 
 export const Home = () => {
     const events = useLiveQuery(async () => {

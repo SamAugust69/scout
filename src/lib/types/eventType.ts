@@ -1,5 +1,4 @@
-import { Log2024 } from "./log2024Type"
-import { Log2025 } from "./log2025Type"
+import { Log, logConfig } from "./logTypes"
 
 export type MatchInfo = {
     match_number: number
@@ -21,7 +20,7 @@ export interface Event {
 export type MatchLog = {
     matchNumber: number
     statistics: MatchStatistics
-    logs: Partial<Log2024 | Log2025>[]
+    logs: Partial<Log<keyof typeof logConfig>>[]
 }
 
 export type MatchStatistics = {

@@ -1,4 +1,3 @@
-import { useState } from "react"
 import { Button } from "./button"
 import { GetVariantProps, vs } from "@vtechguys/vs"
 import { cn } from "@/lib/utils"

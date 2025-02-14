@@ -1,5 +1,5 @@
 import { cn } from "@/lib/utils"
-import { HTMLAttributes, InputHTMLAttributes } from "react"
+import { InputHTMLAttributes } from "react"
 
 interface InputInterface {}
 

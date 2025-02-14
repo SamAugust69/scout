@@ -1,7 +1,5 @@
 // Log common, shouldn't need to be edited
 
-import { MatchStatistics } from "./eventType"
-
 export type LogStatistics = {
     teleopScore: number
     autoScore: number

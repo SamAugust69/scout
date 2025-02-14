@@ -1,12 +1,12 @@
 // gets all logs from match_logs
 
 import { MatchLog } from "./types/eventType"
-import { Log2024 } from "./types/log2024Type"
+import { Log, logConfig } from "./types/logTypes"
 
 export const getLogs = (matchData: MatchLog[]) => {
-    const logs: Log2024[] = []
+    const logs: Log<keyof typeof logConfig>[] = []
     matchData.map((log) => {
-        logs.push(log.logs)
+        logs.push(log.logs as any)
     })
     return logs
 }

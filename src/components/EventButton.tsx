@@ -1,7 +1,6 @@
-import { useState, useEffect } from "react"
 import { ChevronRight } from "lucide-react"
 import { Button } from "./ui/button"
-import { Event } from "@/lib/db"
+import { Event } from "@/lib/types/eventType"
 
 interface EventButtonInterface {
     eventInfo: Event

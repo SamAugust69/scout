@@ -1,44 +1,43 @@
-import { cn } from "@/lib/utils";
-import { GetVariantProps, vs } from "@vtechguys/vs";
-import clsx from "clsx";
+import { cn } from "@/lib/utils"
+import { GetVariantProps, vs } from "@vtechguys/vs"
+import clsx from "clsx"
 
-import { motion, MotionProps } from "motion/react";
-import { HTMLAttributes } from "react";
+import { HTMLAttributes } from "react"
 
 export const headingVariants = vs({
-  base: "",
-  variants: {
-    variant: {
-      primary: "",
+    base: "",
+    variants: {
+        variant: {
+            primary: "",
+        },
+        size: {
+            lg: "text-xl font-bold",
+            default: "text-lg font-semibold",
+        },
     },
-    size: {
-      lg: "text-xl font-bold",
-      default: "text-lg font-semibold",
+    defaultVariants: {
+        size: "default",
+        variant: "primary",
     },
-  },
-  defaultVariants: {
-    size: "default",
-    variant: "primary",
-  },
-});
+})
 
 interface HeadingInterface
-  extends GetVariantProps<typeof headingVariants>,
-    HTMLAttributes<HTMLHeadingElement> {}
+    extends GetVariantProps<typeof headingVariants>,
+        HTMLAttributes<HTMLHeadingElement> {}
 
 export const Heading = ({
-  variant,
-  size,
-  className,
-  children,
-  ...props
+    variant,
+    size,
+    className,
+    children,
+    ...props
 }: HeadingInterface) => {
-  return (
-    <h1
-      className={cn(clsx(headingVariants({ variant, size })), className)}
-      {...props}
-    >
-      {children}
-    </h1>
-  );
-};
+    return (
+        <h1
+            className={cn(clsx(headingVariants({ variant, size })), className)}
+            {...props}
+        >
+            {children}
+        </h1>
+    )
+}
