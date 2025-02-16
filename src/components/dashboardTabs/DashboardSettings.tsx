@@ -12,6 +12,7 @@ import { db } from "@/lib/db"
 import { Divider } from "../ui/divider"
 import { StyledLink } from "../StyledLink"
 import { EventSettings } from "@/lib/types/eventSettings"
+import { ExportLogs } from "../exportLogs"
 
 const pullSchedules = async (key: string): Promise<MatchInfo[] | null> => {
     const data: any[] | null = await fetchTBA({
@@ -198,9 +199,7 @@ export const DashboardSettings = ({
                     </div>
                 </div>
             </div>
-            <div className="rounded bg-neutral-100 p-4 dark:bg-[#302E2E]">
-                export stuff here
-            </div>
+            <ExportLogs />
         </>
     )
 }
