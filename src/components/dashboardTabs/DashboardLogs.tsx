@@ -1,21 +1,9 @@
-import { Event, MatchLog } from "@/lib/types/eventType"
+import { Event } from "@/lib/types/eventType"
 import { Button } from "../ui/button"
 import { LogForm } from "../forms/Form"
 import { useState } from "react"
-import { Log, logConfig } from "@/lib/types/logTypes"
 import { LogElement } from "../LogElement"
-
-const getAllLogs = <Y extends keyof typeof logConfig>(
-    matchLogs: MatchLog[]
-): Partial<Log<Y>>[] => {
-    const logs: Partial<Log<Y>>[] = []
-
-    matchLogs.map((match) => {
-        logs.push(...(match.logs as any))
-    })
-
-    return logs
-}
+import { getLogs } from "@/lib/getLogs"
 
 export const DashboardLogs = ({ eventData }: { eventData: Event | null }) => {
     if (!eventData) return
@@ -23,7 +11,7 @@ export const DashboardLogs = ({ eventData }: { eventData: Event | null }) => {
     const [isOpen, setIsOpen] = useState<boolean>(false)
     const [renderList, setRenderList] = useState<boolean>(false) // controls wether or not the list displays as a match group or a list
 
-    const allLogs = getAllLogs(eventData.match_logs)
+    const allLogs = getLogs(eventData.match_logs)
 
     return (
         <>
