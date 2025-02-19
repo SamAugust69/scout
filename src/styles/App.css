@@ -25,18 +25,3 @@
         border-color: var(--color-gray-200, currentColor);
     }
 }
-
-@layer utilities {
-    --scroll-bar-0 {
-        -ms-overflow-style: none; /* IE and Edge */
-        scrollbar-width: none; /* Firefox */
-    }
-}
-
-@layer utilities {
-    .scrollbar-hidden {
-        -ms-overflow-style: none; /* IE and Edge */
-        scrollbar-gutter: stable both-edges;
-        scrollbar-width: thin;
-    }
-}
