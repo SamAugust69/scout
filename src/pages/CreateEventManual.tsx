@@ -10,19 +10,62 @@ import {
 } from "@/components/ui/dialog"
 import { Heading } from "@/components/ui/heading"
 import { Input } from "@/components/ui/input"
+import { addNotification } from "@/components/ui/notifications"
 import { Paragraph } from "@/components/ui/paragraph"
+import { db } from "@/lib/db"
 import { Event } from "@/lib/types/eventType"
 import { cn } from "@/lib/utils"
 import clsx from "clsx"
 import { ChevronLeft } from "lucide-react"
 import { useState } from "react"
-import { Link, useLocation } from "react-router-dom"
+import { Link, useLocation, useNavigate } from "react-router-dom"
 
 export const CreateEventManual = () => {
     const location = useLocation()
     const [eventChanges, setEventChanges] = useState<Partial<Event>>(
         location.state ?? {}
     )
+    const navigate = useNavigate()
+
+    const createEvent = async () => {
+        if (
+            !eventChanges.year ||
+            !eventChanges.name ||
+            !eventChanges.event_code ||
+            !eventChanges.week
+        ) {
+            addNotification("error", "Please fill in all required fields.")
+            return
+        }
+        const newEvent: Event = {
+            id: eventChanges.year + eventChanges.event_code,
+            name: eventChanges.name,
+            event_code: eventChanges.event_code,
+            week: eventChanges.week,
+            year: eventChanges.year,
+            statistics: eventChanges.statistics ?? [],
+            match_logs: eventChanges.match_logs ?? [],
+            schedule: eventChanges.schedule ?? [],
+        }
+        if ((await db.events.get(newEvent.id)) !== undefined) {
+            addNotification(
+                "error",
+                `Event with id ${newEvent.id} already exists.`
+            )
+            return
+        }
+
+        db.events
+            .add(newEvent)
+            .then(() => {
+                addNotification(
+                    "success",
+                    `Created new event ${eventChanges.name}`
+                )
+                navigate(`/event/${newEvent.id}`)
+            })
+            .catch(() => addNotification("error", "Couldn't Create Event..."))
+    }
 
     return (
         <section className="mx-auto flex w-full max-w-xl flex-col gap-2 p-4">
@@ -93,6 +136,9 @@ export const CreateEventManual = () => {
                             className="bg-neutral-300"
                             defaultValue={eventChanges.event_code}
                         />
+                        <Paragraph size="xs">
+                            Dictates what API searches for
+                        </Paragraph>
                     </div>
                     <div className="">
                         <Paragraph size="sm">Week</Paragraph>
@@ -109,7 +155,10 @@ export const CreateEventManual = () => {
                         />
                     </div>
                 </div>
-                <div className=""></div>
+
+                <Button size="lg" onClick={createEvent}>
+                    Create Event
+                </Button>
             </div>
         </section>
     )

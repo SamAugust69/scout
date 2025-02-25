@@ -26,12 +26,15 @@ export const Create = () => {
 
         const fileReader = new FileReader()
 
+        if (!fileReader) return
+
         fileReader.readAsText(files[0])
 
         fileReader.onload = (e) => {
-            console.log(e.target?.result)
+            navigate("manual", {
+                state: JSON.parse(e.target?.result as string),
+            })
         }
-        navigate("manual", { state: e.target?.result })
     }
     return (
         <section className="mx-auto flex w-full max-w-xl flex-col gap-2 p-4">

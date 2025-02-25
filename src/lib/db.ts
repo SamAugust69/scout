@@ -1,14 +1,16 @@
-import Dexie, { EntityTable } from "dexie"
+import Dexie, { EntityTable, Table } from "dexie"
 import { Event } from "./types/eventType"
 
 export const db = new Dexie("DexieDatabase") as Dexie & {
-    events: EntityTable<Event>
+    events: Table<Event, string>
 }
 
+// Version 1: Initial schema
 db.version(1).stores({
     events: "id, name, week, year, event_code, logs, statistics",
 })
 
+// Version 2: Rename `logs` to `match_logs`
 db.version(2)
     .stores({
         events: "id, name, week, year, event_code, match_logs, statistics",
@@ -23,6 +25,7 @@ db.version(2)
             })
     })
 
+// Version 3: Add `schedule` field
 db.version(3)
     .stores({
         events: "id, name, week, year, event_code, match_logs, statistics, schedule",
