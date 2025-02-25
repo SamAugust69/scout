@@ -10,6 +10,7 @@ import { EventButton } from "./EventButton"
 import { useNavigate } from "react-router-dom"
 import { addNotification } from "./ui/notifications"
 import { Event } from "@/lib/types/eventType"
+import { Navbar } from "./navbar"
 
 const searchEvents = async (
     connectionState: boolean,
@@ -139,6 +140,13 @@ export const EventSearcher = () => {
                 }`}
             >
                 connect to the internet to use
+            </span>
+            <span
+                className={`absolute -bottom-4 left-0 text-xs text-red-500 ${
+                    !connectionState === false && settings.team == "" ? "" : "hidden"
+                }`}
+            >
+                please select a team in settings
             </span>
         </div>
     )
