@@ -1,4 +1,5 @@
 import {
+    FieldChildren,
     FormField,
     FormInputDescription,
     FormInputNumber,
@@ -9,8 +10,6 @@ import {
 } from "@/components/ui/form"
 import { FormPageInterface } from "../formConfig"
 import { Paragraph } from "@/components/ui/paragraph"
-import { Heading } from "@/components/ui/heading"
-import { Dot } from "lucide-react"
 
 const Auto2025 = ({ handleChange, formChanges }: FormPageInterface) => {
     return (
@@ -67,7 +66,7 @@ const Auto2025 = ({ handleChange, formChanges }: FormPageInterface) => {
                     defaultValue={formChanges.auto?.coralStow}
                 />
                 <InputLabel>
-                    Coral Scored in Trough <span className="text-xs">L1</span>
+                    Coral Scored in Trough <span className="text-xs">(L1)</span>
                 </InputLabel>
             </FormField>
         </>
@@ -175,35 +174,112 @@ const Teleop2025 = ({ handleChange, formChanges }: FormPageInterface) => {
                         }
                         defaultValue={formChanges.teleop?.coralStow}
                     />
-                    <InputLabel>Coral Scored in Stow</InputLabel>
+                    <InputLabel>
+                        Coral Scored in Trough{" "}
+                        <span className="text-xs">(L1)</span>
+                    </InputLabel>
                 </FormField>
             </div>
 
-            <FormField>
-                <FormInputNumber
-                    onChange={(e) =>
-                        handleChange(
-                            "teleop.algae",
-                            parseInt(e.currentTarget.value)
-                        )
-                    }
-                    defaultValue={formChanges.teleop?.algae}
-                />
-                <InputLabel>Algae Processed</InputLabel>
-            </FormField>
+            <Paragraph>
+                Algae Scored <span className="text-xs">by robot</span>
+            </Paragraph>
+            <div className="mb-2 flex flex-col gap-2">
+                <FormField>
+                    <FormInputNumber
+                        incrementButton
+                        onChange={(e) =>
+                            handleChange(
+                                "teleop.algae",
+                                parseInt(e.currentTarget.value)
+                            )
+                        }
+                        defaultValue={formChanges.teleop?.algae}
+                    />
+                    <InputLabel>Algae Processed</InputLabel>
+                </FormField>
+                <FormField>
+                    <FormInputNumber
+                        incrementButton
+                        onChange={(e) =>
+                            handleChange(
+                                "teleop.net",
+                                parseInt(e.currentTarget.value)
+                            )
+                        }
+                        defaultValue={formChanges.teleop?.net}
+                    />
+                    <InputLabel>Algae Thrown in Net</InputLabel>
+                </FormField>
+            </div>
+            <Paragraph>Climb</Paragraph>
 
-            <FormField>
-                <FormInputNumber
-                    onChange={(e) =>
-                        handleChange(
-                            "teleop.algae",
-                            parseInt(e.currentTarget.value)
-                        )
-                    }
-                    defaultValue={formChanges.teleop?.net}
-                />
-                <InputLabel>Algae Thrown in Net</InputLabel>
-            </FormField>
+            <div className="mb-2 flex flex-col gap-2">
+                <FormField>
+                    <FormInputToggle
+                        defaultChecked={formChanges.teleop?.parked}
+                        onChange={(e) =>
+                            handleChange(
+                                "teleop.parked",
+                                e.currentTarget.checked
+                            )
+                        }
+                    >
+                        <FormInputTitle>Parked Under Barge</FormInputTitle>
+                        <FormInputDescription>
+                            Did your robot park under the barge
+                        </FormInputDescription>
+                    </FormInputToggle>
+                </FormField>
+
+                <FormField>
+                    <FormInputToggle
+                        defaultChecked={formChanges.teleop?.hung}
+                        onChange={(e) =>
+                            handleChange("teleop.hung", e.currentTarget.checked)
+                        }
+                    >
+                        <FormInputTitle>Hung</FormInputTitle>
+                        <FormInputDescription>
+                            Did your robot hang on a cage?
+                        </FormInputDescription>
+                    </FormInputToggle>
+                    <FieldChildren>
+                        <FormField>
+                            <FormInputToggle
+                                defaultChecked={formChanges.teleop?.deepHang}
+                                onChange={(e) =>
+                                    handleChange(
+                                        "teleop.deepHang",
+                                        e.currentTarget.checked
+                                    )
+                                }
+                            >
+                                <FormInputTitle>Hung Deep</FormInputTitle>
+                                <FormInputDescription>
+                                    Did your robot park under the barge
+                                </FormInputDescription>
+                            </FormInputToggle>
+                        </FormField>
+                        <FormField>
+                            <FormInputToggle
+                                defaultChecked={formChanges.teleop?.shallowHang}
+                                onChange={(e) =>
+                                    handleChange(
+                                        "teleop.shallowHang",
+                                        e.currentTarget.checked
+                                    )
+                                }
+                            >
+                                <FormInputTitle>Hung Shallow</FormInputTitle>
+                                <FormInputDescription>
+                                    Did your robot park under the barge
+                                </FormInputDescription>
+                            </FormInputToggle>
+                        </FormField>
+                    </FieldChildren>
+                </FormField>
+            </div>
         </>
     )
 }

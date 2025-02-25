@@ -10,6 +10,9 @@ import { db } from "@/lib/db"
 import { scoreLog } from "@/lib/types/logCommonType"
 import { Paragraph } from "../ui/paragraph"
 import { Button } from "../ui/button"
+import { Dot } from "lucide-react"
+import { Divider } from "../ui/divider"
+import { Heading } from "../ui/heading"
 
 interface LogFormInterface {
     isOpen: boolean
@@ -209,27 +212,40 @@ const LogForm = ({ isOpen, setIsOpen, eventData }: LogFormInterface) => {
                         )
                     })}
                 </div>
-                <div className="row-span-1 flex flex-col gap-2 overflow-y-auto rounded bg-neutral-900/75 p-4 md:col-span-4 md:row-span-1">
-                    <div className="flex gap-3">
-                        <Paragraph>
-                            Team{" "}
-                            <span className="px-1">
-                                {formChanges.team || "_ "}
-                            </span>
-                        </Paragraph>
-                        <Paragraph>
-                            Match{" "}
-                            <span className="px-1">
-                                {formChanges.match || "_ "}
+                <div className="row-span-1 flex flex-col gap-1 overflow-y-auto rounded bg-neutral-900/75 p-4 md:col-span-4 md:row-span-1">
+                    <div className="flex items-center justify-between">
+                        <div className="flex gap-1">
+                            <Paragraph className="flex gap-2">
+                                Match{" "}
+                                <span className="flex min-w-6 justify-center font-bold">
+                                    {formChanges.match || " "}
+                                </span>
+                            </Paragraph>
+                            <Dot />
+                            <Paragraph className="flex gap-2">
+                                Team{" "}
+                                <span className="flex min-w-6 justify-center font-bold">
+                                    {formChanges.team || " "}
+                                </span>
+                            </Paragraph>
+                        </div>
+                        <Paragraph className="flex gap-2">
+                            Scouted by
+                            <span className="flex min-w-6 justify-center font-bold">
+                                {formChanges.scout}
                             </span>
                         </Paragraph>
                     </div>
-                    {CurrentComponent ? (
-                        <CurrentComponent
-                            handleChange={handleChange}
-                            formChanges={formChanges}
-                        />
-                    ) : null}
+                    <Divider className="mb-2" />
+                    <Heading>{titles[currentStepNumber]}</Heading>
+                    <div className="flex flex-col gap-2">
+                        {CurrentComponent ? (
+                            <CurrentComponent
+                                handleChange={handleChange}
+                                formChanges={formChanges}
+                            />
+                        ) : null}
+                    </div>
                 </div>
                 <div className="row-span-1 flex justify-between rounded bg-neutral-900/75 p-4 md:col-span-4 md:col-start-3 md:row-span-1">
                     <Button

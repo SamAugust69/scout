@@ -57,9 +57,9 @@ export type Log2025 = LogCommon & {
         coralL4: number
         algae: number
         net: number
-    }
-    end: {
+
         parked: boolean
+        hung: boolean
         shallowHang: boolean
         deepHang: boolean
     }

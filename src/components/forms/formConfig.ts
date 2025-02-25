@@ -4,7 +4,12 @@ import {
     StartLogInfo2024,
     Teleop2024,
 } from "./2024/FormPages2024"
-import { Auto2025, StartLogInfo2025, Teleop2025 } from "./2025/FormPages2025"
+import {
+    Auto2025,
+    Finishing2025,
+    StartLogInfo2025,
+    Teleop2025,
+} from "./2025/FormPages2025"
 import { logConfig, scoringMap2025 } from "@/lib/types/logTypes"
 
 export interface FormPageInterface {
@@ -46,6 +51,7 @@ export const formConfig: FormConfig<keyof typeof logConfig>[] = [
             { title: "Info", component: StartLogInfo2025 },
             { title: "Auto", component: Auto2025 },
             { title: "Teleop", component: Teleop2025 },
+            { title: "Finishing", component: Finishing2025 },
         ],
     },
 ]

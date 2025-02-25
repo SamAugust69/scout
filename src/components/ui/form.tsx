@@ -12,6 +12,8 @@ import {
 } from "react"
 import { Button } from "./button"
 import { cn } from "@/lib/utils"
+import { useAppContext } from "@/lib/context/appContext"
+import { Check } from "lucide-react"
 
 interface FormInterface extends HTMLAttributes<HTMLFormElement> {}
 
@@ -58,7 +60,7 @@ const FormField = ({ children, ...props }: FormFieldInterface) => {
                 setIncrementButtons,
             }}
         >
-            <div className="relative flex" {...props}>
+            <div className="relative flex flex-col" {...props}>
                 {children}
             </div>
         </FormFieldContext.Provider>
@@ -89,9 +91,12 @@ const InputLabel = ({ children, ...props }: InputLabelInterface) => {
 
     const { incrementButtons } = context
 
+    const { settings } = useAppContext()
+    console.log(settings.animationsDisabled)
+
     return (
         <label
-            className={`pointer-events-none text-xs transition-all duration-75 peer-placeholder-shown:top-1/2 peer-placeholder-shown:text-sm ${
+            className={`pointer-events-none text-xs ${settings.animationsDisabled ? "transition-none" : "transition-all"} duration-75 peer-placeholder-shown:top-1/2 peer-placeholder-shown:text-sm ${
                 incrementButtons ? "top-0 left-20" : "top-0 left-2"
             } absolute z-20 -translate-y-1/2 transform text-neutral-300/75`}
             {...props}
@@ -147,7 +152,7 @@ const FormInputNumber = ({
     }
 
     return (
-        <>
+        <div className="flex">
             {incrementButtons ? (
                 <Button
                     className="rounded-r-none px-8"
@@ -175,7 +180,7 @@ const FormInputNumber = ({
                     +
                 </Button>
             ) : null}
-        </>
+        </div>
     )
 }
 
@@ -214,7 +219,7 @@ const FormInputToggle = ({
     return (
         <Button
             className={cn(
-                `flex w-full flex-col items-start border ${
+                `flex w-full items-center justify-between border ${
                     toggled
                         ? `border-great-green-600 bg-great-green-600/50 hover:bg-great-green-600/35 text-neutral-200`
                         : "border-neutral-600"
@@ -222,7 +227,8 @@ const FormInputToggle = ({
             )}
             onClick={onClick}
         >
-            {children}
+            <div className="flex flex-col items-start">{children}</div>
+            {toggled ? <Check className="mr-4" /> : null}
             <input
                 ref={inputRef}
                 className="hidden"
