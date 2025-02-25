@@ -67,6 +67,12 @@ export const CreateEventManual = () => {
             .catch(() => addNotification("error", "Couldn't Create Event..."))
     }
 
+    const updateChanges = (key: keyof Event, value: any) => {
+        setEventChanges((prev) => {
+            return { ...prev, [key]: value }
+        })
+    }
+
     return (
         <section className="mx-auto flex w-full max-w-xl flex-col gap-2 p-4">
             <div className="flex justify-between">
@@ -128,6 +134,9 @@ export const CreateEventManual = () => {
                         <Input
                             className="bg-neutral-300"
                             defaultValue={eventChanges.name}
+                            onChange={(e) =>
+                                updateChanges("name", e.currentTarget.value)
+                            }
                         />
                     </div>
                     <div className="">
@@ -135,6 +144,12 @@ export const CreateEventManual = () => {
                         <Input
                             className="bg-neutral-300"
                             defaultValue={eventChanges.event_code}
+                            onChange={(e) =>
+                                updateChanges(
+                                    "event_code",
+                                    e.currentTarget.value
+                                )
+                            }
                         />
                         <Paragraph size="xs">
                             Dictates what API searches for
@@ -145,6 +160,9 @@ export const CreateEventManual = () => {
                         <Input
                             className="bg-neutral-300"
                             defaultValue={eventChanges.week}
+                            onChange={(e) =>
+                                updateChanges("week", e.currentTarget.value)
+                            }
                         />
                     </div>
                     <div className="">
@@ -152,6 +170,9 @@ export const CreateEventManual = () => {
                         <Input
                             className="bg-neutral-300"
                             defaultValue={eventChanges.year}
+                            onChange={(e) =>
+                                updateChanges("year", e.currentTarget.value)
+                            }
                         />
                     </div>
                 </div>
