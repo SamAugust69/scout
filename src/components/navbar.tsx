@@ -8,6 +8,7 @@ import { SettingsMenu } from "./Settings"
 import { Link } from "react-router-dom"
 import { cn } from "@/lib/utils"
 import { MatchNavigation } from "./MatchNavigation"
+import { useAppContext } from "@/lib/context/appContext"
 
 export const Navbar = () => {
     // const [open, setOpen] = useState(false)
@@ -68,6 +69,7 @@ export const Navbar = () => {
                 </motion.div>
             </AnimatePresence>
 
+
             <div
                 className={`flex ${
                     width === openWidth ? "justify-between" : "justify-center"
@@ -85,18 +87,18 @@ export const Navbar = () => {
                 >
                     Help
                 </Link>
-                <div className="flex gap-4">
+                <div className={`flex ${width !== openWidth ? "flex-col" : ""} gap-4`}>
                     <Button
                         variant="secondary"
                         onClick={() => setSettingsOpen(!settingsOpen)}
-                        className={` ${width !== openWidth ? "hidden" : "flex"} w-10 items-center justify-center rounded p-1 transition-all`}
+                        className={` flex items-center justify-center rounded p-1 transition-all px-6`}
                     >
                         <Settings className="w-5" />
                     </Button>
                     <Button
                         variant="secondary"
                         onClick={() => setDark(!dark)}
-                        className="flex h-8 w-16 items-center justify-center rounded-sm transition-colors"
+                        className="flex h-8 px-6 items-center justify-center rounded-sm transition-colors"
                     >
                         <Sun
                             className={`${dark ? "size-0" : "size-5"} transition-all`}
@@ -108,7 +110,7 @@ export const Navbar = () => {
                 </div>
             </div>
 
-            <Button
+            {/* <Button
                 onClick={() => setSettingsOpen(!settingsOpen)}
                 className={`absolute -right-12 bottom-2 flex w-10 items-center justify-center rounded p-1 py-2 opacity-100 transition-all dark:bg-[#302E2E]`}
             >
@@ -116,7 +118,7 @@ export const Navbar = () => {
                     className="w-5"
                     onClick={() => setSettingsOpen(!settingsOpen)}
                 />
-            </Button>
+            </Button> */}
             <SettingsMenu isOpen={settingsOpen} setIsOpen={setSettingsOpen} />
         </motion.nav>
     )
