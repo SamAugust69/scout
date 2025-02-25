@@ -8,14 +8,22 @@ import {
     DialogTitle,
     DialogTrigger,
 } from "@/components/ui/dialog"
+import { Heading } from "@/components/ui/heading"
 import { Input } from "@/components/ui/input"
 import { Paragraph } from "@/components/ui/paragraph"
+import { Event } from "@/lib/types/eventType"
 import { cn } from "@/lib/utils"
 import clsx from "clsx"
 import { ChevronLeft } from "lucide-react"
-import { Link } from "react-router-dom"
+import { useState } from "react"
+import { Link, useLocation } from "react-router-dom"
 
 export const CreateEventManual = () => {
+    const location = useLocation()
+    const [eventChanges, setEventChanges] = useState<Partial<Event>>(
+        location.state ?? {}
+    )
+
     return (
         <section className="mx-auto flex w-full max-w-xl flex-col gap-2 p-4">
             <div className="flex justify-between">
@@ -59,26 +67,49 @@ export const CreateEventManual = () => {
             </div>
             <span className="mb-4 h-0.5 w-full rounded-sm bg-[#7C8C77]"></span>
             {/* content */}
+
+            {/* id: eventInfo.year + eventInfo.event_code,
+                name: eventInfo.name,
+                event_code: eventInfo.event_code,
+                week: eventInfo.week,
+                year: eventInfo.year,
+                statistics: [],
+                match_logs: [],
+                schedule: [], */}
+
             <div className="mx-auto flex w-full flex-col justify-center gap-4">
-                <div className="">
-                    <Paragraph size="sm">Name</Paragraph>
-                    <Input className="bg-neutral-300" />
+                <Heading>New Event</Heading>
+                <div className="grid gap-2 md:grid-cols-2 md:grid-rows-2">
+                    <div className="">
+                        <Paragraph size="sm">Name</Paragraph>
+                        <Input
+                            className="bg-neutral-300"
+                            defaultValue={eventChanges.name}
+                        />
+                    </div>
+                    <div className="">
+                        <Paragraph size="sm">Event Code</Paragraph>
+                        <Input
+                            className="bg-neutral-300"
+                            defaultValue={eventChanges.event_code}
+                        />
+                    </div>
+                    <div className="">
+                        <Paragraph size="sm">Week</Paragraph>
+                        <Input
+                            className="bg-neutral-300"
+                            defaultValue={eventChanges.week}
+                        />
+                    </div>
+                    <div className="">
+                        <Paragraph size="sm">Year</Paragraph>
+                        <Input
+                            className="bg-neutral-300"
+                            defaultValue={eventChanges.year}
+                        />
+                    </div>
                 </div>
-                <div className="">
-                    <Paragraph size="sm">Name</Paragraph>
-                    <Input className="bg-neutral-300" />
-                </div>
-                <div className="">
-                    <Paragraph size="sm">Name</Paragraph>
-                    <Input className="bg-neutral-300" />
-                </div>
-                <div className="">
-                    <Paragraph size="sm">Name</Paragraph>
-                    <Input className="bg-neutral-300" />
-                </div>
-                <div>
-                    <Input />
-                </div>
+                <div className=""></div>
             </div>
         </section>
     )

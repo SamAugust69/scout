@@ -5,14 +5,14 @@ import { Paragraph } from "../ui/paragraph"
 import { Button } from "../ui/button"
 import fetchTBA from "@/lib/fetchTBA"
 import { addNotification } from "../ui/notifications"
-import { useEffect, useState } from "react"
+import { createElement, useEffect, useState } from "react"
 import { Search, View } from "lucide-react"
 import { useAppContext } from "@/lib/context/appContext"
 import { db } from "@/lib/db"
 import { Divider } from "../ui/divider"
 import { StyledLink } from "../StyledLink"
 import { EventSettings } from "@/lib/types/eventSettings"
-import { ExportLogs } from "../ExportLogs"
+import { ExportLogsWebsocket } from "../ExportLogsWebsocket"
 
 const pullSchedules = async (key: string): Promise<MatchInfo[] | null> => {
     const data: any[] | null = await fetchTBA({
@@ -93,6 +93,19 @@ export const DashboardSettings = ({
     const saveEventUserSettings = () => {
         setEventUserChanges({})
         editEventUserSettings(eventData.id, eventUserChanges)
+    }
+
+    const exportEvent = () => {
+        const blob = new Blob([JSON.stringify(eventData, null, 2)], {
+            type: "application/json",
+        })
+        const url = URL.createObjectURL(blob)
+        const a = document.createElement("a")
+        a.download = eventData.id
+        a.href = url
+        document.body.appendChild(a)
+        a.click()
+        document.body.removeChild(a)
     }
 
     return (
@@ -199,7 +212,11 @@ export const DashboardSettings = ({
                     </div>
                 </div>
             </div>
-            <ExportLogs eventData={eventData} />
+            <div className="flex flex-col gap-2 rounded bg-neutral-100 p-4 dark:bg-[#302E2E]">
+                <Heading>Export Event Logs</Heading>
+                <ExportLogsWebsocket eventData={eventData} />
+                <Button onClick={exportEvent}>Export to .json</Button>
+            </div>
         </>
     )
 }
