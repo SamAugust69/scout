@@ -41,6 +41,7 @@ export type Log2024 = LogCommon & {
 export type Log2025 = LogCommon & {
     auto: {
         left: boolean
+        coralStow: number
         coralL1: number
         coralL2: number
         coralL3: number
@@ -49,6 +50,7 @@ export type Log2025 = LogCommon & {
         net: number
     }
     teleop: {
+        coralStow: number
         coralL1: number
         coralL2: number
         coralL3: number

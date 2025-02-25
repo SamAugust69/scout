@@ -13,9 +13,26 @@ import { Paragraph } from "@/components/ui/paragraph"
 import { cn } from "@/lib/utils"
 import clsx from "clsx"
 import { ChevronLeft } from "lucide-react"
-import { Link } from "react-router-dom"
+import { createRef, useRef } from "react"
+import { Link, useNavigate } from "react-router-dom"
 
 export const Create = () => {
+    const inputRef = useRef<HTMLInputElement | null>(null)
+    const navigate = useNavigate()
+
+    const uploadEvent = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const files = e.target.files
+        if (!files) return
+
+        const fileReader = new FileReader()
+
+        fileReader.readAsText(files[0])
+
+        fileReader.onload = (e) => {
+            console.log(e.target?.result)
+        }
+        navigate("manual", { state: e.target?.result })
+    }
     return (
         <section className="mx-auto flex w-full max-w-xl flex-col gap-2 p-4">
             <div className="flex justify-between">
@@ -61,17 +78,32 @@ export const Create = () => {
             {/* content */}
             <div className="mx-auto flex w-full flex-col justify-center gap-8">
                 <EventSearcher />
-                <Link
-                    to={"/create/manual"}
-                    className={cn(
-                        clsx(
-                            buttonVariants({ variant: "primary", size: "lg" })
-                        ),
-                        "flex w-full items-center justify-center gap-2"
-                    )}
-                >
-                    Create Manually
-                </Link>
+                <div className="flex flex-col gap-2">
+                    <Link
+                        to={"/create/manual"}
+                        className={cn(
+                            clsx(
+                                buttonVariants({
+                                    variant: "primary",
+                                    size: "lg",
+                                })
+                            ),
+                            "flex w-full items-center justify-center gap-2"
+                        )}
+                    >
+                        Create Manually
+                    </Link>
+                    <Button size="lg" onClick={() => inputRef.current?.click()}>
+                        Import From .json
+                    </Button>
+                    <input
+                        type="file"
+                        className="hidden"
+                        ref={inputRef}
+                        onChange={uploadEvent}
+                        accept=".json"
+                    />
+                </div>
             </div>
         </section>
     )
