@@ -115,7 +115,7 @@ export const EventSearcher = () => {
                     onChange={(e) => setYear(parseInt(e.target.value))}
                 />
                 <span className="absolute -bottom-4 left-1 text-xs">
-                    {settings?.team ?? "No Team Configured"}
+                    {"Team: " + settings?.team}
                 </span>
                 <Button size="md" variant="secondary" onClick={() => search()}>
                     Search
