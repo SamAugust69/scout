@@ -117,7 +117,7 @@ export const EventSearcher = () => {
                 <span className="absolute -bottom-4 left-1 text-xs">
                     {"Team: " + settings?.team}
                 </span>
-                <Button size="md" variant="secondary" onClick={() => search()} >
+                <Button size="md" variant="secondary" onClick={() => search()}>
                     Search
                 </Button>
             </div>
