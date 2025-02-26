@@ -40,7 +40,7 @@ export const Navbar = () => {
                     setWidth(width === openWidth ? closedWidth : openWidth)
                 }
                 className={`opacity-0 ${
-                    width === openWidth ? "group-hover/nav:opacity-100" : null
+                    width === openWidth ? "opacity-100" : null
                 } absolute top-2 right-2 flex w-8 items-center justify-center p-1 transition-opacity`}
             >
                 <ChevronsLeft />
@@ -49,9 +49,9 @@ export const Navbar = () => {
                 onClick={() =>
                     setWidth(width === openWidth ? closedWidth : openWidth)
                 }
-                className={`opacity-0 ${
-                    width !== openWidth ? "group-hover/nav:opacity-100" : null
-                } absolute top-2 -right-10 flex w-8 items-center justify-center rounded p-1 transition-all dark:bg-[#302E2E]`}
+                className={`opacity-0 ${width !== openWidth ? "opacity-100" : null} 
+                   absolute top-2 -right-10 flex w-8 items-center justify-center rounded p-1 transition-all dark:bg-[#302E2E]`}
+
             >
                 <ChevronsRight />
             </Button>
