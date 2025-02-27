@@ -13,7 +13,7 @@ import { Paragraph } from "@/components/ui/paragraph"
 import { cn } from "@/lib/utils"
 import clsx from "clsx"
 import { ChevronLeft } from "lucide-react"
-import { createRef, useRef } from "react"
+import { useRef } from "react"
 import { Link, useNavigate } from "react-router-dom"
 
 export const Create = () => {

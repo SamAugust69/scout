@@ -8,7 +8,6 @@ import { SettingsMenu } from "./Settings"
 import { Link } from "react-router-dom"
 import { cn } from "@/lib/utils"
 import { MatchNavigation } from "./MatchNavigation"
-import { useAppContext } from "@/lib/context/appContext"
 
 export const Navbar = () => {
     // const [open, setOpen] = useState(false)
@@ -69,7 +68,6 @@ export const Navbar = () => {
                 </motion.div>
             </AnimatePresence>
 
-
             <div
                 className={`flex ${
                     width === openWidth ? "justify-between" : "justify-center"
@@ -87,18 +85,20 @@ export const Navbar = () => {
                 >
                     Help
                 </Link>
-                <div className={`flex ${width !== openWidth ? "flex-col" : ""} gap-4`}>
+                <div
+                    className={`flex ${width !== openWidth ? "flex-col" : ""} gap-4`}
+                >
                     <Button
                         variant="secondary"
                         onClick={() => setSettingsOpen(!settingsOpen)}
-                        className={` flex items-center justify-center rounded p-1 transition-all px-6`}
+                        className={`flex items-center justify-center rounded p-1 px-6 transition-all`}
                     >
                         <Settings className="w-5" />
                     </Button>
                     <Button
                         variant="secondary"
                         onClick={() => setDark(!dark)}
-                        className="flex h-8 px-6 items-center justify-center rounded-sm transition-colors"
+                        className="flex h-8 items-center justify-center rounded-sm px-6 transition-colors"
                     >
                         <Sun
                             className={`${dark ? "size-0" : "size-5"} transition-all`}

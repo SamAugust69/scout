@@ -1,4 +1,4 @@
-import Dexie, { EntityTable, Table } from "dexie"
+import Dexie, { Table } from "dexie"
 import { Event } from "./types/eventType"
 
 export const db = new Dexie("DexieDatabase") as Dexie & {
