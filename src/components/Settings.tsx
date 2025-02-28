@@ -55,7 +55,7 @@ export const SettingsMenu = ({ isOpen, setIsOpen }: SettingsInterface) => {
                         </label>
                         <Input
                             id="teamInput"
-                            defaultValue={settings?.team || 0}
+                            defaultValue={settings?.team || ""}
                             placeholder="Team Number"
                             type="number"
                             onChange={(e) =>
@@ -81,11 +81,17 @@ export const SettingsMenu = ({ isOpen, setIsOpen }: SettingsInterface) => {
                             )
                         }
                     >
-                        Toggle Test
+                        Disable Animations
                     </Toggle>
                 </div>
                 <ModalFooter className="flex justify-end">
-                    <Button size="md" onClick={ () => {saveSettings(); setIsOpen(false);}}>
+                    <Button
+                        size="md"
+                        onClick={() => {
+                            saveSettings()
+                            setIsOpen(false)
+                        }}
+                    >
                         Save
                     </Button>
                 </ModalFooter>

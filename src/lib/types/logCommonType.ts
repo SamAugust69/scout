@@ -1,8 +1,8 @@
 // This is our common file, this shouldn't be modified.
 // make a new log{year}.ts file, and create a schema.
 
-import { MatchStatistics } from "./eventType"
-import { Log, logConfig } from "./logTypes"
+import { Log, logConfig } from "@/components/forms/formConfig"
+import { LogStatistics } from "./logTypes"
 
 // Types that all logs should contain, no matter the year
 
@@ -18,7 +18,7 @@ export type EventCommon = {
 export const scoreLog = <Y extends keyof typeof logConfig>(
     formChanges: Partial<Log<Y>>,
     scoringMap: { [key: string]: number }
-): MatchStatistics => {
+): LogStatistics => {
     var scores: { [key: string]: number } = {}
 
     Object.entries(formChanges).map(([section, values]) => {
@@ -26,22 +26,27 @@ export const scoreLog = <Y extends keyof typeof logConfig>(
             // is object
 
             Object.entries(values).map(([key, value]) => {
+                console.log(
+                    `${section}.${key}: ${scoringMap[`${section}.${key}`]}`
+                )
                 // console.log(`${section}.${key}`)
+
+                if (!scoringMap[`${section}.${key}`]) return
                 const prevScore = scores[section] || 0
+
                 const newScore =
                     prevScore +
-                    (value as number) * scoringMap[`${section}.${key}`]
-
-                console.log(newScore)
+                    ((value as number) || 0) * scoringMap[`${section}.${key}`]
 
                 scores[section] = newScore
+                console.log(scores)
             })
+            console.log(scores)
         }
     })
 
-    console.log(scores)
     return {
-        autoAverage: scores?.auto || 0,
-        teleopAverage: scores?.teleop || 0,
+        autoScore: scores?.auto || 0,
+        teleopScore: scores?.teleop || 0,
     }
 }

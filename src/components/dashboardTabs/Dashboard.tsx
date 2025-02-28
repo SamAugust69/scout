@@ -7,6 +7,7 @@ import { ChevronRight } from "lucide-react"
 import { Button } from "../ui/button"
 import { useAppContext } from "@/lib/context/appContext"
 import { EventSettings } from "@/lib/types/eventSettings"
+import { useFormContext } from "@/lib/context/formContext"
 
 export const Dashboard = ({
     eventData,
@@ -23,6 +24,8 @@ export const Dashboard = ({
     useEffect(() => {
         setSchedule(eventData.schedule)
     }, [])
+
+    const { formIsOpen, setFormIsOpen } = useFormContext()
     return (
         <>
             <div className="grid grid-cols-2 gap-2">
@@ -57,7 +60,9 @@ export const Dashboard = ({
                         ]
                     }
                 />
-                <Button size="lg">Scout Now</Button>
+                <Button size="lg" onClick={() => setFormIsOpen(!formIsOpen)}>
+                    Scout Now
+                </Button>
             </div>
         </>
     )

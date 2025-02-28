@@ -13,7 +13,7 @@ import { Paragraph } from "@/components/ui/paragraph"
 import { cn } from "@/lib/utils"
 import clsx from "clsx"
 import { ChevronLeft } from "lucide-react"
-import { createRef, useRef } from "react"
+import { useRef } from "react"
 import { Link, useNavigate } from "react-router-dom"
 
 export const Create = () => {
@@ -26,12 +26,15 @@ export const Create = () => {
 
         const fileReader = new FileReader()
 
+        if (!fileReader) return
+
         fileReader.readAsText(files[0])
 
         fileReader.onload = (e) => {
-            console.log(e.target?.result)
+            navigate("manual", {
+                state: JSON.parse(e.target?.result as string),
+            })
         }
-        navigate("manual", { state: e.target?.result })
     }
     return (
         <section className="mx-auto flex w-full max-w-xl flex-col gap-2 p-4">

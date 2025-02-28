@@ -1,6 +1,5 @@
 import { ChangeEvent, useEffect, useState } from "react"
 import { Button } from "./ui/button"
-import { Heading } from "./ui/heading"
 import { Input } from "./ui/input"
 import { Paragraph } from "./ui/paragraph"
 import { ConnectToWebsocket } from "@/lib/webSocket"
