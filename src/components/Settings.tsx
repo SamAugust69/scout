@@ -55,7 +55,7 @@ export const SettingsMenu = ({ isOpen, setIsOpen }: SettingsInterface) => {
                         </label>
                         <Input
                             id="teamInput"
-                            defaultValue={settings?.team || 0}
+                            defaultValue={settings?.team || ""}
                             placeholder="Team Number"
                             type="number"
                             onChange={(e) =>
