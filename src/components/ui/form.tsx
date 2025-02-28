@@ -92,7 +92,6 @@ const InputLabel = ({ children, ...props }: InputLabelInterface) => {
     const { incrementButtons } = context
 
     const { settings } = useAppContext()
-    console.log(settings.animationsDisabled)
 
     return (
         <label

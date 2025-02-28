@@ -4,12 +4,15 @@ import { LogForm } from "../forms/Form"
 import { useState } from "react"
 import { LogElement } from "../LogElement"
 import { getLogs } from "@/lib/getLogs"
+import { Paragraph } from "../ui/paragraph"
+import { scoreLog } from "@/lib/types/logCommonType"
+import { formConfig } from "../forms/formConfig"
 
 export const DashboardLogs = ({ eventData }: { eventData: Event | null }) => {
     if (!eventData) return
 
     const [isOpen, setIsOpen] = useState<boolean>(false)
-    const [renderList, setRenderList] = useState<boolean>(false) // controls wether or not the list displays as a match group or a list
+    const [renderList, setRenderList] = useState<boolean>(true) // controls wether or not the list displays as a match group or a list
 
     const allLogs = getLogs(eventData.match_logs)
 
@@ -31,17 +34,38 @@ export const DashboardLogs = ({ eventData }: { eventData: Event | null }) => {
                 ></Button>
             </div>
 
+            {/* <FilterLogList year={eventData.year as keyof typeof logConfig} /> */}
+
             {renderList
                 ? allLogs.map((log) => {
+                      console.log(allLogs)
                       return (
-                          <div className="bg-neutral-700">
-                              {log.match} {log.team}
+                          <div className="flex flex-col bg-neutral-700">
+                              <Paragraph>{JSON.stringify(log)}</Paragraph>
+                              <Button
+                                  onClick={() =>
+                                      console.log(
+                                          scoreLog(
+                                              log,
+                                              formConfig[
+                                                  eventData.year as keyof typeof formConfig
+                                              ].scoringMap
+                                          )
+                                      )
+                                  }
+                              >
+                                  Score Function Again
+                              </Button>
                           </div>
                       )
                   })
-                : eventData.match_logs.map((log) => {
+                : null}
+
+            {!renderList
+                ? eventData.match_logs.map((log) => {
                       return <LogElement logInfo={log} />
-                  })}
+                  })
+                : null}
 
             <Button onClick={() => setIsOpen(!isOpen)}>Scout</Button>
         </>

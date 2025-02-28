@@ -1,4 +1,4 @@
-import { Log, logConfig } from "./logTypes"
+import { Log, logConfig } from "@/components/forms/formConfig"
 
 export type MatchInfo = {
     match_number: number

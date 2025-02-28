@@ -1,4 +1,3 @@
-import { Accordion, AccordionItem } from "@/components/ui/accordion"
 import { buttonVariants } from "@/components/ui/button"
 
 import { Paragraph } from "@/components/ui/paragraph"
@@ -9,7 +8,7 @@ import { Link } from "react-router-dom"
 
 export const Help = () => {
     return (
-        <section className="mx-auto flex w-full max-w-xl flex-col gap-2 p-4 ">
+        <section className="mx-auto flex w-full max-w-xl flex-col gap-2 p-4">
             <div className="flex justify-between">
                 <Link
                     to={"/"}
@@ -25,7 +24,9 @@ export const Help = () => {
                 >
                     <ChevronLeft className="w-4" /> Go Home
                 </Link>
-                <Paragraph className="mb-5 font-bold">Help Land (ing) (also screw you)</Paragraph>
+                <Paragraph className="mb-5 font-bold">
+                    Help Land (ing) (also screw you)
+                </Paragraph>
             </div>
             <span className="mb-3 h-0.5 w-full rounded-sm bg-[#7C8C77]"></span>
             {/* content */}

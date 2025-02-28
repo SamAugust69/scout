@@ -2,10 +2,10 @@ import { useState } from "react"
 import useMultiForm from "@/lib/useMultiForm"
 
 import { Modal, ModalContent } from "@/components/ui/modal"
-import { formConfig } from "./formConfig"
-import { Event, MatchLog, MatchStatistics } from "@/lib/types/eventType"
+import { formConfig, Log, logConfig } from "./formConfig"
+import { Event, MatchLog } from "@/lib/types/eventType"
 import { addNotification } from "../ui/notifications"
-import { Log, logConfig } from "@/lib/types/logTypes"
+import { LogStatistics } from "@/lib/types/logTypes"
 import { db } from "@/lib/db"
 import { scoreLog } from "@/lib/types/logCommonType"
 import { Paragraph } from "../ui/paragraph"
@@ -21,27 +21,14 @@ interface LogFormInterface {
 }
 
 const LogForm = ({ isOpen, setIsOpen, eventData }: LogFormInterface) => {
-    const Year = eventData.year as keyof typeof logConfig
-    const [formChanges, setFormChanges] = useState<Log<typeof Year>>(
-        {} as Log<typeof Year>
+    const year = eventData.year as keyof typeof logConfig
+    const [formChanges, setFormChanges] = useState<Partial<Log<typeof year>>>(
+        {}
     )
-
-    const getYearInfo = (year: number) => {
-        const titles: string[] = []
-        const components: any = []
-        const filtered = formConfig.filter((info) => info.year === year)[0]
-
-        filtered.steps.map((step) => {
-            titles.push(step.title)
-            components.push(step.component)
-        })
-
-        return { titles, components, scoringMap: filtered.scoringMap }
-    }
 
     const handleChange = (key: string, value: any) => {
         setFormChanges((prev) => {
-            const keys = key.split(".") as [keyof Log<typeof Year>, never]
+            const keys = key.split(".") as [keyof Log<typeof year>, never]
             if (keys.length === 2) {
                 // for nested
                 const [parentKey, childKey] = keys
@@ -63,7 +50,7 @@ const LogForm = ({ isOpen, setIsOpen, eventData }: LogFormInterface) => {
             }
         })
     }
-    const { components, scoringMap, titles } = getYearInfo(eventData.year)
+    const { scoringMap, steps } = formConfig[year]
 
     const submitForm = () => {
         // submission logic
@@ -78,12 +65,24 @@ const LogForm = ({ isOpen, setIsOpen, eventData }: LogFormInterface) => {
             goToStep(0)
             return
         }
-        const statistics: MatchStatistics = scoreLog(formChanges, scoringMap)
+
+        // update stats and id
+        const logStats: LogStatistics = scoreLog(formChanges, scoringMap)
+        const logToSubmit: Partial<Log<typeof year>> = {
+            ...formChanges,
+            id: crypto.randomUUID(),
+            score: logStats,
+        }
+
+        setFormChanges({})
+        setIsOpen(false)
+        goToStep(0)
 
         const newMatch: MatchLog = {
             matchNumber: formChanges.match,
-            logs: [formChanges],
-            statistics: statistics,
+            logs: [logToSubmit],
+            statistics: { autoAverage: 0, teleopAverage: 0 },
+            // statistics: statistics,
         }
 
         // goal: filter current eventData.match_logs for current match to be submitted, add log, update statistics
@@ -101,21 +100,21 @@ const LogForm = ({ isOpen, setIsOpen, eventData }: LogFormInterface) => {
         }
         console.log("Match data found")
 
-        matchInfo.logs.push(formChanges)
+        matchInfo.logs.push(logToSubmit)
 
         // generate new stats
 
-        const newStats: MatchStatistics = { autoAverage: 0, teleopAverage: 0 }
-        matchInfo.logs.map((match) => {
-            const stats = scoreLog(match, scoringMap)
+        // const newStats: MatchStatistics = { autoAverage: 0, teleopAverage: 0 }
+        // matchInfo.logs.map((match) => {
+        //     const stats = scoreLog(match, scoringMap)
 
-            newStats.autoAverage = +stats.autoAverage
-            newStats.teleopAverage = +stats.teleopAverage
-        })
-        newStats.autoAverage = newStats.autoAverage / matchInfo.logs.length
-        newStats.teleopAverage = newStats.teleopAverage / matchInfo.logs.length
+        //     newStats.autoAverage = +stats.autoAverage
+        //     newStats.teleopAverage = +stats.teleopAverage
+        // })
+        // newStats.autoAverage = newStats.autoAverage / matchInfo.logs.length
+        // newStats.teleopAverage = newStats.teleopAverage / matchInfo.logs.length
 
-        matchInfo.statistics = newStats
+        // matchInfo.statistics = newStats
         // matchInfo.logs.push(newMatch)
         db.events.update(eventData, {
             ...eventData,
@@ -126,11 +125,15 @@ const LogForm = ({ isOpen, setIsOpen, eventData }: LogFormInterface) => {
                 matchInfo,
             ],
         })
-
-        console.log(matchInfo)
     }
 
-    // form pages, create those yourselfs
+    const components: React.ComponentType<any>[] = []
+    const titles: string[] = []
+
+    steps.map((step) => {
+        components.push(step.component)
+        titles.push(step.title)
+    })
 
     const {
         CurrentComponent,
@@ -237,7 +240,9 @@ const LogForm = ({ isOpen, setIsOpen, eventData }: LogFormInterface) => {
                         </Paragraph>
                     </div>
                     <Divider className="mb-2" />
-                    <Heading>{titles[currentStepNumber]}</Heading>
+                    <Heading className="mb-2">
+                        {titles[currentStepNumber]}
+                    </Heading>
                     <div className="flex flex-col gap-2">
                         {CurrentComponent ? (
                             <CurrentComponent
@@ -262,78 +267,6 @@ const LogForm = ({ isOpen, setIsOpen, eventData }: LogFormInterface) => {
                     )}
                 </div>
             </ModalContent>
-            {/* <ModalContent className="m-2 grid h-full max-h-[52rem] w-full max-w-[900px] grid-cols-9 grid-rows-6 gap-4 bg-neutral-900/75">
-                <div className="hidden-small col-span-9 row-span-1 flex items-center gap-4 rounded-md border border-neutral-600 bg-neutral-800 py-8 md:col-span-3 md:row-span-6">
-                    {titles.map((title, i) => {
-                        return (
-                            <button
-                                className="group flex w-44 items-center gap-3"
-                                onClick={() => goToStep(i)}
-                                key={i}
-                            >
-                                <div
-                                    className={`${
-                                        currentStepNumber === i
-                                            ? "bg-neutral-600"
-                                            : "bg-neutral-500"
-                                    } flex h-10 w-10 items-center justify-center rounded-full border border-neutral-400 transition-colors duration-100 group-hover:bg-neutral-600`}
-                                >
-                                    {i + 1}
-                                </div>
-                                <div className="hidden md:visible">
-                                    <h3 className="text-left text-xs font-bold text-neutral-400 sm:text-sm">
-                                        Step {i + 1}
-                                    </h3>
-                                    <p className="text-left text-sm font-medium text-neutral-300 sm:text-base">
-                                        {title}
-                                    </p>
-                                </div>
-                            </button>
-                        )
-                    })}
-                </div>
-                <div className="col-span-9 row-span-6 flex flex-col gap-4 sm:row-span-5 md:col-span-6 md:row-span-6">
-                    <div className="relative flex h-full flex-col justify-between overflow-scroll rounded-md border border-neutral-600 bg-neutral-800 p-2">
-                        <Form
-                            onSubmit={(form) =>
-                                console.log(form.currentTarget.checkValidity())
-                            }
-                        >
-                            <div className="absolute left-0 flex w-full justify-end px-4">
-                                {formChanges.match}
-                            </div>
-                            <FormHeader>
-                                <FormHeading>Test Form</FormHeading>
-                                <FormParagraph>ELLO </FormParagraph>
-                            </FormHeader>
-
-                            {CurrentComponent ? (
-                                <CurrentComponent
-                                    handleChange={handleChange}
-                                    formChanges={formChanges}
-                                />
-                            ) : null}
-                            <FormSubmit>test</FormSubmit>
-                        </Form>
-
-                        <div className="md:hidden">nav 2</div>
-                    </div>
-                    <div className="hidden justify-between rounded-md border border-neutral-600 bg-neutral-800 p-2 md:flex">
-                        <Button
-                            onClick={backwards}
-                            variant={"link"}
-                            className={`${isFirstStep ? "invisible" : null}`}
-                        >
-                            Back
-                        </Button>
-                        {isLastStep ? (
-                            <Button onClick={submitForm}>Submit</Button>
-                        ) : (
-                            <Button onClick={forwards}>Next</Button>
-                        )}
-                    </div>
-                </div>
-            </ModalContent> */}
         </Modal>
     )
 }

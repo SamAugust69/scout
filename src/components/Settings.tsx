@@ -81,11 +81,17 @@ export const SettingsMenu = ({ isOpen, setIsOpen }: SettingsInterface) => {
                             )
                         }
                     >
-                        Toggle Test
+                        Disable Animations
                     </Toggle>
                 </div>
                 <ModalFooter className="flex justify-end">
-                    <Button size="md" onClick={ () => {saveSettings(); setIsOpen(false);}}>
+                    <Button
+                        size="md"
+                        onClick={() => {
+                            saveSettings()
+                            setIsOpen(false)
+                        }}
+                    >
                         Save
                     </Button>
                 </ModalFooter>

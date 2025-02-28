@@ -1,6 +1,7 @@
 import {
     FieldChildren,
     FormField,
+    FormFieldTextArea,
     FormInputDescription,
     FormInputNumber,
     FormInputText,
@@ -59,11 +60,11 @@ const Auto2025 = ({ handleChange, formChanges }: FormPageInterface) => {
                     incrementButton
                     onChange={(e) =>
                         handleChange(
-                            "auto.coralStow",
+                            "auto.coralL1",
                             parseInt(e.currentTarget.value)
                         )
                     }
-                    defaultValue={formChanges.auto?.coralStow}
+                    defaultValue={formChanges.auto?.coralL1}
                 />
                 <InputLabel>
                     Coral Scored in Trough <span className="text-xs">(L1)</span>
@@ -78,6 +79,7 @@ const StartLogInfo2025 = ({ handleChange, formChanges }: FormPageInterface) => {
         <>
             <FormField>
                 <FormInputNumber
+                    incrementButton
                     onChange={(e) =>
                         handleChange(
                             "match",
@@ -168,11 +170,11 @@ const Teleop2025 = ({ handleChange, formChanges }: FormPageInterface) => {
                         incrementButton
                         onChange={(e) =>
                             handleChange(
-                                "teleop.coralStow",
+                                "teleop.coralL1",
                                 parseInt(e.currentTarget.value)
                             )
                         }
-                        defaultValue={formChanges.teleop?.coralStow}
+                        defaultValue={formChanges.teleop?.coralL1}
                     />
                     <InputLabel>
                         Coral Scored in Trough{" "}
@@ -285,7 +287,13 @@ const Teleop2025 = ({ handleChange, formChanges }: FormPageInterface) => {
 }
 
 const Finishing2025 = ({}: FormPageInterface) => {
-    return <></>
+    return (
+        <>
+            <FormField>
+                <FormFieldTextArea></FormFieldTextArea>
+            </FormField>
+        </>
+    )
 }
 
 export { StartLogInfo2025, Auto2025, Teleop2025, Finishing2025 }
