@@ -76,7 +76,7 @@ const FormInputText = ({ ...props }: FormInputInterface) => {
         <input
             placeholder=""
             type="text"
-            className="peer relative flex h-10 w-full rounded border border-neutral-500 bg-neutral-400 px-2 text-neutral-700 outline-none placeholder:text-sm invalid:border-r-600 disabled:pointer-events-none dark:border-neutral-600 dark:bg-neutral-700 dark:text-neutral-300 dark:placeholder-neutral-400"
+            className="peer relative flex h-10 w-full rounded border border-neutral-500 bg-neutral-400 px-2 text-neutral-700 outline-none placeholder:text-sm invalid:border-red-400 disabled:pointer-events-none dark:border-neutral-600 dark:bg-neutral-700 dark:text-neutral-300 dark:placeholder-neutral-400"
             {...props}
         />
     )

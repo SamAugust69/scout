@@ -16,6 +16,20 @@ const Auto2025 = ({ handleChange, formChanges }: FormPageInterface) => {
     return (
         <>
             <FormField>
+                <FormInputToggle
+                    defaultChecked={formChanges.auto?.left}
+                    onChange={(e) =>
+                        handleChange("auto.left", e.currentTarget.checked)
+                    }
+                >
+                    <FormInputTitle>Left Starting Line</FormInputTitle>
+                    <FormInputDescription>
+                        Did your robot move off the starting line?
+                    </FormInputDescription>
+                </FormInputToggle>
+            </FormField>
+            <Paragraph>Coral Scored</Paragraph>
+            <FormField>
                 <FormInputNumber
                     incrementButton
                     onChange={(e) =>
@@ -70,6 +84,33 @@ const Auto2025 = ({ handleChange, formChanges }: FormPageInterface) => {
                     Coral Scored in Trough <span className="text-xs">(L1)</span>
                 </InputLabel>
             </FormField>
+            <Paragraph>Algae Scored</Paragraph>
+            <FormField>
+                <FormInputNumber
+                    incrementButton
+                    onChange={(e) =>
+                        handleChange(
+                            "auto.algae",
+                            parseInt(e.currentTarget.value)
+                        )
+                    }
+                    defaultValue={formChanges.auto?.algae}
+                />
+                <InputLabel>Algae Processed</InputLabel>
+            </FormField>
+            <FormField>
+                <FormInputNumber
+                    incrementButton
+                    onChange={(e) =>
+                        handleChange(
+                            "auto.net",
+                            parseInt(e.currentTarget.value)
+                        )
+                    }
+                    defaultValue={formChanges.auto?.net}
+                />
+                <InputLabel>Algae Thrown in Net</InputLabel>
+            </FormField>
         </>
     )
 }
@@ -108,6 +149,7 @@ const StartLogInfo2025 = ({ handleChange, formChanges }: FormPageInterface) => {
 
             <FormField>
                 <FormInputText
+                    required
                     onChange={(e) =>
                         handleChange("scout", e.currentTarget.value)
                     }

@@ -21,13 +21,24 @@ const DialogContext = createContext<
 
 interface DialogProps {
     children: React.ReactNode
+    isOpen?: boolean
+    setIsOpen?: React.Dispatch<React.SetStateAction<boolean>>
     onClose?: () => void
     onOpen?: () => void
 }
 
-const Dialog = ({ children, onClose, onOpen }: DialogProps) => {
-    const [isOpen, setIsOpen] = useState(false)
+const Dialog = ({
+    children,
+    onClose,
+    onOpen,
+    isOpen: propIsOpen,
+    setIsOpen: propSetIsOpen,
+}: DialogProps) => {
+    const [internalIsOpen, setInternalIsOpen] = useState(false)
     const body = document.querySelector("body")
+
+    const isOpen = propIsOpen ? propIsOpen : internalIsOpen
+    const setIsOpen = propSetIsOpen ? propSetIsOpen : setInternalIsOpen
 
     const open = () => {
         setIsOpen(true)
@@ -49,9 +60,15 @@ const Dialog = ({ children, onClose, onOpen }: DialogProps) => {
     )
 }
 
-interface DialogOverlayProps extends HTMLAttributes<HTMLDivElement> {}
+interface DialogOverlayProps extends HTMLAttributes<HTMLDivElement> {
+    overlayInvisible?: boolean
+}
 
-const DialogOverlay = ({ children, ...props }: DialogOverlayProps) => {
+const DialogOverlay = ({
+    children,
+    overlayInvisible,
+    ...props
+}: DialogOverlayProps) => {
     const dialogContext = useContext(DialogContext)
 
     if (!dialogContext) return "Use DialogTrigger within a Dialog comp."
@@ -61,7 +78,7 @@ const DialogOverlay = ({ children, ...props }: DialogOverlayProps) => {
     return (
         <div
             onClick={close}
-            className="fixed top-0 left-0 z-20 flex h-full w-full items-center justify-center overflow-hidden bg-neutral-950/50"
+            className={`fixed top-0 left-0 z-30 flex h-full w-full items-center justify-center overflow-hidden ${!overlayInvisible ? "bg-neutral-950/50" : ""}`}
             {...props}
         >
             {children}
@@ -104,11 +121,14 @@ const DialogClose = ({ children }: DialogCloseProps) => {
     })
 }
 
-interface DialogContentProps extends HTMLAttributes<HTMLDivElement> {}
+interface DialogContentProps extends HTMLAttributes<HTMLDivElement> {
+    overlayInvisible?: boolean
+}
 
 const DialogContent = ({
     children,
     className,
+    overlayInvisible,
     onKeyUp,
 }: DialogContentProps) => {
     const dialogContext = useContext(DialogContext)
@@ -119,7 +139,10 @@ const DialogContent = ({
 
     if (isOpen) {
         return (
-            <DialogOverlay onKeyUp={onKeyUp}>
+            <DialogOverlay
+                onKeyUp={onKeyUp}
+                overlayInvisible={overlayInvisible}
+            >
                 <motion.div
                     initial={{ scale: 0.975, opacity: 0.9 }}
                     animate={{ scale: 1, opacity: 1 }}
@@ -127,7 +150,10 @@ const DialogContent = ({
                     onClick={(e: React.MouseEvent<HTMLDivElement>) =>
                         e.stopPropagation()
                     }
-                    className={cn`w-full max-w-[26rem] rounded-md bg-neutral-300 p-4 text-neutral-800 shadow-md shadow-neutral-500 dark:bg-neutral-800 dark:shadow-neutral-900 ${className}`}
+                    className={cn(
+                        `w-full max-w-[26rem] rounded-md bg-neutral-300 p-4 text-neutral-800 shadow-md shadow-neutral-500 dark:bg-neutral-800 dark:shadow-neutral-900`,
+                        className
+                    )}
                 >
                     {children}
                 </motion.div>

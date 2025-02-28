@@ -13,6 +13,7 @@ import { Button } from "../ui/button"
 import { ChevronUp, Dot } from "lucide-react"
 import { Divider } from "../ui/divider"
 import { Heading } from "../ui/heading"
+import { Dialog, DialogContent, DialogTrigger } from "../ui/dialog"
 
 interface LogFormInterface {
     isOpen: boolean
@@ -187,8 +188,8 @@ const LogForm = ({ isOpen, setIsOpen, eventData }: LogFormInterface) => {
             isOpen={isOpen}
             setIsOpen={setIsOpen}
         >
-            <ModalContent className="m-4 grid h-full max-h-screen w-full max-w-[900px] grid-cols-1 grid-rows-[auto_1fr_auto] gap-2 bg-neutral-200 md:grid-cols-6 md:grid-rows-[1fr_auto] dark:bg-[#272424] dark:text-white">
-                <div className="relative row-span-1 flex items-center justify-center gap-4 rounded bg-neutral-300 p-4 md:col-span-2 md:row-span-2 md:flex-col md:justify-between md:pt-8 dark:bg-neutral-900/75">
+            <ModalContent className="m-4 grid h-full max-h-screen w-full max-w-[900px] grid-cols-1 grid-rows-[auto_auto_1fr_auto] gap-2 bg-neutral-200 md:grid-cols-6 md:grid-rows-[1fr_auto] dark:bg-[#272424] dark:text-white">
+                <div className="relative row-span-1 flex items-center justify-center gap-4 rounded bg-neutral-300 p-4 md:col-span-2 md:row-span-2 md:flex-col md:justify-between md:p-2 md:pt-8 dark:bg-neutral-900/75">
                     {titles.map((title, i) => {
                         return (
                             <button
@@ -216,15 +217,8 @@ const LogForm = ({ isOpen, setIsOpen, eventData }: LogFormInterface) => {
                             </button>
                         )
                     })}
-                    <Button
-                        variant="link"
-                        className="absolute right-4 text-sm"
-                        onClick={() => setNotesOpen(!notesOpen)}
-                    >
-                        Notes
-                    </Button>
                     <textarea
-                        className="mt-auto hidden h-full max-h-28 w-full resize-none rounded border-neutral-700 bg-neutral-900 p-2 text-sm focus:border-none focus:border-blue-500 focus:ring-blue-500 md:block"
+                        className="text-md mt-auto hidden h-40 w-full resize-none rounded border-neutral-700 bg-neutral-800/25 p-2 outline-0 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 md:block"
                         placeholder="Notes"
                         value={formChanges.notes}
                         onChange={(e) =>
@@ -232,12 +226,13 @@ const LogForm = ({ isOpen, setIsOpen, eventData }: LogFormInterface) => {
                         }
                     />
                     {/* dark:bg-[#1b1a1a]/75 */}
-                    {notesOpen ? (
-                        <div
-                            className={`absolute top-20 z-30 m-1 flex h-40 w-[98%] flex-col rounded border border-neutral-500 bg-neutral-200 md:hidden dark:border-neutral-700 dark:bg-neutral-900`}
+                    <Dialog isOpen={notesOpen} setIsOpen={setNotesOpen}>
+                        <DialogContent
+                            overlayInvisible
+                            className={`absolute top-22 m-1 flex h-48 max-w-[89%] flex-col rounded border border-neutral-500 bg-neutral-200 md:hidden dark:border-neutral-700 dark:bg-neutral-900`}
                         >
                             <textarea
-                                className="mx-2 mt-2 h-full resize-none rounded border-neutral-700 bg-neutral-800/25 p-2 text-sm outline-0 focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                                className="text-md mx-2 mt-2 h-full resize-none rounded border-neutral-700 bg-neutral-800/25 p-2 outline-0 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 dark:text-neutral-200 dark:placeholder:text-neutral-500"
                                 placeholder="Notes"
                                 value={formChanges.notes}
                                 onChange={(e) =>
@@ -245,15 +240,22 @@ const LogForm = ({ isOpen, setIsOpen, eventData }: LogFormInterface) => {
                                 }
                             />
                             <Button
-                                variant="link"
                                 onClick={() => setNotesOpen(!notesOpen)}
-                                className="flex items-center justify-center gap-2 text-sm"
+                                size="lg"
+                                className="m-2 flex items-center justify-center gap-2 text-sm dark:bg-neutral-800"
                             >
-                                Close <ChevronUp className="w-4" />
+                                Close Notes <ChevronUp className="w-4" />
                             </Button>
-                        </div>
-                    ) : null}
+                        </DialogContent>
+                    </Dialog>
                 </div>
+                <Button
+                    onClick={() => setNotesOpen(!notesOpen)}
+                    size="lg"
+                    className="md:hidden dark:bg-neutral-900/75 dark:hover:bg-neutral-900/70"
+                >
+                    Open Notes
+                </Button>
                 <div className="row-span-1 flex flex-col gap-1 overflow-y-auto rounded bg-neutral-300 p-4 md:col-span-4 md:row-span-1 dark:bg-neutral-900/75">
                     <div className="flex items-center justify-between">
                         <div className="flex gap-1">
@@ -291,18 +293,23 @@ const LogForm = ({ isOpen, setIsOpen, eventData }: LogFormInterface) => {
                         ) : null}
                     </div>
                 </div>
-                <div className="row-span-1 flex justify-between rounded bg-neutral-300 p-4 md:col-span-4 md:col-start-3 md:row-span-1 dark:bg-neutral-900/75">
+                <div className="row-span-1 flex justify-between rounded bg-neutral-300 p-2 md:col-span-4 md:col-start-3 md:row-span-1 dark:bg-neutral-900/75">
                     <Button
                         onClick={backwards}
                         variant={"link"}
-                        className={`${isFirstStep ? "invisible" : null}`}
+                        size="lg"
+                        className={`${isFirstStep ? "invisible" : null} pr-8`}
                     >
                         Back
                     </Button>
                     {isLastStep ? (
-                        <Button onClick={submitForm}>Submit</Button>
+                        <Button onClick={submitForm} size="lg" className="px-8">
+                            Submit
+                        </Button>
                     ) : (
-                        <Button onClick={forwards}>Next</Button>
+                        <Button onClick={forwards} size="lg" className="px-8">
+                            Next
+                        </Button>
                     )}
                 </div>
             </ModalContent>
