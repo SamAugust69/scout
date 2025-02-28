@@ -8,7 +8,7 @@ import {
     FormInputTitle,
     FormInputToggle,
     InputLabel,
-} from "@/components/ui/form"
+} from "@/components/ui/formElements"
 import { FormPageInterface } from "../formConfig"
 import { Paragraph } from "@/components/ui/paragraph"
 

@@ -10,7 +10,7 @@ import { db } from "@/lib/db"
 import { scoreLog } from "@/lib/types/logCommonType"
 import { Paragraph } from "../ui/paragraph"
 import { Button } from "../ui/button"
-import { Dot } from "lucide-react"
+import { ChevronUp, Dot } from "lucide-react"
 import { Divider } from "../ui/divider"
 import { Heading } from "../ui/heading"
 
@@ -22,6 +22,7 @@ interface LogFormInterface {
 
 const LogForm = ({ isOpen, setIsOpen, eventData }: LogFormInterface) => {
     const year = eventData.year as keyof typeof logConfig
+    const [notesOpen, setNotesOpen] = useState(false)
     const [formChanges, setFormChanges] = useState<Partial<Log<typeof year>>>(
         {}
     )
@@ -49,6 +50,7 @@ const LogForm = ({ isOpen, setIsOpen, eventData }: LogFormInterface) => {
                 }
             }
         })
+        console.log(formChanges)
     }
     const { scoringMap, steps } = formConfig[year]
 
@@ -186,7 +188,7 @@ const LogForm = ({ isOpen, setIsOpen, eventData }: LogFormInterface) => {
             setIsOpen={setIsOpen}
         >
             <ModalContent className="m-4 grid h-full max-h-screen w-full max-w-[900px] grid-cols-1 grid-rows-[auto_1fr_auto] gap-2 bg-neutral-200 md:grid-cols-6 md:grid-rows-[1fr_auto] dark:bg-[#272424] dark:text-white">
-                <div className="row-span-1 flex justify-center gap-4 rounded bg-neutral-900/75 p-4 md:col-span-2 md:row-span-2 md:flex-col md:justify-start md:py-8">
+                <div className="relative row-span-1 flex items-center justify-center gap-4 rounded bg-neutral-300 p-4 md:col-span-2 md:row-span-2 md:flex-col md:justify-between md:pt-8 dark:bg-neutral-900/75">
                     {titles.map((title, i) => {
                         return (
                             <button
@@ -214,8 +216,45 @@ const LogForm = ({ isOpen, setIsOpen, eventData }: LogFormInterface) => {
                             </button>
                         )
                     })}
+                    <Button
+                        variant="link"
+                        className="absolute right-4 text-sm"
+                        onClick={() => setNotesOpen(!notesOpen)}
+                    >
+                        Notes
+                    </Button>
+                    <textarea
+                        className="mt-auto hidden h-full max-h-28 w-full resize-none rounded border-neutral-700 bg-neutral-900 p-2 text-sm focus:border-none focus:border-blue-500 focus:ring-blue-500 md:block"
+                        placeholder="Notes"
+                        value={formChanges.notes}
+                        onChange={(e) =>
+                            handleChange("notes", e.currentTarget.value)
+                        }
+                    />
+                    {/* dark:bg-[#1b1a1a]/75 */}
+                    {notesOpen ? (
+                        <div
+                            className={`absolute top-20 z-30 m-1 flex h-40 w-[98%] flex-col rounded border border-neutral-500 bg-neutral-200 md:hidden dark:border-neutral-700 dark:bg-neutral-900`}
+                        >
+                            <textarea
+                                className="mx-2 mt-2 h-full resize-none rounded border-neutral-700 bg-neutral-800/25 p-2 text-sm outline-0 focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                                placeholder="Notes"
+                                value={formChanges.notes}
+                                onChange={(e) =>
+                                    handleChange("notes", e.currentTarget.value)
+                                }
+                            />
+                            <Button
+                                variant="link"
+                                onClick={() => setNotesOpen(!notesOpen)}
+                                className="flex items-center justify-center gap-2 text-sm"
+                            >
+                                Close <ChevronUp className="w-4" />
+                            </Button>
+                        </div>
+                    ) : null}
                 </div>
-                <div className="row-span-1 flex flex-col gap-1 overflow-y-auto rounded bg-neutral-900/75 p-4 md:col-span-4 md:row-span-1">
+                <div className="row-span-1 flex flex-col gap-1 overflow-y-auto rounded bg-neutral-300 p-4 md:col-span-4 md:row-span-1 dark:bg-neutral-900/75">
                     <div className="flex items-center justify-between">
                         <div className="flex gap-1">
                             <Paragraph className="flex gap-2">
@@ -252,7 +291,7 @@ const LogForm = ({ isOpen, setIsOpen, eventData }: LogFormInterface) => {
                         ) : null}
                     </div>
                 </div>
-                <div className="row-span-1 flex justify-between rounded bg-neutral-900/75 p-4 md:col-span-4 md:col-start-3 md:row-span-1">
+                <div className="row-span-1 flex justify-between rounded bg-neutral-300 p-4 md:col-span-4 md:col-start-3 md:row-span-1 dark:bg-neutral-900/75">
                     <Button
                         onClick={backwards}
                         variant={"link"}

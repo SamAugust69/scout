@@ -76,7 +76,7 @@ const FormInputText = ({ ...props }: FormInputInterface) => {
         <input
             placeholder=""
             type="text"
-            className="peer relative flex h-10 w-full rounded border border-neutral-600 bg-neutral-700 px-2 text-neutral-300 placeholder-neutral-400 outline-none placeholder:text-sm invalid:border-r-600 disabled:pointer-events-none"
+            className="peer relative flex h-10 w-full rounded border border-neutral-500 bg-neutral-400 px-2 text-neutral-700 outline-none placeholder:text-sm invalid:border-r-600 disabled:pointer-events-none dark:border-neutral-600 dark:bg-neutral-700 dark:text-neutral-300 dark:placeholder-neutral-400"
             {...props}
         />
     )
@@ -97,7 +97,7 @@ const InputLabel = ({ children, ...props }: InputLabelInterface) => {
         <label
             className={`pointer-events-none text-xs ${settings.animationsDisabled ? "transition-none" : "transition-all"} duration-75 peer-placeholder-shown:top-1/2 peer-placeholder-shown:text-sm ${
                 incrementButtons ? "top-0 left-20" : "top-0 left-2"
-            } absolute z-20 -translate-y-1/2 transform text-neutral-300/75`}
+            } absolute z-20 -translate-y-1/2 transform dark:text-neutral-300/75`}
             {...props}
         >
             {children}

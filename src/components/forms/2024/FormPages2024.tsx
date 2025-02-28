@@ -1,4 +1,4 @@
-import { FormField, FormFieldTextArea } from "@/components/ui/form"
+import { FormField, FormFieldTextArea } from "@/components/ui/formElements"
 import { FormPageInterface } from "../formConfig"
 
 const Auto2024 = ({}: FormPageInterface) => {

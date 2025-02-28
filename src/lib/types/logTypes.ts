@@ -13,6 +13,7 @@ export type LogCommon = {
     dateSubmitted: Date
     statistics: LogStatistics
     score: LogScore
+    notes: string
 }
 
 export type LogScore = {
