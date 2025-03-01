@@ -99,6 +99,7 @@ export const DashboardLogs = ({ eventData }: { eventData: Event | null }) => {
                 isOpen={isOpen}
                 setIsOpen={setIsOpen}
                 eventData={eventData}
+                loadData={{}}
             />
             <div className="flex justify-end gap-2">
                 <Button
