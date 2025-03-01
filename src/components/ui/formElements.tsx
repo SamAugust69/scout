@@ -262,7 +262,7 @@ const FormInputDescription = ({
     ...props
 }: FormInputDescriptionInterface) => {
     return (
-        <p className={cn`text-neutral-400 ${className}`} {...props}>
+        <p className={cn`text-left text-neutral-400 ${className}`} {...props}>
             {children}
         </p>
     )

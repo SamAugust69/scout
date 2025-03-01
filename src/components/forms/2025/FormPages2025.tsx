@@ -301,7 +301,8 @@ const Teleop2025 = ({ handleChange, formChanges }: FormPageInterface) => {
                             >
                                 <FormInputTitle>Hung Deep</FormInputTitle>
                                 <FormInputDescription>
-                                    Did your robot park under the barge
+                                    Did your robot hang on a cage low to the
+                                    ground?
                                 </FormInputDescription>
                             </FormInputToggle>
                         </FormField>
@@ -317,7 +318,8 @@ const Teleop2025 = ({ handleChange, formChanges }: FormPageInterface) => {
                             >
                                 <FormInputTitle>Hung Shallow</FormInputTitle>
                                 <FormInputDescription>
-                                    Did your robot park under the barge
+                                    Did your robot hang on a cage high in the
+                                    air?
                                 </FormInputDescription>
                             </FormInputToggle>
                         </FormField>
