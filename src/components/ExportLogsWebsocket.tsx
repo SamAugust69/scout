@@ -75,6 +75,7 @@ export const ExportLogsWebsocket = ({
 
         const onMessage = (socket: WebSocket, e: MessageEvent<any>) => {
             const data: WebsocketMessage = JSON.parse(e.data)
+            console.log(data)
 
             // console.log(data);
 
@@ -115,6 +116,13 @@ export const ExportLogsWebsocket = ({
         if (socket === null) {
             setConnectionStatus(ConnectionStates.notConnected)
         } else setConnectionStatus(ConnectionStates.connected)
+
+        // cleanup function
+        return () => {
+            if (socket) {
+                socket.close()
+            }
+        }
     }, [socket])
 
     const getOtherLogs = () => {
@@ -124,6 +132,11 @@ export const ExportLogsWebsocket = ({
             targetId: clientID,
         }
         socket?.send(JSON.stringify(request))
+    }
+
+    const disconnectSocket = () => {
+        socket?.close()
+        setSocket(null)
     }
 
     return (
@@ -152,7 +165,9 @@ export const ExportLogsWebsocket = ({
                 />
                 <Button
                     onClick={() =>
-                        socket === null ? createConnection() : setSocket(null)
+                        socket === null
+                            ? createConnection()
+                            : disconnectSocket()
                     }
                     className="flex w-full max-w-34 items-center justify-center gap-2"
                     variant="secondary"
