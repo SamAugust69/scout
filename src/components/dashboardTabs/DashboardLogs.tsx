@@ -4,7 +4,6 @@ import { LogForm } from "../forms/Form"
 import { useEffect, useState } from "react"
 import { LogElement } from "../LogElement"
 import { getLogs } from "@/lib/getLogs"
-import { Paragraph } from "../ui/paragraph"
 import { Log, logConfig } from "../forms/formConfig"
 import { FilterLogList } from "../FilterLogList"
 

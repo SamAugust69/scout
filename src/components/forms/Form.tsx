@@ -13,7 +13,7 @@ import { Button } from "../ui/button"
 import { ChevronUp, Dot } from "lucide-react"
 import { Divider } from "../ui/divider"
 import { Heading } from "../ui/heading"
-import { Dialog, DialogContent, DialogTrigger } from "../ui/dialog"
+import { Dialog, DialogContent } from "../ui/dialog"
 
 interface LogFormInterface {
     isOpen: boolean

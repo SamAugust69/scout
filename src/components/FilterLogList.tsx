@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react"
 import { Button } from "./ui/button"
 import { formConfig, Log, logConfig } from "./forms/formConfig"
 import { FilterButtonsType } from "./dashboardTabs/DashboardLogs"
