@@ -4,7 +4,7 @@ const ConnectToWebsocket = (
     onMessage?: (e: MessageEvent<any>) => void,
     onError?: () => void
 ) => {
-    const socket = new WebSocket(`ws://${address}`)
+    const socket = new WebSocket(`wss://${address}`)
 
     socket.addEventListener("open", () => {
         if (onOpen) onOpen()
