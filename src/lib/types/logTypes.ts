@@ -14,6 +14,7 @@ export type LogCommon = {
     statistics: LogStatistics
     score: LogScore
     notes: string
+    broken: boolean
 }
 
 export type LogScore = {

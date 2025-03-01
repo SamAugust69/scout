@@ -256,7 +256,7 @@ const Teleop2025 = ({ handleChange, formChanges }: FormPageInterface) => {
                     <InputLabel>Algae Thrown in Net</InputLabel>
                 </FormField>
             </div>
-            <Paragraph>Climb</Paragraph>
+            <Paragraph>Barge</Paragraph>
 
             <div className="mb-2 flex flex-col gap-2">
                 <FormField>
@@ -330,11 +330,21 @@ const Teleop2025 = ({ handleChange, formChanges }: FormPageInterface) => {
     )
 }
 
-const Finishing2025 = ({}: FormPageInterface) => {
+const Finishing2025 = ({ handleChange, formChanges }: FormPageInterface) => {
     return (
         <>
             <FormField>
-                <FormFieldTextArea></FormFieldTextArea>
+                <FormInputToggle
+                    defaultChecked={formChanges.broken}
+                    onChange={(e) =>
+                        handleChange("broken", e.currentTarget.checked)
+                    }
+                >
+                    <FormInputTitle>Broken Robot</FormInputTitle>
+                    <FormInputDescription>
+                        Did your robot fully break and disable during the match?
+                    </FormInputDescription>
+                </FormInputToggle>
             </FormField>
         </>
     )
