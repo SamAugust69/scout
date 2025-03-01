@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import useMultiForm from "@/lib/useMultiForm"
 
 import { Modal, ModalContent } from "@/components/ui/modal"
@@ -19,16 +19,29 @@ interface LogFormInterface {
     isOpen: boolean
     setIsOpen: React.Dispatch<React.SetStateAction<boolean>>
     eventData: Event
+    loadData: Partial<Log<keyof typeof logConfig>>
+    // setLoadData: React.Dispatch<
+    //     React.SetStateAction<Partial<Log<keyof typeof logConfig>>>
+    // >
 }
 
-const LogForm = ({ isOpen, setIsOpen, eventData }: LogFormInterface) => {
+type FormStatus = "Incomplete" | "New"
+
+const LogForm = ({
+    isOpen,
+    setIsOpen,
+    eventData,
+    loadData,
+}: LogFormInterface) => {
     const year = eventData.year as keyof typeof logConfig
     const [notesOpen, setNotesOpen] = useState(false)
     const [formChanges, setFormChanges] = useState<Partial<Log<typeof year>>>(
         {}
     )
+    const [formStatus, setFormStatus] = useState<FormStatus>("New")
 
     const handleChange = (key: string, value: any) => {
+        if (formStatus === "New") setFormStatus("Incomplete")
         setFormChanges((prev) => {
             const keys = key.split(".") as [keyof Log<typeof year>, never]
             if (keys.length === 2) {
@@ -55,6 +68,15 @@ const LogForm = ({ isOpen, setIsOpen, eventData }: LogFormInterface) => {
     }
     const { scoringMap, steps } = formConfig[year]
 
+    useEffect(() => {
+        console.log("Opened, Status: ", formStatus)
+
+        if (formStatus === "New") {
+            // propigate form
+            setFormChanges({ ...loadData })
+        }
+    }, [isOpen])
+
     const submitForm = () => {
         // submission logic
         // db.events.update(eventData, { ...eventData })
@@ -78,7 +100,9 @@ const LogForm = ({ isOpen, setIsOpen, eventData }: LogFormInterface) => {
         }
 
         setFormChanges({})
+        setFormStatus("New")
         setIsOpen(false)
+
         goToStep(0)
 
         const newMatch: MatchLog = {
@@ -190,6 +214,7 @@ const LogForm = ({ isOpen, setIsOpen, eventData }: LogFormInterface) => {
         >
             <ModalContent className="m-4 grid h-full max-h-screen w-full max-w-[900px] grid-cols-1 grid-rows-[auto_auto_1fr_auto] gap-2 bg-neutral-200 md:grid-cols-6 md:grid-rows-[1fr_auto] dark:bg-[#272424] dark:text-white">
                 <div className="relative row-span-1 flex items-center justify-center gap-4 rounded bg-neutral-300 p-4 md:col-span-2 md:row-span-2 md:flex-col md:justify-between md:p-2 md:pt-8 dark:bg-neutral-900/75">
+                    {formStatus}
                     {titles.map((title, i) => {
                         return (
                             <button
