@@ -14,12 +14,17 @@ import { ChevronUp, Dot } from "lucide-react"
 import { Divider } from "../ui/divider"
 import { Heading } from "../ui/heading"
 import { Dialog, DialogContent } from "../ui/dialog"
+import { EventSettings } from "@/lib/types/eventSettings"
 
 interface LogFormInterface {
     isOpen: boolean
     setIsOpen: React.Dispatch<React.SetStateAction<boolean>>
     eventData: Event
-    loadData: Partial<Log<keyof typeof logConfig>>
+    // loadData?: Partial<Log<keyof typeof logConfig>>
+    eventUserSettings: { [key: string]: EventSettings }
+    setEventUserSettings: React.Dispatch<
+        React.SetStateAction<{ [key: string]: EventSettings }>
+    >
     // setLoadData: React.Dispatch<
     //     React.SetStateAction<Partial<Log<keyof typeof logConfig>>>
     // >
@@ -31,7 +36,8 @@ const LogForm = ({
     isOpen,
     setIsOpen,
     eventData,
-    loadData,
+    eventUserSettings,
+    setEventUserSettings,
 }: LogFormInterface) => {
     const year = eventData.year as keyof typeof logConfig
     const [notesOpen, setNotesOpen] = useState(false)
@@ -39,6 +45,17 @@ const LogForm = ({
         {}
     )
     const [formStatus, setFormStatus] = useState<FormStatus>("New")
+
+    const currentMatch = eventUserSettings[eventData.id].currentMatch
+    const fart = () => {
+        const tabletNumber = eventUserSettings[eventData.id].tabletNumber || 0
+
+        if (tabletNumber <= 3)
+            return eventData.schedule[currentMatch].red[tabletNumber - 1]
+        return eventData.schedule[currentMatch].blue[tabletNumber - 4]
+    }
+
+    console.log(Number(fart()))
 
     const handleChange = (key: string, value: any) => {
         if (formStatus === "New") setFormStatus("Incomplete")
@@ -73,7 +90,8 @@ const LogForm = ({
 
         if (formStatus === "New") {
             // propigate form
-            setFormChanges({ ...loadData })
+            handleChange("match", currentMatch + 1)
+            handleChange("team", fart())
         }
     }, [isOpen])
 
@@ -101,6 +119,15 @@ const LogForm = ({
 
         setFormChanges({})
         setFormStatus("New")
+        setEventUserSettings((prev) => {
+            return {
+                ...prev,
+                [eventData.id]: {
+                    ...prev[eventData.id],
+                    currentMatch: currentMatch + 1,
+                },
+            }
+        })
         setIsOpen(false)
 
         goToStep(0)
@@ -213,8 +240,7 @@ const LogForm = ({
             setIsOpen={setIsOpen}
         >
             <ModalContent className="m-4 grid h-full max-h-screen w-full max-w-[900px] grid-cols-1 grid-rows-[auto_auto_1fr_auto] gap-2 bg-neutral-200 md:grid-cols-6 md:grid-rows-[1fr_auto] dark:bg-[#272424] dark:text-white">
-                <div className="relative row-span-1 flex items-center justify-center gap-4 rounded bg-neutral-300 p-4 md:col-span-2 md:row-span-2 md:flex-col md:justify-between md:p-2 md:pt-8 dark:bg-neutral-900/75">
-                    {formStatus}
+                <div className="relative row-span-1 flex items-center justify-center gap-4 overflow-y-scroll rounded bg-neutral-300 p-4 md:col-span-2 md:row-span-2 md:flex-col md:justify-between md:p-2 md:pt-8 dark:bg-neutral-900/75">
                     {titles.map((title, i) => {
                         return (
                             <button

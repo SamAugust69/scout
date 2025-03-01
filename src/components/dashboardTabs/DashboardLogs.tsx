@@ -1,11 +1,11 @@
 import { Event } from "@/lib/types/eventType"
 import { Button } from "../ui/button"
-import { LogForm } from "../forms/Form"
 import { useEffect, useState } from "react"
 import { LogElement } from "../LogElement"
 import { getLogs } from "@/lib/getLogs"
 import { Log, logConfig } from "../forms/formConfig"
 import { FilterLogList } from "../FilterLogList"
+import { useFormContext } from "@/lib/context/formContext"
 
 const filterLogsAsTeams = (
     allLogs: Log<keyof typeof logConfig>[]
@@ -31,8 +31,8 @@ export type FilterButtonsType = {
 export const DashboardLogs = ({ eventData }: { eventData: Event | null }) => {
     if (!eventData) return
 
-    const [isOpen, setIsOpen] = useState<boolean>(false)
     const [renderList, setRenderList] = useState<boolean>(true) // controls wether or not the list displays as a match group or a list
+    const { formIsOpen, setFormIsOpen } = useFormContext()
 
     const filteredLogsAsTeams = filterLogsAsTeams(getLogs(eventData.match_logs))
 
@@ -95,12 +95,6 @@ export const DashboardLogs = ({ eventData }: { eventData: Event | null }) => {
 
     return (
         <>
-            <LogForm
-                isOpen={isOpen}
-                setIsOpen={setIsOpen}
-                eventData={eventData}
-                loadData={{}}
-            />
             <div className="flex justify-end gap-2">
                 <Button
                     className={`${renderList ? "" : "dark:bg-neutral-300"}`}
@@ -138,7 +132,7 @@ export const DashboardLogs = ({ eventData }: { eventData: Event | null }) => {
                     : null}
             </div>
 
-            <Button onClick={() => setIsOpen(!isOpen)}>Scout</Button>
+            <Button onClick={() => setFormIsOpen(!formIsOpen)}>Scout</Button>
         </>
     )
 }
