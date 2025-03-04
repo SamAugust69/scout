@@ -6,10 +6,6 @@ import { getLogs } from "@/lib/getLogs"
 import { Log, logConfig } from "../forms/formConfig"
 import { FilterLogList } from "../FilterLogList"
 import { useFormContext } from "@/lib/context/formContext"
-import { Paragraph } from "../ui/paragraph"
-import { Heading } from "../ui/heading"
-import { LinearChart } from "../LinearChart"
-import { LogScore } from "@/lib/types/logTypes"
 import { ScoreBreakdown } from "../ScoreBreakdown"
 
 const filterLogsAsTeams = (
