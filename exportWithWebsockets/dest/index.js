@@ -3,15 +3,23 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+const https_1 = __importDefault(require("https"));
+const fs_1 = __importDefault(require("fs"));
 const ws_1 = __importDefault(require("ws"));
 const PORT = 155;
-const wss = new ws_1.default.Server({ port: PORT });
+// Load SSL/TLS certificates
+const server = https_1.default.createServer({
+    cert: fs_1.default.readFileSync("./cert.pem"), // Path to your certificate
+    key: fs_1.default.readFileSync("./key.pem"), // Path to your private key
+});
+// Create a WebSocket server attached to the HTTPS server
+const wss = new ws_1.default.Server({ server });
 const clients = new Map();
 function generateUniqueId() {
     return Math.random().toString(36).substring(2, 9); // Simple unique ID generator
 }
-wss.on("listening", (ws) => {
-    console.log(`Websocket listening on port ${PORT}`);
+server.listen(PORT, () => {
+    console.log(`WebSocket server listening on wss://localhost:${PORT}`);
 });
 // Request Types
 // syncLogsRequest
@@ -30,7 +38,7 @@ wss.on("connection", (ws) => {
             const parsedMessage = JSON.parse(message.toString());
             switch (parsedMessage.type) {
                 case "syncLogsRequest":
-                    // client requests logs
+                    // Client requests logs
                     console.log(`syncLogsRequest from ${parsedMessage.targetId}`);
                     clients.forEach((socket, id) => {
                         if (parsedMessage.targetId !== id) {

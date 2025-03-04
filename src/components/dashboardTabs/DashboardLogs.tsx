@@ -1,11 +1,16 @@
 import { Event } from "@/lib/types/eventType"
 import { Button } from "../ui/button"
-import { useEffect, useState } from "react"
+import { useEffect, useState, useMemo, useCallback } from "react"
 import { LogElement } from "../LogElement"
 import { getLogs } from "@/lib/getLogs"
 import { Log, logConfig } from "../forms/formConfig"
 import { FilterLogList } from "../FilterLogList"
 import { useFormContext } from "@/lib/context/formContext"
+import { Paragraph } from "../ui/paragraph"
+import { Heading } from "../ui/heading"
+import { LinearChart } from "../LinearChart"
+import { LogScore } from "@/lib/types/logTypes"
+import { ScoreBreakdown } from "../ScoreBreakdown"
 
 const filterLogsAsTeams = (
     allLogs: Log<keyof typeof logConfig>[]
@@ -29,80 +34,86 @@ export type FilterButtonsType = {
 }
 
 export const DashboardLogs = ({ eventData }: { eventData: Event | null }) => {
-    if (!eventData) return
+    if (!eventData) return null
 
-    const [renderList, setRenderList] = useState<boolean>(true) // controls wether or not the list displays as a match group or a list
+    const [renderList, setRenderList] = useState<boolean>(true)
     const { formIsOpen, setFormIsOpen } = useFormContext()
 
-    const filteredLogsAsTeams = filterLogsAsTeams(getLogs(eventData.match_logs))
+    const filteredLogsAsTeams = useMemo(
+        () => filterLogsAsTeams(getLogs(eventData.match_logs)),
+        [eventData.match_logs]
+    )
 
     type Year = keyof typeof logConfig
 
-    const [selectedFilters, setSelectedFilters] = useState<{
-        auto: (keyof Log<Year>["auto"])[]
-        teleop: (keyof Log<Year>["teleop"])[]
-    }>({ auto: [], teleop: [] })
+    const [selectedFilters, setSelectedFilters] = useState<FilterButtonsType>({
+        auto: [],
+        teleop: [],
+    })
     const [filteredLogs, setFilteredLogs] = useState<
         Record<number, Log<Year>[]>
     >({})
 
-    const filterTeamsAndLogs = (
-        teamLogs: Record<number, Log<Year>[]>,
-        selectedFilters: FilterButtonsType
-    ): Record<number, Log<Year>[]> => {
-        const filteredTeams: Record<number, Log<Year>[]> = {}
+    const filterTeamsAndLogs = useCallback(
+        (
+            teamLogs: Record<number, Log<Year>[]>,
+            selectedFilters: FilterButtonsType
+        ): Record<number, Log<Year>[]> => {
+            const filteredTeams: Record<number, Log<Year>[]> = {}
 
-        for (const [team, logs] of Object.entries(teamLogs)) {
-            const teamNumber = Number(team)
+            for (const [team, logs] of Object.entries(teamLogs)) {
+                const teamNumber = Number(team)
 
-            const filteredLogs = logs.filter((log) => {
-                // auto filters
-                const autoMatches = selectedFilters.auto.every(
-                    (key) =>
-                        log.auto &&
-                        log.auto[key] !== undefined &&
-                        log.auto[key] !== false &&
-                        log.auto[key] !== 0
-                )
+                const filteredLogs = logs.filter((log) => {
+                    const autoMatches = selectedFilters.auto.every(
+                        (key) =>
+                            log.auto &&
+                            log.auto[key] !== undefined &&
+                            log.auto[key] !== false &&
+                            log.auto[key] !== 0
+                    )
 
-                // teleop filters
-                const teleopMatches = selectedFilters.teleop.every(
-                    (key) =>
-                        log.teleop &&
-                        log.teleop[key] !== undefined &&
-                        log.teleop[key] !== false &&
-                        log.teleop[key] !== 0
-                )
+                    const teleopMatches = selectedFilters.teleop.every(
+                        (key) =>
+                            log.teleop &&
+                            log.teleop[key] !== undefined &&
+                            log.teleop[key] !== false &&
+                            log.teleop[key] !== 0
+                    )
 
-                // return true if both filters pass
-                return autoMatches && teleopMatches
-            })
+                    return autoMatches && teleopMatches
+                })
 
-            // only include the team if they have at least one matching log
-            if (filteredLogs.length > 0) {
-                filteredTeams[teamNumber] = filteredLogs
+                if (filteredLogs.length > 0) {
+                    filteredTeams[teamNumber] = logs
+                }
             }
-        }
 
-        return filteredTeams
-    }
+            return filteredTeams
+        },
+        []
+    )
 
     useEffect(() => {
         setFilteredLogs(
             filterTeamsAndLogs(filteredLogsAsTeams, selectedFilters)
         )
-    }, [selectedFilters])
+    }, [selectedFilters, filteredLogsAsTeams, filterTeamsAndLogs])
+
+    const handleToggleRenderList = useCallback((value: boolean) => {
+        setRenderList(value)
+    }, [])
 
     return (
         <>
             <div className="flex justify-end gap-2">
                 <Button
                     className={`${renderList ? "" : "dark:bg-neutral-300"}`}
-                    onClick={() => setRenderList(false)}
+                    onClick={() => handleToggleRenderList(false)}
                 ></Button>
                 <Button
                     className={`${renderList ? "dark:bg-neutral-300" : ""}`}
-                    onClick={() => setRenderList(true)}
+                    onClick={() => handleToggleRenderList(true)}
                 ></Button>
             </div>
 
@@ -111,24 +122,23 @@ export const DashboardLogs = ({ eventData }: { eventData: Event | null }) => {
                 selectedFilters={selectedFilters}
                 setSelectedFilters={setSelectedFilters}
             />
-            <div className="w-full">
+            <div className="flex w-full flex-col gap-2">
                 {renderList
                     ? Object.entries(filteredLogs).map(([team, logs]) => {
                           return (
-                              <div>
-                                  {team}
-                                  {logs.map((log) => {
-                                      return <div>{JSON.stringify(log)}</div>
-                                  })}
-                              </div>
+                              <ScoreBreakdown
+                                  key={team}
+                                  team={team}
+                                  logs={logs}
+                              />
                           )
                       })
                     : null}
 
                 {!renderList
-                    ? eventData.match_logs.map((log) => {
-                          return <LogElement logInfo={log} />
-                      })
+                    ? eventData.match_logs.map((log, i) => (
+                          <LogElement key={i} logInfo={log} />
+                      ))
                     : null}
             </div>
 

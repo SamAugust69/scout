@@ -1,8 +1,17 @@
+import https from "https"
+import fs from "fs"
 import WebSocket, { MessageEvent } from "ws"
 
 const PORT = 155
 
-const wss = new WebSocket.Server({ port: PORT })
+// Load SSL/TLS certificates
+const server = https.createServer({
+    cert: fs.readFileSync("./cert.pem"), // Path to your certificate
+    key: fs.readFileSync("./key.pem"), // Path to your private key
+})
+
+// Create a WebSocket server attached to the HTTPS server
+const wss = new WebSocket.Server({ server })
 
 const clients = new Map<string, WebSocket>()
 
@@ -10,8 +19,8 @@ function generateUniqueId() {
     return Math.random().toString(36).substring(2, 9) // Simple unique ID generator
 }
 
-wss.on("listening", (ws: WebSocket) => {
-    console.log(`Websocket listening on port ${PORT}`)
+server.listen(PORT, () => {
+    console.log(`WebSocket server listening on wss://localhost:${PORT}`)
 })
 
 // Request Types
@@ -41,8 +50,7 @@ wss.on("connection", (ws: WebSocket) => {
 
             switch (parsedMessage.type) {
                 case "syncLogsRequest":
-                    // client requests logs
-
+                    // Client requests logs
                     console.log(
                         `syncLogsRequest from ${parsedMessage.targetId}`
                     )
@@ -74,8 +82,8 @@ wss.on("connection", (ws: WebSocket) => {
                             data: parsedMessage.data,
                         })
                     )
-
                     break
+
                 default:
                     console.log(
                         `Received unknown request "${parsedMessage.type}"`

@@ -32,6 +32,7 @@ export const buttonVariants = vs({
                 "dark:text-neutral-300 dark:hover:bg-neutral-600 dark:bg-neutral-700 bg-neutral-300 hover:bg-neutral-200",
             dark: "dark:text-neutral-300 dark:hover:bg-neutral-600 dark:bg-neutral-700 bg-neutral-300 hover:bg-neutral-200",
             link: "hover:underline dark:bg-transparent dark:hover:bg-transparent hover:text-neutral-700 dark:hover:text-neutral-300/65",
+            none: "",
         },
         size: {
             xl: "h-15 px-4 py-2",

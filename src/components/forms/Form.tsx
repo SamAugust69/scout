@@ -46,16 +46,16 @@ const LogForm = ({
     )
     const [formStatus, setFormStatus] = useState<FormStatus>("New")
 
-    const currentMatch = eventUserSettings[eventData.id].currentMatch
+    const currentMatch = eventUserSettings[eventData.id].currentMatch || 0
     const fart = () => {
         const tabletNumber = eventUserSettings[eventData.id].tabletNumber || 0
+
+        if (!eventData.schedule[currentMatch]) return
 
         if (tabletNumber <= 3)
             return eventData.schedule[currentMatch].red[tabletNumber - 1]
         return eventData.schedule[currentMatch].blue[tabletNumber - 4]
     }
-
-    console.log(Number(fart()))
 
     const handleChange = (key: string, value: any) => {
         if (formStatus === "New") setFormStatus("Incomplete")

@@ -46,7 +46,7 @@ export const FilterLogList = ({
                         <Button
                             key={i}
                             onClick={() => toggleFilter(autoKey, "auto")}
-                            className={`${selectedFilters.auto.includes(autoKey) ? "dark:bg-cool-green dark:hover:bg-cool-green/75" : ""}`}
+                            className={`${selectedFilters.auto.includes(autoKey) ? "dark:bg-cool-green enabled:hover:dark:bg-cool-green/75" : ""}`}
                         >
                             {key}
                         </Button>
