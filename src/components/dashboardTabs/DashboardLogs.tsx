@@ -118,7 +118,7 @@ export const DashboardLogs = ({ eventData }: { eventData: Event | null }) => {
                 selectedFilters={selectedFilters}
                 setSelectedFilters={setSelectedFilters}
             />
-            <div className="flex w-full flex-col gap-2">
+            <div className="flex flex-col gap-2">
                 {renderList
                     ? Object.entries(filteredLogs).map(([team, logs]) => {
                           return (

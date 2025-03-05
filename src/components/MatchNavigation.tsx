@@ -8,8 +8,8 @@ export const MatchNavigation = () => {
     const { schedule } = useAppContext()
     const containerRef = useRef<HTMLDivElement>(null)
 
+
     useEffect(() => {
-        // containerRef.current?.children[3].scrollIntoView()
     }, [])
 
     return (
