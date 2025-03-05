@@ -8,6 +8,10 @@ import { addNotification } from "./ui/notifications"
 import { ClientMessage } from "@/lib/types/syncTypes"
 import { getLogs } from "@/lib/getLogs"
 import { Event } from "@/lib/types/eventType"
+import { db } from "@/lib/db"
+import { Log, logConfig } from "./forms/formConfig"
+import { submitLog } from "@/lib/submitLog"
+import { log } from "console"
 
 type WebsocketMessage = {
     type: string
@@ -73,7 +77,7 @@ export const ExportLogsWebsocket = ({
             )
         }
 
-        const onMessage = (socket: WebSocket, e: MessageEvent<any>) => {
+        const onMessage = async (socket: WebSocket, e: MessageEvent<any>) => {
             const data: WebsocketMessage = JSON.parse(e.data)
             console.log(data)
 
@@ -92,12 +96,28 @@ export const ExportLogsWebsocket = ({
                         data: getLogs(eventData?.match_logs || []),
                     }
 
+                    addNotification("default", `Giving ${data.targetId} logs`, "Sending Logs")
                     socket.send(JSON.stringify(response))
 
                     break
                 case "syncData":
                     const recievedData = data as WebsocketMessageData
                     console.log("I got some data!", recievedData.data)
+
+                    if (!eventData) return
+
+                    const logs = recievedData.data as unknown as Log<keyof typeof logConfig>[]
+
+                    let currentEventData = eventData;
+
+                    for (const log of logs) {
+                        console.log("Submitting log:", log.match, log.team);
+                        currentEventData = await submitLog(currentEventData, log);
+                    }
+                    addNotification("success", `${logs.length} submitted`, "Synced Logs")
+                
+                      
+
             }
         }
         if (socket) socket.close()
@@ -131,6 +151,7 @@ export const ExportLogsWebsocket = ({
             type: "syncLogsRequest",
             targetId: clientID,
         }
+        addNotification("default", "Attempting to sync data", "Syncing")
         socket?.send(JSON.stringify(request))
     }
 
