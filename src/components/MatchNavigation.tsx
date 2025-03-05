@@ -3,13 +3,20 @@ import { useAppContext } from "@/lib/context/appContext"
 import { Paragraph } from "./ui/paragraph"
 import { Input } from "./ui/input"
 import { useEffect, useRef } from "react"
+import { EventSettings } from "@/lib/types/eventSettings"
+import { useLocalStorage } from "@/lib/useLocalStorage"
 
 export const MatchNavigation = () => {
     const { schedule } = useAppContext()
     const containerRef = useRef<HTMLDivElement>(null)
+        const [eventUserSettings, setEventUserSettings] = useLocalStorage<{
+            [key: string]: EventSettings
+        }>({}, "eventUserSettings")
+
+    console.log(eventUserSettings)
 
     useEffect(() => {
-        // containerRef.current?.children[3].scrollIntoView()
+        containerRef.current?.children[eventUserSettings[]].scrollIntoView()
     }, [])
 
     return (

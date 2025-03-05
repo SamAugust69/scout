@@ -140,7 +140,7 @@ export const ScoreBreakdown = ({ logs, team }: ScoreBreakdownInterface) => {
             </ChartContainer>
             <div className="border-t p-2 dark:border-neutral-600">
                 {logs.map((log, i) => (
-                    <div key={i}>{JSON.stringify(log)}</div>
+                    <Paragraph key={i}>{JSON.stringify(log)}</Paragraph>
                 ))}
             </div>
         </div>
