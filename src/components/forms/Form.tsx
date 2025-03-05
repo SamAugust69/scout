@@ -46,9 +46,9 @@ const LogForm = ({
     )
     const [formStatus, setFormStatus] = useState<FormStatus>("New")
 
-    const currentMatch = eventUserSettings[eventData.id].currentMatch || 0
+    const currentMatch = eventUserSettings[eventData.id]?.currentMatch || 0
     const fart = () => {
-        const tabletNumber = eventUserSettings[eventData.id].tabletNumber || 0
+        const tabletNumber = eventUserSettings[eventData.id]?.tabletNumber || 0
 
         if (!eventData.schedule[currentMatch]) return
 

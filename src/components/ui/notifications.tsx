@@ -64,13 +64,13 @@ const Notifications = ({}) => {
 }
 
 const notificationVariants = vs({
-    base: "bg-neutral-100 border-2 rounded px-4 py-3",
+    base: "bg-neutral-100 border-2 rounded px-4 py-3 dark:bg-neutral-800",
     variants: {
         variant: {
-            default: "border-neutral-400",
+            default: "border-neutral-400 dark:border-neutral-700",
             warning: "border-amber-400 dark:border-amber-400",
             error: "border-red-600 dark:border-red-400",
-            success: "border-cool-green",
+            success: "border-cool-green dark:border-cool-green",
         },
     },
     defaultVariants: {
@@ -98,7 +98,7 @@ const Notification = ({ variant, id, message, title }: Notification) => {
             }}
             className={clsx(
                 notificationVariants({ variant }),
-                "relative z-50 flex w-72 flex-col justify-between dark:border-neutral-700 dark:bg-neutral-800"
+                "relative z-50 flex w-72 flex-col justify-between "
             )}
         >
             <Heading>
