@@ -8,10 +8,8 @@ import { addNotification } from "./ui/notifications"
 import { ClientMessage } from "@/lib/types/syncTypes"
 import { getLogs } from "@/lib/getLogs"
 import { Event } from "@/lib/types/eventType"
-import { db } from "@/lib/db"
 import { Log, logConfig } from "./forms/formConfig"
 import { submitLog } from "@/lib/submitLog"
-import { log } from "console"
 
 type WebsocketMessage = {
     type: string
