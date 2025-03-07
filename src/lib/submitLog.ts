@@ -1,13 +1,21 @@
 import { Log, logConfig } from "@/components/forms/formConfig"
 import { Event, MatchLog } from "./types/eventType"
 import { db } from "./db"
+import { Table, Transaction } from "dexie"
 
-export const submitLog = async (eventData: Event, log: Log<keyof typeof logConfig>): Promise<Event> => {
+export const submitLog = async (transaction: Transaction & {
+    events: Table<Event, string, Event>;
+}, eventId: string, log: Log<keyof typeof logConfig>) => {
     const newMatch: MatchLog = {
         matchNumber: log.match,
         logs: [log],
         statistics: { autoAverage: 0, teleopAverage: 0 },
     };
+
+    const eventData = await db.events.get(eventId)
+
+
+    if (!eventData) return
 
     // Find the match in eventData
     const matchInfo = eventData.match_logs.find(
@@ -15,6 +23,7 @@ export const submitLog = async (eventData: Event, log: Log<keyof typeof logConfi
     );
 
     let updatedEventData: Event;
+
 
     if (!matchInfo) {
         console.log("No match data found, creating new match");
@@ -41,16 +50,13 @@ export const submitLog = async (eventData: Event, log: Log<keyof typeof logConfi
     }
 
     // Update the database
+
     try {
-        await db.events.update(updatedEventData, {
-            ...updatedEventData,
-            match_logs: updatedEventData.match_logs,
-        });
+        await transaction.events.put(updatedEventData)
         console.log("Database update successful for log:", log);
     } catch (error) {
         console.error("Database update failed for log:", log, error);
     }
 
     // Return the updated eventData
-    return updatedEventData;
 };

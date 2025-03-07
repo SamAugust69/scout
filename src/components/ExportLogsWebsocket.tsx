@@ -10,6 +10,8 @@ import { getLogs } from "@/lib/getLogs"
 import { Event } from "@/lib/types/eventType"
 import { Log, logConfig } from "./forms/formConfig"
 import { submitLog } from "@/lib/submitLog"
+import { db } from "@/lib/db"
+import { Toggle } from "./ui/toggle"
 
 type WebsocketMessage = {
     type: string
@@ -106,13 +108,19 @@ export const ExportLogsWebsocket = ({
 
                     const logs = recievedData.data as unknown as Log<keyof typeof logConfig>[]
 
-                    let currentEventData = eventData;
+                    await db.transaction('rw', db.events, async (transaction) => {
+                
+                        for (const log of logs) {
+                            console.log("Submitting log:", log.match, log.team);
+                            await submitLog(transaction, eventData.id, log);
+                        }
+                
+                        console.log("All logs submitted successfully");
+                    }).catch((error) => {
+                        console.error("Transaction failed:", error);
+                        throw error;
+                    });
 
-                    for (const log of logs) {
-                        console.log("Submitting log:", log.match, log.team);
-                        currentEventData = await submitLog(currentEventData, log);
-                    }
-                    addNotification("success", `${logs.length} submitted`, "Synced Logs")
                 
                       
 
@@ -150,6 +158,18 @@ export const ExportLogsWebsocket = ({
             targetId: clientID,
         }
         addNotification("default", "Attempting to sync data", "Syncing")
+        socket?.send(JSON.stringify(request))
+    }
+    const [sendLogs, setSendLogs] = useState(false)
+    const toggleSendLogs = () => {
+        if (!clientID) return
+        setSendLogs(!sendLogs)
+        const request: ClientMessage = {
+            type: "toggleSendLogs",
+            targetId: clientID,
+            data: !sendLogs
+        }
+
         socket?.send(JSON.stringify(request))
     }
 
@@ -214,6 +234,7 @@ export const ExportLogsWebsocket = ({
             >
                 Sync
             </Button>
+            <Toggle disabled={socket === null} toggleValue={sendLogs} onClick={toggleSendLogs}>test</Toggle>
         </div>
     )
 }
