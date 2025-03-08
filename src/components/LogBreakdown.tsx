@@ -23,15 +23,19 @@ export const LogBreakdown = ({log}: LogBreakdownInterface) => {
             </div>
             {open ?
             <div className="dark:bg-neutral-800/50 px-3 py-2 relative">
-                <div className="flex gap-2 right-3">
+                <div className="flex gap-4 right-3">
 
                 <div>
                     <Paragraph size="xs">Auto Score</Paragraph>
-                    {log.score.autoScore}
+                    {log.score.teleopScore.toPrecision(2)}
                 </div>
                 <div className="">
                     <Paragraph size="xs">Teleop Score</Paragraph>
-                    {log.score.teleopScore}
+                    {log.score.teleopScore.toPrecision(2)}
+                </div>
+                <div className="">
+                    <Paragraph size="xs">Scouter</Paragraph>
+                    {log.scout}
                 </div>
                 </div>
 
@@ -40,6 +44,10 @@ export const LogBreakdown = ({log}: LogBreakdownInterface) => {
                 <Paragraph size="xs" className="mt-2">Teleop</Paragraph>
 
                 <Paragraph className="ml-1">{JSON.stringify(log.teleop) || "N/A"}</Paragraph>
+
+                <Paragraph size="xs" className="mt-2">Notes</Paragraph>
+                
+                <Paragraph size="sm" className="ml-1">{log.notes ? `"${log.notes}"` : "N/A"}</Paragraph>
 
             </div> : null}
 
