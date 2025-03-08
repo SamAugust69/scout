@@ -10,7 +10,6 @@ import { EventButton } from "./EventButton"
 import { useNavigate } from "react-router-dom"
 import { addNotification } from "./ui/notifications"
 import { Event } from "@/lib/types/eventType"
-import { Navbar } from "./navbar"
 
 const searchEvents = async (
     connectionState: boolean,
@@ -106,7 +105,7 @@ export const EventSearcher = () => {
                     Input year, and search for events
                 </Paragraph>
             </div>
-            <div className="relative flex w-full gap-3">
+            <div className={`relative flex w-full gap-3 ${ !connectionState || settings.team == "" ? "pointer-events-none" : "pointer-events-auto"}`}>
                 <Input
                     placeholder="Year"
                     className="bg-neutral-200"
@@ -139,14 +138,16 @@ export const EventSearcher = () => {
                     connectionState ? "hidden" : ""
                 }`}
             >
-                connect to the internet to use
+                connect to the internet to use the search button
             </span>
             <span
                 className={`absolute -bottom-4 left-0 text-xs text-red-500 ${
-                    !connectionState === false && settings.team == "" ? "" : "hidden"
+                    !connectionState === false && settings.team == ""
+                        ? ""
+                        : "hidden"
                 }`}
             >
-                please select a team in settings
+                please select a team in settings to continue
             </span>
         </div>
     )

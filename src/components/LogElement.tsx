@@ -1,8 +1,8 @@
 import { MatchLog } from "@/lib/types/eventType"
 import { Paragraph } from "./ui/paragraph"
 import { Heading } from "./ui/heading"
-import { Log, logConfig } from "@/lib/types/logTypes"
 import { useMemo } from "react"
+import { Log, logConfig } from "./forms/formConfig"
 
 interface LogElementInterface {
     logInfo: MatchLog

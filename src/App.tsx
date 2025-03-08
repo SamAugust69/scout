@@ -46,6 +46,7 @@ function App() {
                 className="font-host-grotesk flex h-screen bg-neutral-200 dark:bg-[#272424] dark:text-neutral-300 dark:scheme-dark"
                 data-mode={dark ? "dark" : "light"}
             >
+                {/* TODO:  move app context to db */}
                 <AppContextContext.Provider
                     value={{
                         connectionState: connected,
