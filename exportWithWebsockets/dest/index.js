@@ -5,8 +5,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const ws_1 = __importDefault(require("ws"));
 const PORT = 155;
-// Load SSL/TLS certificates
-// Create a WebSocket server attached to the HTTPS server
+// Create a WebSocket server
 const wss = new ws_1.default.Server({ port: PORT });
 const clients = new Map();
 function generateUniqueId() {
@@ -15,28 +14,26 @@ function generateUniqueId() {
 wss.on("listening", () => {
     console.log(`WebSocket server listening on ws://localhost:${PORT}`);
 });
-// Request Types
-// syncLogsRequest
-// getLogsFromClient
-// giveLogsToClient
-// (toSyncId) syncLogsRequest -> server
-// server getLogs -> (all clients excl. toSyncId) -> (id) syncLogs -> server
+const logsToSync = [];
+let logsReceived = 0;
+const clientsToSync = new Map();
 wss.on("connection", (ws) => {
     console.log("Connection!");
     const id = generateUniqueId();
     clients.set(id, ws);
     ws.send(JSON.stringify({ type: "hello", targetId: id }));
-    const logsToSync = [];
-    var logsRecieved = 0;
-    const clientsToSync = new Map();
     ws.on("message", (message) => {
-        var _a;
+        var _a, _b;
         try {
             const parsedMessage = JSON.parse(message.toString());
             switch (parsedMessage.type) {
                 case "syncLogsRequest":
                     // Client requests logs
                     console.log(`syncLogsRequest from ${parsedMessage.targetId}`);
+                    if (!parsedMessage.targetId || !clients.has(parsedMessage.targetId)) {
+                        console.log("Invalid targetId");
+                        return;
+                    }
                     console.log(clientsToSync.size);
                     clientsToSync.forEach((socket, id) => {
                         console.log(`getLogs request sent to ${id}`);
@@ -51,7 +48,11 @@ wss.on("connection", (ws) => {
                         console.log("No targetID");
                         return;
                     }
-                    clients.get(parsedMessage.targetId);
+                    const clientList = Array.from(clients.keys());
+                    (_a = clients.get(parsedMessage.targetId)) === null || _a === void 0 ? void 0 : _a.send(JSON.stringify({
+                        type: "clientList",
+                        data: clientList,
+                    }));
                     break;
                 case "toggleSendLogs":
                     const value = parsedMessage.data;
@@ -59,41 +60,43 @@ wss.on("connection", (ws) => {
                     console.log("toggleSendLogs");
                     console.log("Setting to ", value);
                     if (!clientId) {
-                        console.log("No clientId recieved");
+                        console.log("No clientId received");
                         return;
                     }
                     if (value === false) {
                         // found client ID within toSync
                         console.log("Found client, toggling off");
                         clientsToSync.delete(clientId);
+                        console.log(clientsToSync.size);
                         return;
                     }
                     console.log("Adding client to list");
-                    const id = clients.get(clientId);
-                    if (!id) {
+                    const ws = clients.get(clientId);
+                    if (!ws) {
                         console.log("Couldn't get clientId?");
                         return;
                     }
-                    clientsToSync.set(clientId, id);
+                    clientsToSync.set(clientId, ws);
+                    console.log(clientsToSync.size);
                     break;
                 case "syncLogs":
-                    if (parsedMessage.targetId === undefined) {
-                        console.log("No targetID");
+                    if (parsedMessage.targetId === undefined || !clients.has(parsedMessage.targetId)) {
+                        console.log("Invalid targetID");
                         return;
                     }
                     console.log(`${parsedMessage.targetId} Requesting Log Sync`);
                     const logs = parsedMessage.data;
                     logsToSync.push(...logs);
-                    logsRecieved++;
-                    console.log("Recieved: ", logsRecieved);
+                    logsReceived++;
+                    console.log("Received: ", logsReceived);
                     console.log("Total clients to sync: ", clientsToSync.size);
-                    if (logsRecieved >= clientsToSync.size) {
+                    if (logsReceived >= clientsToSync.size) {
                         console.log(`Syncing ${logsToSync.length} logs`);
-                        (_a = clients.get(parsedMessage.targetId)) === null || _a === void 0 ? void 0 : _a.send(JSON.stringify({
+                        (_b = clients.get(parsedMessage.targetId)) === null || _b === void 0 ? void 0 : _b.send(JSON.stringify({
                             type: "syncData",
-                            data: parsedMessage.data,
+                            data: logsToSync,
                         }));
-                        logsRecieved = 0;
+                        logsReceived = 0;
                         logsToSync.splice(0, logsToSync.length);
                     }
                     break;
@@ -108,6 +111,7 @@ wss.on("connection", (ws) => {
     });
     ws.on("close", () => {
         clients.delete(id);
+        clientsToSync.delete(id);
         console.log("disconnect");
     });
 });

@@ -234,7 +234,7 @@ export const ExportLogsWebsocket = ({
             >
                 Sync
             </Button>
-            <Toggle disabled={socket === null} toggleValue={sendLogs} onClick={toggleSendLogs}>test</Toggle>
+            <Toggle disabled={socket === null} toggleValue={sendLogs} onClick={toggleSendLogs}>Sync Logs</Toggle>
         </div>
     )
 }

@@ -228,6 +228,22 @@ const Teleop2025 = ({ handleChange, formChanges }: FormPageInterface) => {
                 Algae Scored <span className="text-xs">by robot</span>
             </Paragraph>
             <div className="mb-2 flex flex-col gap-2">
+            <FormField>
+                    <FormInputToggle
+                        defaultChecked={formChanges.teleop?.parked}
+                        onChange={(e) =>
+                            handleChange(
+                                "teleop.manipulatesAlgae",
+                                e.currentTarget.checked
+                            )
+                        }
+                    >
+                        <FormInputTitle>Manipulated Algae</FormInputTitle>
+                        <FormInputDescription>
+                            Did your robot move around Algae
+                        </FormInputDescription>
+                    </FormInputToggle>
+                </FormField>
                 <FormField>
                     <FormInputNumber
                         incrementButton
@@ -325,6 +341,7 @@ const Teleop2025 = ({ handleChange, formChanges }: FormPageInterface) => {
                     </FieldChildren>
                 </FormField>
             </div>
+
         </>
     )
 }
@@ -335,6 +352,7 @@ const Finishing2025 = ({ handleChange, formChanges }: FormPageInterface) => {
             <FormField>
                 <FormInputToggle
                     defaultChecked={formChanges.broken}
+                    className="dark:border-red-400 dark:bg-red-500/25 enabled:hover:dark:bg-red-500/20"
                     onChange={(e) =>
                         handleChange("broken", e.currentTarget.checked)
                     }
@@ -342,6 +360,20 @@ const Finishing2025 = ({ handleChange, formChanges }: FormPageInterface) => {
                     <FormInputTitle>Broken Robot</FormInputTitle>
                     <FormInputDescription>
                         Did your robot fully break and disable during the match?
+                    </FormInputDescription>
+                </FormInputToggle>
+            </FormField>
+            <FormField>
+                <FormInputToggle
+                    defaultChecked={formChanges.damaged}
+                    className="dark:border-yellow-400 dark:bg-yellow-500/25 enabled:hover:dark:bg-yellow-500/20"
+                    onChange={(e) =>
+                        handleChange("damaged", e.currentTarget.checked)
+                    }
+                >
+                    <FormInputTitle>Partially Broken Robot</FormInputTitle>
+                    <FormInputDescription>
+                        Did a portion of your robot break, impacting the game?
                     </FormInputDescription>
                 </FormInputToggle>
             </FormField>
