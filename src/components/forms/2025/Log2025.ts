@@ -15,6 +15,7 @@ export type Log2025 = LogCommon & {
         coralL2: number
         coralL3: number
         coralL4: number
+        manipulatesAlgae: boolean
         algae: number
         net: number
 
@@ -65,6 +66,8 @@ export const Log2025Default: Partial<Log2025> = {
         coralL4: 0,
         algae: 0,
         net: 0,
+
+        manipulatesAlgae: false,
 
         parked: false,
         hung: false,

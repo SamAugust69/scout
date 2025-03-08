@@ -67,11 +67,11 @@ export const SettingsMenu = ({ isOpen, setIsOpen }: SettingsInterface) => {
                         />
                     </div>
                     <Toggle
-                        value={
+                        toggleValue={
                             changes.animationsDisabled ??
                             settings.animationsDisabled
                         }
-                        setValue={() =>
+                        setToggleValue={() =>
                             onChange(
                                 !(
                                     changes.animationsDisabled ??

@@ -41,7 +41,7 @@ export const Dashboard = ({
                 <div className="col-span-2 rounded bg-neutral-100 px-4 py-3 dark:bg-[#302E2E]"></div>
             </div>
             <div className="flex flex-col gap-3 rounded bg-neutral-100 p-3 dark:bg-[#302E2E]">
-                <div className="flex justify-between">
+                <div className="flex items-center justify-between">
                     <Heading>Next Match</Heading>
                     {/* <StyledLink
                         variant="link"
@@ -52,8 +52,15 @@ export const Dashboard = ({
                         View Full Schedule
                         <ChevronRight className="relative right-4 w-4 opacity-0 transition-opacity group-hover:right-0 group-hover:opacity-100" />
                     </StyledLink> */}
+                    <Paragraph>
+                        Tablet Number:{" "}
+                        <span className="font-bold">
+                            {eventUserSettings[eventData.id].tabletNumber}
+                        </span>
+                    </Paragraph>
                 </div>
                 <ScheduleMatchView
+                    tabletNumber={eventUserSettings[eventData.id].tabletNumber}
                     match={
                         eventData?.schedule[
                             eventUserSettings[eventData.id].currentMatch

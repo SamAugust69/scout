@@ -13,6 +13,9 @@ export type LogCommon = {
     dateSubmitted: Date
     statistics: LogStatistics
     score: LogScore
+    notes: string
+    broken: boolean
+    damaged: boolean
 }
 
 export type LogScore = {

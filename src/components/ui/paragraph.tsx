@@ -3,7 +3,7 @@ import { GetVariantProps, vs } from "@vtechguys/vs"
 import { HTMLAttributes } from "react"
 
 export const paragraphVariants = vs({
-    base: "text-neutral-800 dark:text-neutral-300 ",
+    base: "text-neutral-800 dark:text-neutral-300 break-all",
     variants: {
         size: {
             default: "",

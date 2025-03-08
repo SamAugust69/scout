@@ -73,6 +73,8 @@ export const EventDashboard = () => {
                     isOpen={formIsOpen}
                     setIsOpen={setFormIsOpen}
                     eventData={eventData}
+                    eventUserSettings={eventUserSettings}
+                    setEventUserSettings={setEventUserSettings}
                 />
             ) : null}
             <section className="mx-auto flex w-full max-w-2xl flex-col gap-2 p-4">

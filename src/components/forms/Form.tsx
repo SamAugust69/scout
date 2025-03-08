@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import useMultiForm from "@/lib/useMultiForm"
 
 import { Modal, ModalContent } from "@/components/ui/modal"
@@ -10,23 +10,55 @@ import { db } from "@/lib/db"
 import { scoreLog } from "@/lib/types/logCommonType"
 import { Paragraph } from "../ui/paragraph"
 import { Button } from "../ui/button"
-import { Dot } from "lucide-react"
+import { ChevronUp, Dot } from "lucide-react"
 import { Divider } from "../ui/divider"
 import { Heading } from "../ui/heading"
+import { Dialog, DialogContent } from "../ui/dialog"
+import { EventSettings } from "@/lib/types/eventSettings"
 
 interface LogFormInterface {
     isOpen: boolean
     setIsOpen: React.Dispatch<React.SetStateAction<boolean>>
     eventData: Event
+    // loadData?: Partial<Log<keyof typeof logConfig>>
+    eventUserSettings: { [key: string]: EventSettings }
+    setEventUserSettings: React.Dispatch<
+        React.SetStateAction<{ [key: string]: EventSettings }>
+    >
+    // setLoadData: React.Dispatch<
+    //     React.SetStateAction<Partial<Log<keyof typeof logConfig>>>
+    // >
 }
 
-const LogForm = ({ isOpen, setIsOpen, eventData }: LogFormInterface) => {
+type FormStatus = "Incomplete" | "New"
+
+const LogForm = ({
+    isOpen,
+    setIsOpen,
+    eventData,
+    eventUserSettings,
+    setEventUserSettings,
+}: LogFormInterface) => {
     const year = eventData.year as keyof typeof logConfig
+    const [notesOpen, setNotesOpen] = useState(false)
     const [formChanges, setFormChanges] = useState<Partial<Log<typeof year>>>(
         {}
     )
+    const [formStatus, setFormStatus] = useState<FormStatus>("New")
+
+    const currentMatch = eventUserSettings[eventData.id]?.currentMatch || 0
+    const fart = () => {
+        const tabletNumber = eventUserSettings[eventData.id]?.tabletNumber || 0
+
+        if (!eventData.schedule[currentMatch]) return
+
+        if (tabletNumber <= 3)
+            return eventData.schedule[currentMatch].red[tabletNumber - 1]
+        return eventData.schedule[currentMatch].blue[tabletNumber - 4]
+    }
 
     const handleChange = (key: string, value: any) => {
+        if (formStatus === "New") setFormStatus("Incomplete")
         setFormChanges((prev) => {
             const keys = key.split(".") as [keyof Log<typeof year>, never]
             if (keys.length === 2) {
@@ -49,8 +81,19 @@ const LogForm = ({ isOpen, setIsOpen, eventData }: LogFormInterface) => {
                 }
             }
         })
+        console.log(formChanges)
     }
     const { scoringMap, steps } = formConfig[year]
+
+    useEffect(() => {
+        console.log("Opened, Status: ", formStatus)
+
+        if (formStatus === "New") {
+            // propigate form
+            handleChange("match", currentMatch + 1)
+            handleChange("team", fart())
+        }
+    }, [isOpen])
 
     const submitForm = () => {
         // submission logic
@@ -75,7 +118,18 @@ const LogForm = ({ isOpen, setIsOpen, eventData }: LogFormInterface) => {
         }
 
         setFormChanges({})
+        setFormStatus("New")
+        setEventUserSettings((prev) => {
+            return {
+                ...prev,
+                [eventData.id]: {
+                    ...prev[eventData.id],
+                    currentMatch: currentMatch + 1,
+                },
+            }
+        })
         setIsOpen(false)
+
         goToStep(0)
 
         const newMatch: MatchLog = {
@@ -185,8 +239,8 @@ const LogForm = ({ isOpen, setIsOpen, eventData }: LogFormInterface) => {
             isOpen={isOpen}
             setIsOpen={setIsOpen}
         >
-            <ModalContent className="m-4 grid h-full max-h-screen w-full max-w-[900px] grid-cols-1 grid-rows-[auto_1fr_auto] gap-2 bg-neutral-200 md:grid-cols-6 md:grid-rows-[1fr_auto] dark:bg-[#272424] dark:text-white">
-                <div className="row-span-1 flex justify-center gap-4 rounded bg-neutral-900/75 p-4 md:col-span-2 md:row-span-2 md:flex-col md:justify-start md:py-8">
+            <ModalContent className="m-4 grid h-full max-h-screen w-full max-w-[900px] grid-cols-1 grid-rows-[auto_auto_1fr_auto] gap-2 bg-neutral-200 md:grid-cols-6 md:grid-rows-[1fr_auto] dark:bg-[#272424] dark:text-white">
+                <div className="relative row-span-1 flex items-center justify-center gap-4 overflow-y-scroll rounded bg-neutral-300 p-4 md:col-span-2 md:row-span-2 md:flex-col md:justify-between md:p-2 md:pt-8 dark:bg-neutral-900/75">
                     {titles.map((title, i) => {
                         return (
                             <button
@@ -214,8 +268,46 @@ const LogForm = ({ isOpen, setIsOpen, eventData }: LogFormInterface) => {
                             </button>
                         )
                     })}
+                    <textarea
+                        className="text-md mt-auto hidden h-40 w-full resize-none rounded border-neutral-700 bg-neutral-800/25 p-2 outline-0 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 md:block"
+                        placeholder="Notes"
+                        value={formChanges.notes}
+                        onChange={(e) =>
+                            handleChange("notes", e.currentTarget.value)
+                        }
+                    />
+                    {/* dark:bg-[#1b1a1a]/75 */}
+                    <Dialog isOpen={notesOpen} setIsOpen={setNotesOpen}>
+                        <DialogContent
+                            overlayInvisible
+                            className={`absolute top-22 m-1 flex h-48 max-w-[89%] flex-col rounded border border-neutral-500 bg-neutral-200 md:hidden dark:border-neutral-700 dark:bg-neutral-900`}
+                        >
+                            <textarea
+                                className="text-md mx-2 mt-2 h-full resize-none rounded border-neutral-700 bg-neutral-800/25 p-2 outline-0 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 dark:text-neutral-200 dark:placeholder:text-neutral-500"
+                                placeholder="Notes"
+                                value={formChanges.notes}
+                                onChange={(e) =>
+                                    handleChange("notes", e.currentTarget.value)
+                                }
+                            />
+                            <Button
+                                onClick={() => setNotesOpen(!notesOpen)}
+                                size="lg"
+                                className="m-2 flex items-center justify-center gap-2 text-sm dark:bg-neutral-800"
+                            >
+                                Close Notes <ChevronUp className="w-4" />
+                            </Button>
+                        </DialogContent>
+                    </Dialog>
                 </div>
-                <div className="row-span-1 flex flex-col gap-1 overflow-y-auto rounded bg-neutral-900/75 p-4 md:col-span-4 md:row-span-1">
+                <Button
+                    onClick={() => setNotesOpen(!notesOpen)}
+                    size="lg"
+                    className="md:hidden dark:bg-neutral-900/75 dark:hover:bg-neutral-900/70"
+                >
+                    Open Notes
+                </Button>
+                <div className="row-span-1 flex flex-col gap-1 overflow-y-auto rounded bg-neutral-300 p-4 md:col-span-4 md:row-span-1 dark:bg-neutral-900/75">
                     <div className="flex items-center justify-between">
                         <div className="flex gap-1">
                             <Paragraph className="flex gap-2">
@@ -252,18 +344,23 @@ const LogForm = ({ isOpen, setIsOpen, eventData }: LogFormInterface) => {
                         ) : null}
                     </div>
                 </div>
-                <div className="row-span-1 flex justify-between rounded bg-neutral-900/75 p-4 md:col-span-4 md:col-start-3 md:row-span-1">
+                <div className="row-span-1 flex justify-between rounded bg-neutral-300 p-2 md:col-span-4 md:col-start-3 md:row-span-1 dark:bg-neutral-900/75">
                     <Button
                         onClick={backwards}
                         variant={"link"}
-                        className={`${isFirstStep ? "invisible" : null}`}
+                        size="lg"
+                        className={`${isFirstStep ? "invisible" : null} pr-8`}
                     >
                         Back
                     </Button>
                     {isLastStep ? (
-                        <Button onClick={submitForm}>Submit</Button>
+                        <Button onClick={submitForm} size="lg" className="px-8">
+                            Submit
+                        </Button>
                     ) : (
-                        <Button onClick={forwards}>Next</Button>
+                        <Button onClick={forwards} size="lg" className="px-8">
+                            Next
+                        </Button>
                     )}
                 </div>
             </ModalContent>

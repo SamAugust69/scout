@@ -1,20 +1,33 @@
 import {
     FieldChildren,
     FormField,
-    FormFieldTextArea,
     FormInputDescription,
     FormInputNumber,
     FormInputText,
     FormInputTitle,
     FormInputToggle,
     InputLabel,
-} from "@/components/ui/form"
+} from "@/components/ui/formElements"
 import { FormPageInterface } from "../formConfig"
 import { Paragraph } from "@/components/ui/paragraph"
 
 const Auto2025 = ({ handleChange, formChanges }: FormPageInterface) => {
     return (
         <>
+            <FormField>
+                <FormInputToggle
+                    defaultChecked={formChanges.auto?.left}
+                    onChange={(e) =>
+                        handleChange("auto.left", e.currentTarget.checked)
+                    }
+                >
+                    <FormInputTitle>Left Starting Line</FormInputTitle>
+                    <FormInputDescription>
+                        Did your robot move off the starting line?
+                    </FormInputDescription>
+                </FormInputToggle>
+            </FormField>
+            <Paragraph>Coral Scored</Paragraph>
             <FormField>
                 <FormInputNumber
                     incrementButton
@@ -70,6 +83,33 @@ const Auto2025 = ({ handleChange, formChanges }: FormPageInterface) => {
                     Coral Scored in Trough <span className="text-xs">(L1)</span>
                 </InputLabel>
             </FormField>
+            <Paragraph>Algae Scored</Paragraph>
+            <FormField>
+                <FormInputNumber
+                    incrementButton
+                    onChange={(e) =>
+                        handleChange(
+                            "auto.algae",
+                            parseInt(e.currentTarget.value)
+                        )
+                    }
+                    defaultValue={formChanges.auto?.algae}
+                />
+                <InputLabel>Algae Processed</InputLabel>
+            </FormField>
+            <FormField>
+                <FormInputNumber
+                    incrementButton
+                    onChange={(e) =>
+                        handleChange(
+                            "auto.net",
+                            parseInt(e.currentTarget.value)
+                        )
+                    }
+                    defaultValue={formChanges.auto?.net}
+                />
+                <InputLabel>Algae Thrown in Net</InputLabel>
+            </FormField>
         </>
     )
 }
@@ -108,6 +148,7 @@ const StartLogInfo2025 = ({ handleChange, formChanges }: FormPageInterface) => {
 
             <FormField>
                 <FormInputText
+                    required
                     onChange={(e) =>
                         handleChange("scout", e.currentTarget.value)
                     }
@@ -187,6 +228,22 @@ const Teleop2025 = ({ handleChange, formChanges }: FormPageInterface) => {
                 Algae Scored <span className="text-xs">by robot</span>
             </Paragraph>
             <div className="mb-2 flex flex-col gap-2">
+            <FormField>
+                    <FormInputToggle
+                        defaultChecked={formChanges.teleop?.parked}
+                        onChange={(e) =>
+                            handleChange(
+                                "teleop.manipulatesAlgae",
+                                e.currentTarget.checked
+                            )
+                        }
+                    >
+                        <FormInputTitle>Manipulated Algae</FormInputTitle>
+                        <FormInputDescription>
+                            Did your robot move around Algae
+                        </FormInputDescription>
+                    </FormInputToggle>
+                </FormField>
                 <FormField>
                     <FormInputNumber
                         incrementButton
@@ -214,7 +271,7 @@ const Teleop2025 = ({ handleChange, formChanges }: FormPageInterface) => {
                     <InputLabel>Algae Thrown in Net</InputLabel>
                 </FormField>
             </div>
-            <Paragraph>Climb</Paragraph>
+            <Paragraph>Barge</Paragraph>
 
             <div className="mb-2 flex flex-col gap-2">
                 <FormField>
@@ -259,7 +316,8 @@ const Teleop2025 = ({ handleChange, formChanges }: FormPageInterface) => {
                             >
                                 <FormInputTitle>Hung Deep</FormInputTitle>
                                 <FormInputDescription>
-                                    Did your robot hang on the cage close to the ground?
+                                    Did your robot hang on a cage low to the
+                                    ground?
                                 </FormInputDescription>
                             </FormInputToggle>
                         </FormField>
@@ -275,22 +333,49 @@ const Teleop2025 = ({ handleChange, formChanges }: FormPageInterface) => {
                             >
                                 <FormInputTitle>Hung Shallow</FormInputTitle>
                                 <FormInputDescription>
-                                    Did your robot hang on the cage high up?
+                                    Did your robot hang on a cage high in the
+                                    air?
                                 </FormInputDescription>
                             </FormInputToggle>
                         </FormField>
                     </FieldChildren>
                 </FormField>
             </div>
+
         </>
     )
 }
 
-const Finishing2025 = ({}: FormPageInterface) => {
+const Finishing2025 = ({ handleChange, formChanges }: FormPageInterface) => {
     return (
         <>
             <FormField>
-                <FormFieldTextArea></FormFieldTextArea>
+                <FormInputToggle
+                    defaultChecked={formChanges.broken}
+                    className="dark:border-red-400 dark:bg-red-500/25 enabled:hover:dark:bg-red-500/20"
+                    onChange={(e) =>
+                        handleChange("broken", e.currentTarget.checked)
+                    }
+                >
+                    <FormInputTitle>Broken Robot</FormInputTitle>
+                    <FormInputDescription>
+                        Did your robot fully break and disable during the match?
+                    </FormInputDescription>
+                </FormInputToggle>
+            </FormField>
+            <FormField>
+                <FormInputToggle
+                    defaultChecked={formChanges.damaged}
+                    className="dark:border-yellow-400 dark:bg-yellow-500/25 enabled:hover:dark:bg-yellow-500/20"
+                    onChange={(e) =>
+                        handleChange("damaged", e.currentTarget.checked)
+                    }
+                >
+                    <FormInputTitle>Partially Broken Robot</FormInputTitle>
+                    <FormInputDescription>
+                        Did a portion of your robot break, impacting the game?
+                    </FormInputDescription>
+                </FormInputToggle>
             </FormField>
         </>
     )

@@ -1,73 +1,144 @@
 import { Event } from "@/lib/types/eventType"
 import { Button } from "../ui/button"
-import { LogForm } from "../forms/Form"
-import { useState } from "react"
+import { useEffect, useState, useMemo, useCallback } from "react"
 import { LogElement } from "../LogElement"
 import { getLogs } from "@/lib/getLogs"
-import { Paragraph } from "../ui/paragraph"
-import { scoreLog } from "@/lib/types/logCommonType"
-import { formConfig } from "../forms/formConfig"
+import { Log, logConfig } from "../forms/formConfig"
+import { FilterLogList } from "../FilterLogList"
+import { useFormContext } from "@/lib/context/formContext"
+import { ScoreBreakdown } from "../ScoreBreakdown"
+
+const filterLogsAsTeams = (
+    allLogs: Log<keyof typeof logConfig>[]
+): { [key: number]: Log<keyof typeof logConfig>[] } => {
+    const filteredTeamLogs: { [key: number]: Log<keyof typeof logConfig>[] } =
+        {}
+
+    allLogs.forEach((log) => {
+        const team = log.team
+
+        if (!filteredTeamLogs[team]) filteredTeamLogs[team] = []
+        filteredTeamLogs[team].push(log)
+    })
+
+    return filteredTeamLogs
+}
+
+export type FilterButtonsType = {
+    auto: (keyof Log<keyof typeof logConfig>["auto"])[]
+    teleop: (keyof Log<keyof typeof logConfig>["teleop"])[]
+}
 
 export const DashboardLogs = ({ eventData }: { eventData: Event | null }) => {
-    if (!eventData) return
+    if (!eventData) return null
 
-    const [isOpen, setIsOpen] = useState<boolean>(false)
-    const [renderList, setRenderList] = useState<boolean>(true) // controls wether or not the list displays as a match group or a list
+    const [renderList, setRenderList] = useState<boolean>(true)
+    const { formIsOpen, setFormIsOpen } = useFormContext()
 
-    const allLogs = getLogs(eventData.match_logs)
+    const filteredLogsAsTeams = useMemo(
+        () => filterLogsAsTeams(getLogs(eventData.match_logs)),
+        [eventData.match_logs]
+    )
+
+    type Year = keyof typeof logConfig
+
+    const [selectedFilters, setSelectedFilters] = useState<FilterButtonsType>({
+        auto: [],
+        teleop: [],
+    })
+    const [filteredLogs, setFilteredLogs] = useState<
+        Record<number, Log<Year>[]>
+    >({})
+
+    const filterTeamsAndLogs = useCallback(
+        (
+            teamLogs: Record<number, Log<Year>[]>,
+            selectedFilters: FilterButtonsType
+        ): Record<number, Log<Year>[]> => {
+            const filteredTeams: Record<number, Log<Year>[]> = {}
+
+            for (const [team, logs] of Object.entries(teamLogs)) {
+                const teamNumber = Number(team)
+
+                const filteredLogs = logs.filter((log) => {
+                    const autoMatches = selectedFilters.auto.every(
+                        (key) =>
+                            log.auto &&
+                            log.auto[key] !== undefined &&
+                            log.auto[key] !== false &&
+                            log.auto[key] !== 0
+                    )
+
+                    const teleopMatches = selectedFilters.teleop.every(
+                        (key) =>
+                            log.teleop &&
+                            log.teleop[key] !== undefined &&
+                            log.teleop[key] !== false &&
+                            log.teleop[key] !== 0
+                    )
+
+                    return autoMatches && teleopMatches
+                })
+
+                if (filteredLogs.length > 0) {
+                    filteredTeams[teamNumber] = logs
+                }
+            }
+
+            return filteredTeams
+        },
+        []
+    )
+
+    useEffect(() => {
+        setFilteredLogs(
+            filterTeamsAndLogs(filteredLogsAsTeams, selectedFilters)
+        )
+    }, [selectedFilters, filteredLogsAsTeams, filterTeamsAndLogs])
+
+    const handleToggleRenderList = useCallback((value: boolean) => {
+        setRenderList(value)
+    }, [])
 
     return (
         <>
-            <LogForm
-                isOpen={isOpen}
-                setIsOpen={setIsOpen}
-                eventData={eventData}
-            />
             <div className="flex justify-end gap-2">
                 <Button
                     className={`${renderList ? "" : "dark:bg-neutral-300"}`}
-                    onClick={() => setRenderList(false)}
+                    onClick={() => handleToggleRenderList(false)}
                 ></Button>
                 <Button
                     className={`${renderList ? "dark:bg-neutral-300" : ""}`}
-                    onClick={() => setRenderList(true)}
+                    onClick={() => handleToggleRenderList(true)}
                 ></Button>
             </div>
 
-            {/* <FilterLogList year={eventData.year as keyof typeof logConfig} /> */}
+            <FilterLogList
+                year={eventData.year as keyof typeof logConfig}
+                selectedFilters={selectedFilters}
+                setSelectedFilters={setSelectedFilters}
+            />
+            <div className="flex flex-col gap-2">
+                {renderList
+                    ? Object.entries(filteredLogs).map(([team, logs]) => {
+                          return (
+                              <ScoreBreakdown
+                                  key={team}
+                                  team={team}
+                                  logs={logs}
+                              />
+                          )
+                      })
+                    : null}
 
-            {renderList
-                ? allLogs.map((log) => {
-                      console.log(allLogs)
-                      return (
-                          <div className="flex flex-col bg-neutral-700">
-                              <Paragraph>{JSON.stringify(log)}</Paragraph>
-                              <Button
-                                  onClick={() =>
-                                      console.log(
-                                          scoreLog(
-                                              log,
-                                              formConfig[
-                                                  eventData.year as keyof typeof formConfig
-                                              ].scoringMap
-                                          )
-                                      )
-                                  }
-                              >
-                                  Score Function Again
-                              </Button>
-                          </div>
-                      )
-                  })
-                : null}
+                {!renderList
+                    ? eventData.match_logs.map((log, i) => (
+                          <LogElement key={i} logInfo={log} />
+                      ))
+                    : null}
+            </div>
 
-            {!renderList
-                ? eventData.match_logs.map((log) => {
-                      return <LogElement logInfo={log} />
-                  })
-                : null}
-
-            <Button onClick={() => setIsOpen(!isOpen)}>Scout</Button>
+            <Button onClick={() => setFormIsOpen(!formIsOpen)}>Scout</Button>
         </>
     )
 }

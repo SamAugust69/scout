@@ -8,6 +8,10 @@ import { addNotification } from "./ui/notifications"
 import { ClientMessage } from "@/lib/types/syncTypes"
 import { getLogs } from "@/lib/getLogs"
 import { Event } from "@/lib/types/eventType"
+import { Log, logConfig } from "./forms/formConfig"
+import { submitLog } from "@/lib/submitLog"
+import { db } from "@/lib/db"
+import { Toggle } from "./ui/toggle"
 
 type WebsocketMessage = {
     type: string
@@ -73,8 +77,9 @@ export const ExportLogsWebsocket = ({
             )
         }
 
-        const onMessage = (socket: WebSocket, e: MessageEvent<any>) => {
+        const onMessage = async (socket: WebSocket, e: MessageEvent<any>) => {
             const data: WebsocketMessage = JSON.parse(e.data)
+            console.log(data)
 
             // console.log(data);
 
@@ -91,12 +96,34 @@ export const ExportLogsWebsocket = ({
                         data: getLogs(eventData?.match_logs || []),
                     }
 
+                    addNotification("default", `Giving ${data.targetId} logs`, "Sending Logs")
                     socket.send(JSON.stringify(response))
 
                     break
                 case "syncData":
                     const recievedData = data as WebsocketMessageData
                     console.log("I got some data!", recievedData.data)
+
+                    if (!eventData) return
+
+                    const logs = recievedData.data as unknown as Log<keyof typeof logConfig>[]
+
+                    await db.transaction('rw', db.events, async (transaction) => {
+                
+                        for (const log of logs) {
+                            console.log("Submitting log:", log.match, log.team);
+                            await submitLog(transaction, eventData.id, log);
+                        }
+                
+                        console.log("All logs submitted successfully");
+                    }).catch((error) => {
+                        console.error("Transaction failed:", error);
+                        throw error;
+                    });
+
+                
+                      
+
             }
         }
         if (socket) socket.close()
@@ -115,6 +142,13 @@ export const ExportLogsWebsocket = ({
         if (socket === null) {
             setConnectionStatus(ConnectionStates.notConnected)
         } else setConnectionStatus(ConnectionStates.connected)
+
+        // cleanup function
+        return () => {
+            if (socket) {
+                socket.close()
+            }
+        }
     }, [socket])
 
     const getOtherLogs = () => {
@@ -123,7 +157,25 @@ export const ExportLogsWebsocket = ({
             type: "syncLogsRequest",
             targetId: clientID,
         }
+        addNotification("default", "Attempting to sync data", "Syncing")
         socket?.send(JSON.stringify(request))
+    }
+    const [sendLogs, setSendLogs] = useState(false)
+    const toggleSendLogs = () => {
+        if (!clientID) return
+        setSendLogs(!sendLogs)
+        const request: ClientMessage = {
+            type: "toggleSendLogs",
+            targetId: clientID,
+            data: !sendLogs
+        }
+
+        socket?.send(JSON.stringify(request))
+    }
+
+    const disconnectSocket = () => {
+        socket?.close()
+        setSocket(null)
     }
 
     return (
@@ -152,7 +204,9 @@ export const ExportLogsWebsocket = ({
                 />
                 <Button
                     onClick={() =>
-                        socket === null ? createConnection() : setSocket(null)
+                        socket === null
+                            ? createConnection()
+                            : disconnectSocket()
                     }
                     className="flex w-full max-w-34 items-center justify-center gap-2"
                     variant="secondary"
@@ -180,6 +234,7 @@ export const ExportLogsWebsocket = ({
             >
                 Sync
             </Button>
+            <Toggle disabled={socket === null} toggleValue={sendLogs} onClick={toggleSendLogs}>Sync Logs</Toggle>
         </div>
     )
 }
