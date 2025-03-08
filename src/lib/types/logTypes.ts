@@ -15,6 +15,7 @@ export type LogCommon = {
     score: LogScore
     notes: string
     broken: boolean
+    damaged: boolean
 }
 
 export type LogScore = {

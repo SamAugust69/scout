@@ -187,7 +187,7 @@ const FormInputNumber = ({
 
 interface FormToggleInterface extends InputHTMLAttributes<HTMLInputElement> {}
 
-const FormInputToggle = ({
+const  FormInputToggle = ({
     children,
     className,
     defaultChecked,

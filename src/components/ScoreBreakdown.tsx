@@ -11,6 +11,7 @@ import {
     ChartTooltipContent,
 } from "./ui/chart"
 import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from "recharts"
+import { LogBreakdown } from "./LogBreakdown"
 
 const extractScoresFromLogs = (logs: Log<keyof typeof logConfig>[]) => {
     const scores: ({ match: number } & LogScore)[] = []
@@ -100,7 +101,7 @@ export const ScoreBreakdown = ({ logs, team }: ScoreBreakdownInterface) => {
                     </Button>
                 </div>
             </div>
-            <ChartContainer config={chartConfig} className="my-4">
+            <ChartContainer config={chartConfig} className="py-4 dark:bg-neutral-800/50">
                 <AreaChart
                     data={logScores}
                     margin={{
@@ -138,11 +139,11 @@ export const ScoreBreakdown = ({ logs, team }: ScoreBreakdownInterface) => {
                     />
                 </AreaChart>
             </ChartContainer>
-            <div className="border-t p-2 dark:border-neutral-600">
+            <ul className="border-t dark:border-neutral-600 only:border-b">
                 {logs.map((log, i) => (
-                    <Paragraph key={i}>{JSON.stringify(log)}</Paragraph>
+                    <LogBreakdown key={i} log={log}/>
                 ))}
-            </div>
+            </ul>
         </div>
     )
 }
