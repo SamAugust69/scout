@@ -1,4 +1,4 @@
-import { Event, MatchInfo } from "@/lib/types/eventType"
+import { Event, MatchInfo, MatchLog } from "@/lib/types/eventType"
 import { Heading } from "../ui/heading"
 import { Input } from "../ui/input"
 import { Paragraph } from "../ui/paragraph"
@@ -13,6 +13,8 @@ import { Divider } from "../ui/divider"
 import { StyledLink } from "../StyledLink"
 import { EventSettings } from "@/lib/types/eventSettings"
 import { ExportLogsWebsocket } from "../ExportLogsWebsocket"
+import { getLogs } from "@/lib/getLogs"
+import { Log, logConfig } from "../forms/formConfig"
 
 const pullSchedules = async (key: string): Promise<MatchInfo[] | null> => {
     const data: any[] | null = await fetchTBA({
@@ -106,6 +108,64 @@ export const DashboardSettings = ({
         document.body.appendChild(a)
         a.click()
         document.body.removeChild(a)
+    }
+
+    const deleteDuplicateData = () => {
+
+        const allLogs = getLogs(eventData.match_logs)
+        const filteredLogs: Log<keyof typeof logConfig>[] = []
+
+        const seenIds = new Set<string>()
+
+        allLogs.map((log) => {
+            if (seenIds.has(log.id)) return
+            filteredLogs.push(log)
+            seenIds.add(log.id)
+        })
+
+            // Find the match in eventData
+        var logsAsMatchLogs: MatchLog[] = []
+
+        filteredLogs.map((log) => {
+
+            const matchInfo = logsAsMatchLogs.find(
+                (match) => match.matchNumber === log.match
+            );
+
+            const newMatch: MatchLog = {
+                matchNumber: log.match,
+                logs: [log],
+                statistics: { autoAverage: 0, teleopAverage: 0 },
+            };
+    
+    
+    
+            if (!matchInfo) {
+                console.log("No match data found, creating new match");
+                logsAsMatchLogs = 
+                   [...logsAsMatchLogs, newMatch]
+            } else {
+                console.log("Match data found, updating existing match");
+                const updatedMatchInfo = {
+                    ...matchInfo,
+                    logs: [...matchInfo.logs, log],
+                };
+    
+                logsAsMatchLogs = 
+                    [
+                        ...logsAsMatchLogs.filter(
+                            (match) => match.matchNumber !== log.match
+                        ),
+                        updatedMatchInfo,
+                    ]
+                
+            }
+        })
+
+    // Update the database
+
+        db.events.update(eventData.id, {...eventData, match_logs: logsAsMatchLogs})
+        return filteredLogs
     }
 
     return (
@@ -204,6 +264,9 @@ export const DashboardSettings = ({
                             <span className="absolute bottom-0.5 text-xs font-bold dark:text-neutral-400">
                                 {eventData.match_logs.length} Logs
                             </span>
+                        </Button>
+                        <Button onClick={deleteDuplicateData}>
+                            Delete Duplicates
                         </Button>
                         {/* <Button size="lg" variant="secondary">
                             Delete All Logs{" "}
