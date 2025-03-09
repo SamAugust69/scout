@@ -119,6 +119,7 @@ export const DashboardLogs = ({ eventData }: { eventData: Event | null }) => {
                 setSelectedFilters={setSelectedFilters}
             />
             <div className="flex gap-2 rounded bg-neutral-100 p-4 dark:bg-[#302E2E]">
+                
             </div>
             <div className="flex flex-col gap-2">
                 {renderList
