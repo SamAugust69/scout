@@ -78,7 +78,7 @@ export const ScoreBreakdown = ({ logs, team }: ScoreBreakdownInterface) => {
                             Auto Average
                         </Paragraph>
                         <Paragraph className="text-left font-bold dark:text-white">
-                            {averages.autoAverage}{" "}
+                            {averages.autoAverage.toPrecision(2)}{" "}
                             <span className="text-xs dark:text-neutral-300">
                                 points
                             </span>
@@ -93,7 +93,7 @@ export const ScoreBreakdown = ({ logs, team }: ScoreBreakdownInterface) => {
                             Teleop Average
                         </Paragraph>
                         <Paragraph className="text-left font-bold dark:text-white">
-                            {averages.teleopAverage}{" "}
+                            {averages.teleopAverage.toPrecision(2)}{" "}
                             <span className="text-xs dark:text-neutral-300">
                                 points
                             </span>
