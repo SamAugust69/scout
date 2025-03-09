@@ -71,7 +71,7 @@ export const SettingsMenu = ({ isOpen, setIsOpen }: SettingsInterface) => {
                             changes.animationsDisabled ??
                             settings.animationsDisabled
                         }
-                        setToggleValue={() =>
+                        onClick={() =>
                             onChange(
                                 !(
                                     changes.animationsDisabled ??
@@ -82,6 +82,23 @@ export const SettingsMenu = ({ isOpen, setIsOpen }: SettingsInterface) => {
                         }
                     >
                         Disable Animations
+                    </Toggle>
+                    <Toggle
+                        toggleValue={
+                            changes.disableNavbar ??
+                            settings.disableNavbar
+                        }
+                        onClick={() =>
+                            onChange(
+                                !(
+                                    changes.disableNavbar ??
+                                    settings.disableNavbar
+                                ),
+                                "disableNavbar"
+                            )
+                        }
+                    >
+                        Disable Navbar
                     </Toggle>
                 </div>
                 <ModalFooter className="flex justify-end">

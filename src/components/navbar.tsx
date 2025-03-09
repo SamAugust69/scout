@@ -13,7 +13,7 @@ export const Navbar = () => {
     // const [open, setOpen] = useState(false)
     const [settingsOpen, setSettingsOpen] = useState<boolean>(false)
     const { setDark, dark } = useDarkModeContext()
-
+    
     const openWidth = 400
     const closedWidth = 110
     const [width, setWidth] = useState<number>(closedWidth)
@@ -48,7 +48,7 @@ export const Navbar = () => {
                 onClick={() =>
                     setWidth(width === openWidth ? closedWidth : openWidth)
                 }
-                className={`opacity-0 ${width !== openWidth ? "opacity-100" : null} 
+                className={`opacity-0 ${width !== openWidth ? "group-hover/nav:opacity-100" : null} 
                    absolute top-2 -right-10 flex w-8 items-center justify-center rounded p-1 transition-all dark:bg-[#302E2E]`}
 
             >

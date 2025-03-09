@@ -15,9 +15,10 @@ export const LogBreakdown = ({log}: LogBreakdownInterface) => {
             <div className="flex justify-between py-2 px-3">
                 <Paragraph size="sm">Match {log.match}</Paragraph>
                 <div className="flex gap-4 items-center">
-                {log.damaged ?<Paragraph size="xs" className="dark:text-yellow-400">Damaged</Paragraph> : null}
+                    {log.damaged ?<Paragraph size="xs" className="dark:text-yellow-400">Damaged</Paragraph> : null}
                     { log.broken ? <Paragraph size="xs" className="dark:text-red-400">Broken</Paragraph> : null}
-                {!open ?<ChevronDown className="w-4"/> : <ChevronUp className="w-4"/>}
+                    { log.defence ? <Paragraph size="xs" className="dark:text-blue-400">Defence</Paragraph> : null}
+                    {!open ?<ChevronDown className="w-4"/> : <ChevronUp className="w-4"/>}
 
                 </div>
             </div>
@@ -27,7 +28,7 @@ export const LogBreakdown = ({log}: LogBreakdownInterface) => {
 
                 <div>
                     <Paragraph size="xs">Auto Score</Paragraph>
-                    {log.score.teleopScore.toPrecision(2)}
+                    {log.score.autoScore.toPrecision(2)}
                 </div>
                 <div className="">
                     <Paragraph size="xs">Teleop Score</Paragraph>

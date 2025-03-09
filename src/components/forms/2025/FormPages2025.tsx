@@ -349,17 +349,17 @@ const Teleop2025 = ({ handleChange, formChanges }: FormPageInterface) => {
 const Finishing2025 = ({ handleChange, formChanges }: FormPageInterface) => {
     return (
         <>
-            <FormField>
+                    <FormField>
                 <FormInputToggle
-                    defaultChecked={formChanges.broken}
-                    className="dark:border-red-400 dark:bg-red-500/25 enabled:hover:dark:bg-red-500/20"
+                    defaultChecked={formChanges.defence}
+                    className="dark:border-blue-400 dark:bg-blue-500/25 enabled:hover:dark:bg-blue-500/20"
                     onChange={(e) =>
-                        handleChange("broken", e.currentTarget.checked)
+                        handleChange("defence", e.currentTarget.checked)
                     }
                 >
-                    <FormInputTitle>Broken Robot</FormInputTitle>
+                    <FormInputTitle>Defence Robot</FormInputTitle>
                     <FormInputDescription>
-                        Did your robot fully break and disable during the match?
+                        Was your robot a defence bot? Did they goto the opponents side?
                     </FormInputDescription>
                 </FormInputToggle>
             </FormField>
@@ -374,6 +374,20 @@ const Finishing2025 = ({ handleChange, formChanges }: FormPageInterface) => {
                     <FormInputTitle>Partially Broken Robot</FormInputTitle>
                     <FormInputDescription>
                         Did a portion of your robot break, impacting the game?
+                    </FormInputDescription>
+                </FormInputToggle>
+            </FormField>
+            <FormField>
+                <FormInputToggle
+                    defaultChecked={formChanges.broken}
+                    className="dark:border-red-400 dark:bg-red-500/25 enabled:hover:dark:bg-red-500/20"
+                    onChange={(e) =>
+                        handleChange("broken", e.currentTarget.checked)
+                    }
+                >
+                    <FormInputTitle>Broken Robot</FormInputTitle>
+                    <FormInputDescription>
+                        Did your robot fully break and disable during the match?
                     </FormInputDescription>
                 </FormInputToggle>
             </FormField>
