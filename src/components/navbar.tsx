@@ -8,12 +8,14 @@ import { SettingsMenu } from "./Settings"
 import { Link } from "react-router-dom"
 import { cn } from "@/lib/utils"
 import { MatchNavigation } from "./MatchNavigation"
+import { useAppContext } from "@/lib/context/appContext"
 
 export const Navbar = () => {
     // const [open, setOpen] = useState(false)
     const [settingsOpen, setSettingsOpen] = useState<boolean>(false)
     const { setDark, dark } = useDarkModeContext()
-
+    const {settings} = useAppContext()
+    
     const openWidth = 400
     const closedWidth = 110
     const [width, setWidth] = useState<number>(closedWidth)
@@ -39,7 +41,7 @@ export const Navbar = () => {
                     setWidth(width === openWidth ? closedWidth : openWidth)
                 }
                 className={`opacity-0 ${
-                    width === openWidth ? "group-hover/nav:opacity-100" : null
+                    width === openWidth ? "opacity-100" : null
                 } absolute top-2 right-2 flex w-8 items-center justify-center p-1 transition-opacity`}
             >
                 <ChevronsLeft />

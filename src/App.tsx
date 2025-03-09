@@ -21,7 +21,7 @@ import { MatchInfo } from "./lib/types/eventType"
 function App() {
     const [dark, setDark] = useLocalStorage<boolean>(false, "theme")
     const [settings, setSettings] = useLocalStorage<Settings>(
-        { team: "", animationsDisabled: false }, // Default settings value,
+        { team: "", animationsDisabled: false, disableNavbar: false }, // Default settings value,
         "settings"
     )
     const [schedule, setSchedule] = useState<MatchInfo[] | null>(null)
@@ -43,7 +43,7 @@ function App() {
     return (
         <DarkModeContext.Provider value={{ dark: dark || false, setDark }}>
             <div
-                className="font-host-grotesk flex h-screen overflow-x-hidden bg-neutral-200 dark:bg-[#272424] dark:text-neutral-300 dark:scheme-dark"
+                className="font-host-grotesk flex h-screen overflow-x-hidden bg-neutral-200 dark:bg-[#272424] dark:text-neutral-300 dark:scheme-dark *:transition-none"
                 data-mode={dark ? "dark" : "light"}
             >
                 {/* TODO:  move app context to db */}

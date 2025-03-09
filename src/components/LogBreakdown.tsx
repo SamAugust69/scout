@@ -27,7 +27,7 @@ export const LogBreakdown = ({log}: LogBreakdownInterface) => {
 
                 <div>
                     <Paragraph size="xs">Auto Score</Paragraph>
-                    {log.score.teleopScore.toPrecision(2)}
+                    {log.score.autoScore.toPrecision(2)}
                 </div>
                 <div className="">
                     <Paragraph size="xs">Teleop Score</Paragraph>

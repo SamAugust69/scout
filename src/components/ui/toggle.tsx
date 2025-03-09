@@ -29,16 +29,15 @@ interface ToggleInterface extends ButtonHTMLAttributes<HTMLButtonElement> {
 export const Toggle = ({
     children,
     toggleValue,
-    setToggleValue,
     variant,
     size,
     onClick,
+
     ...props
 }: ToggleInterface & GetVariantProps<typeof toggleVariants>) => {
     return (
         <button
-        disabled
-        onClick={() => {setToggleValue && setToggleValue(!toggleValue); onClick && onClick()}}
+        onClick={() => {onClick && onClick()}}
         className={cn(
             clsx(toggleVariants({ variant, size })),
             `${toggleValue ? "dark:bg-cool-green/25 dark:hover:bg-cool-green/35" : "dark:bg-neutral-900 dark:hover:bg-neutral-900/50"}`
