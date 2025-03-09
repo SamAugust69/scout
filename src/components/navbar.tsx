@@ -8,13 +8,11 @@ import { SettingsMenu } from "./Settings"
 import { Link } from "react-router-dom"
 import { cn } from "@/lib/utils"
 import { MatchNavigation } from "./MatchNavigation"
-import { useAppContext } from "@/lib/context/appContext"
 
 export const Navbar = () => {
     // const [open, setOpen] = useState(false)
     const [settingsOpen, setSettingsOpen] = useState<boolean>(false)
     const { setDark, dark } = useDarkModeContext()
-    const {settings} = useAppContext()
     
     const openWidth = 400
     const closedWidth = 110

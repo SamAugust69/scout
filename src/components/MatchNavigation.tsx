@@ -22,21 +22,21 @@ export const MatchNavigation = () => {
         )
     }
 
-    const filterScheduleByTeam = (number: number) => {
-        console.log('fart')
+    // const filterScheduleByTeam = (number: number) => {
+    //     console.log('fart')
 
-        if (!schedule) return
-        setFilteredSchedule(() => 
-            schedule.filter((match) => {
-                return match.match_number >= number
-            })
-        )
-    }
+    //     if (!schedule) return
+    //     setFilteredSchedule(() => 
+    //         schedule.filter((match) => {
+    //             return match.
+    //         })
+    //     )
+    // }
 
     return (
         <>
             <div className="rounded-t bg-neutral-200 p-4 dark:bg-[#272424]">
-                <Input ref={filterRef} onChange={(e) => filterScheduleByTeam(Number(e.currentTarget.value) || 0)} placeholder="Team Number" />
+                <Input ref={filterRef} onChange={(e) => filterScheduleByNumber(Number(e.currentTarget.value) || 0)} placeholder="Team Number" />
             </div>
             <div
                 ref={containerRef}
