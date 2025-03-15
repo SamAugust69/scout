@@ -15,7 +15,7 @@ import { Log2025, Log2025Default, scoringMap2025 } from "./2025/Log2025"
 
 export interface FormPageInterface {
     // handleChange: (e: React.ChangeEvent<HTMLInputElement>) => void
-    handleChange: (key: any, value: any) => void
+    handleChange: (key: string, value: any) => void
     formChanges: Partial<any>
 }
 

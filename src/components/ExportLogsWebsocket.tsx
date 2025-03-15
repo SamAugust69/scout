@@ -96,7 +96,11 @@ export const ExportLogsWebsocket = ({
                         data: getLogs(eventData?.match_logs || []),
                     }
 
-                    addNotification("default", `Giving ${data.targetId} logs`, "Sending Logs")
+                    addNotification(
+                        "default",
+                        `Giving ${data.targetId} logs`,
+                        "Sending Logs"
+                    )
                     socket.send(JSON.stringify(response))
 
                     break
@@ -106,24 +110,27 @@ export const ExportLogsWebsocket = ({
 
                     if (!eventData) return
 
-                    const logs = recievedData.data as unknown as Log<keyof typeof logConfig>[]
+                    const logs = recievedData.data as unknown as Log<
+                        keyof typeof logConfig
+                    >[]
 
-                    await db.transaction('rw', db.events, async (transaction) => {
-                
-                        for (const log of logs) {
-                            console.log("Submitting log:", log.match, log.team);
-                            await submitLog(transaction, eventData.id, log);
-                        }
-                
-                        console.log("All logs submitted successfully");
-                    }).catch((error) => {
-                        console.error("Transaction failed:", error);
-                        throw error;
-                    });
+                    await db
+                        .transaction("rw", db.events, async (transaction) => {
+                            for (const log of logs) {
+                                console.log(
+                                    "Submitting log:",
+                                    log.match,
+                                    log.team
+                                )
+                                await submitLog(transaction, eventData.id, log)
+                            }
 
-                
-                      
-
+                            console.log("All logs submitted successfully")
+                        })
+                        .catch((error) => {
+                            console.error("Transaction failed:", error)
+                            throw error
+                        })
             }
         }
         if (socket) socket.close()
@@ -167,7 +174,7 @@ export const ExportLogsWebsocket = ({
         const request: ClientMessage = {
             type: "toggleSendLogs",
             targetId: clientID,
-            data: !sendLogs
+            data: !sendLogs,
         }
 
         socket?.send(JSON.stringify(request))
@@ -234,7 +241,13 @@ export const ExportLogsWebsocket = ({
             >
                 Sync
             </Button>
-            <Toggle disabled={socket === null} toggleValue={sendLogs} onClick={toggleSendLogs}>Sync Logs</Toggle>
+            <Toggle
+                disabled={socket === null}
+                toggleValue={sendLogs}
+                onClick={toggleSendLogs}
+            >
+                Sync Logs
+            </Toggle>
         </div>
     )
 }
