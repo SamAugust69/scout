@@ -17,6 +17,7 @@ import { Notifications } from "./components/ui/notifications"
 import { EventScout } from "./pages/event/EventScout"
 import { EventSchedule } from "./pages/event/EventSchedule"
 import { MatchInfo } from "./lib/types/eventType"
+import { EventStats } from "./pages/EventStats"
 
 function App() {
     const [dark, setDark] = useLocalStorage<boolean>(false, "theme")
@@ -43,7 +44,7 @@ function App() {
     return (
         <DarkModeContext.Provider value={{ dark: dark || false, setDark }}>
             <div
-                className="font-host-grotesk flex h-screen overflow-x-hidden bg-neutral-200 dark:bg-[#272424] dark:text-neutral-300 dark:scheme-dark *:transition-none"
+                className="font-host-grotesk flex h-screen overflow-x-hidden bg-neutral-200 *:transition-none dark:bg-[#272424] dark:text-neutral-300 dark:scheme-dark"
                 data-mode={dark ? "dark" : "light"}
             >
                 {/* TODO:  move app context to db */}
@@ -98,6 +99,11 @@ function App() {
                                 path="/help"
                                 errorElement={<NavigationError />}
                                 element={<Help />}
+                            />
+                            <Route
+                                path="/eventStats"
+                                errorElement={<NavigationError />}
+                                element={<EventStats />}
                             />
                         </Routes>
                         <Notifications />
