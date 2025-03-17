@@ -15,6 +15,7 @@ completedColumns:
 - [better-loading-animation-for-dashboard](tasks/better-loading-animation-for-dashboard.md)
 - [scouting-mode-only-show-button-to-add-stuff](tasks/scouting-mode-only-show-button-to-add-stuff.md)
 - [schedule-view-only-load-as-you-scroll-down](tasks/schedule-view-only-load-as-you-scroll-down.md)
+- [go-home-goes-to-last-page](tasks/go-home-goes-to-last-page.md)
 
 ## Todo
 

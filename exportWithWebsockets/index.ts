@@ -29,11 +29,12 @@ const findClientId = (clientId: string): Client | null => {
 
 // Every request updates lastseen
 app.use((req, res, next) => {
-    const { clientId } = req.params
-    const client = findClientId(clientId)
+    const id = req.headers["x-clientid"] as string
+    const client = findClientId(id || "")
+    // console.log(req.headers)
 
     if (client) {
-        console.log(`Last seen updated for ${client}`)
+        console.log(`Last seen updated for ${id}`)
         client.lastSeen = Date.now()
     }
 
@@ -71,7 +72,8 @@ app.put("/deregister/:clientId", (req, res) => {
 
 // Send over synchronization list
 app.get("/synchronizationList", (req, res) => {
-    res.status(200).send(Array.from(clientsToSync))
+    console.log("Getting sync list")
+    res.status(200).send(Array.from(clientsToSync.keys()))
 })
 
 app.post("/sendLogs", (req, res) => {
@@ -117,10 +119,7 @@ app.get("/sse/enableSynchronization/:clientId", (req, res) => {
     console.log(`Added client ${clientId} to clientsToSync`)
 
     res.write(
-        JSON.stringify({
-            type: "hello",
-            message: "Connected to SSE, waiting for synchronization request",
-        })
+        `data: ${JSON.stringify({ type: "hello", message: "Connected to SSE, waiting for synchronization request" })}\n\n`
     )
 
     const heartbeatInterval = setInterval(() => {
@@ -157,7 +156,7 @@ app.get("/sse/synchronize/:clientId", (req, res) => {
 
     for (const [id, res] of clientsToSync.entries()) {
         console.log(`Requesting data from ${id}`)
-        res.write(JSON.stringify({ type: "requestData" }))
+        res.write(`data: ${JSON.stringify({ type: "requestData" })}\n\n`)
     }
 
     // Send a heartbeat to keep the connection alive- not working?

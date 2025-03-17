@@ -24,10 +24,11 @@ const findClientId = (clientId) => {
 };
 // Every request updates lastseen
 app.use((req, res, next) => {
-    const { clientId } = req.params;
-    const client = findClientId(clientId);
+    const id = req.headers["x-clientid"];
+    const client = findClientId(id || "");
+    // console.log(req.headers)
     if (client) {
-        console.log(`Last seen updated for ${client}`);
+        console.log(`Last seen updated for ${id}`);
         client.lastSeen = Date.now();
     }
     next();
@@ -56,7 +57,8 @@ app.put("/deregister/:clientId", (req, res) => {
 });
 // Send over synchronization list
 app.get("/synchronizationList", (req, res) => {
-    res.status(200).send(Array.from(clientsToSync));
+    console.log("Getting sync list");
+    res.status(200).send(Array.from(clientsToSync.keys()));
 });
 app.post("/sendLogs", (req, res) => {
     var _a;
@@ -91,10 +93,7 @@ app.get("/sse/enableSynchronization/:clientId", (req, res) => {
     // Add client to syncList
     clientsToSync.set(clientId, res);
     console.log(`Added client ${clientId} to clientsToSync`);
-    res.write(JSON.stringify({
-        type: "hello",
-        message: "Connected to SSE, waiting for synchronization request",
-    }));
+    res.write(`data: ${JSON.stringify({ type: "hello", message: "Connected to SSE, waiting for synchronization request" })}\n\n`);
     const heartbeatInterval = setInterval(() => {
         var _a;
         (_a = client.response) === null || _a === void 0 ? void 0 : _a.write(": keep-alive\n\n");
@@ -124,7 +123,7 @@ app.get("/sse/synchronize/:clientId", (req, res) => {
     syncTarget = clientId;
     for (const [id, res] of clientsToSync.entries()) {
         console.log(`Requesting data from ${id}`);
-        res.write(JSON.stringify({ type: "requestData" }));
+        res.write(`data: ${JSON.stringify({ type: "requestData" })}\n\n`);
     }
     // Send a heartbeat to keep the connection alive- not working?
     const heartbeatInterval = setInterval(() => {

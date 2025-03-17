@@ -1,10 +1,12 @@
 import { Input } from "./ui/input"
 import { EventSettings } from "@/lib/types/eventSettings"
 import { Event } from "@/lib/types/eventType"
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { Button } from "./ui/button"
 import { addNotification } from "./ui/notifications"
 import axios from "axios"
+import { Toggle } from "./ui/toggle"
+import { Paragraph } from "./ui/paragraph"
 
 const startSyncing = async (address: string, clientId: string) => {
     const response = await fetch(`${address}/startSync`, {
@@ -50,45 +52,64 @@ export const ExportLogs = ({
 
         const url = new URL(`${address}/register`)
 
-        axios({
-            method: "GET",
-            url: url.href,
-        })
-            .then((res) => {
-                if (res.status === 200) {
-                    setClientId(res.data.clientId)
-                    heartbeat(address, res.data.clientId)
-                }
+        try {
+            axios({
+                method: "GET",
+                url: url.href,
             })
-            .catch((e: Error) => {
-                console.log(e.message)
-                addNotification("error", e.message, url.href)
-            })
+                .then((res) => {
+                    if (res.status === 200) {
+                        setClientId(res.data.clientId)
+                        heartbeat(address, res.data.clientId)
+                        addNotification(
+                            "success",
+                            "Connected to the REST api successfully",
+                            "Success!"
+                        )
+                    }
+                })
+                .catch((e: Error) => {
+                    console.log(e.message)
+                    addNotification("error", e.message, url.href)
+                })
+        } catch (err) {
+            console.log(err)
+            addNotification("error")
+        }
     }
 
     let heartbeatIntervalId: NodeJS.Timeout | null = null
+    const clientIdRef = useRef<string | undefined>(clientId)
     const heartbeat = (address: string, clientId: string) => {
+        clientIdRef.current = clientId
+
         heartbeatIntervalId = setInterval(() => {
             if (!clientId) {
                 heartbeatIntervalId && clearInterval(heartbeatIntervalId)
                 return
             }
             axios
-                .get(`${address}/heartbeat/${clientId}`, {})
+                .get(`${address}/heartbeat/${clientId}`, {
+                    headers: {
+                        "x-clientId": clientId,
+                    },
+                })
                 .then(() => {
                     console.log("Heartbeat good")
                 })
                 .catch((res) => {
-                    console.log("Hearbeat bad")
-                    setClientId(undefined)
-                    addNotification(
-                        "error",
-                        res.response.data.error,
-                        "Heartbeat Failed"
-                    )
+                    if (clientIdRef.current === clientId) {
+                        console.log("Hearbeat bad")
+                        setClientId(undefined)
+                        addNotification(
+                            "error",
+                            res.response.data.error,
+                            "Heartbeat Failed"
+                        )
+                    }
                     heartbeatIntervalId && clearInterval(heartbeatIntervalId)
                 })
-        }, 10000)
+        }, 30000)
     }
 
     const disconnect = (clientId: string) => {
@@ -122,30 +143,42 @@ export const ExportLogs = ({
                 break
         }
     }
-
-    const enableSynchronization = () => {
+    const [eventSource, setEventSource] = useState<EventSource | undefined>(
+        undefined
+    )
+    const openSynchronization = () => {
         const address = eventUserSettings[eventData.id].exportAddress
 
-        axios
-            .get(`${address}/sse/enableSynchronization/${clientId}`, {
-                headers: {
-                    Accept: "text/event-stream",
-                },
-                responseType: "stream",
-                adapter: "fetch",
-            })
-            .then(async (response) => {
-                const stream = response.data
+        const url = `${address}/sse/enableSynchronization/${clientId}`
 
-                const reader = stream
-                    .pipeThrough(new TextDecoderStream())
-                    .getReader()
-                while (true) {
-                    const { value, done } = await reader.read()
-                    if (done) break
-                    sse(value)
-                }
-            })
+        const eventSource = new EventSource(url)
+
+        eventSource.onopen = () => {
+            addNotification("success", "Syncing logs!", "Opened SSE")
+            setEventSource(eventSource)
+        }
+
+        eventSource.addEventListener("message", (message) => {
+            console.log(message)
+        })
+    }
+
+    const closeSynchronization = () => {
+        addNotification("default", "Stopped syncing logs", "Closed SSE")
+        setEventSource(undefined)
+        eventSource?.close()
+    }
+
+    const synchronize = () => {
+        const address = eventUserSettings[eventData.id].exportAddress
+
+        axios.get(`${address}/see/synchronize/${clientId}`, {
+            headers: {
+                Accept: "text/event-stream",
+            },
+            responseType: "stream",
+            adapter: "fetch",
+        })
     }
 
     useEffect(() => {
@@ -155,20 +188,32 @@ export const ExportLogs = ({
     return (
         <div className="flex w-full flex-col gap-1">
             <div className="flex gap-1">
-                <Input
-                    placeholder="localhost:155"
-                    defaultValue={eventUserSettings[eventData.id].exportAddress}
-                    onChange={(e) =>
-                        editEventUserSettings(eventData.id, {
-                            ...eventUserSettings[eventData.id],
-                            exportAddress: e.target.value,
-                        })
+                <div className="w-full">
+                    <Paragraph size="sm">Server Address</Paragraph>
+                    <Input
+                        placeholder="http://localhost:155"
+                        defaultValue={
+                            eventUserSettings[eventData.id].exportAddress
+                        }
+                        onChange={(e) =>
+                            editEventUserSettings(eventData.id, {
+                                ...eventUserSettings[eventData.id],
+                                exportAddress: e.target.value,
+                            })
+                        }
+                        className="col-span-3 row-start-2 dark:placeholder:text-neutral-600"
+                    />
+                </div>
+                <Toggle
+                    className="w-12"
+                    disabled={clientId === undefined}
+                    toggleValue={eventSource !== undefined}
+                    onClick={() =>
+                        eventSource !== undefined
+                            ? closeSynchronization()
+                            : openSynchronization()
                     }
-                    className="col-span-3 row-start-2"
-                />
-                <Button onClick={enableSynchronization}>
-                    enableSynchronization
-                </Button>
+                ></Toggle>
                 <Button
                     className="w-full max-w-32"
                     onClick={() =>

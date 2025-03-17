@@ -32,17 +32,21 @@ export const Toggle = ({
     variant,
     size,
     onClick,
+    className,
 
     ...props
 }: ToggleInterface & GetVariantProps<typeof toggleVariants>) => {
     return (
         <button
-        onClick={() => {onClick && onClick()}}
-        className={cn(
-            clsx(toggleVariants({ variant, size })),
-            `${toggleValue ? "dark:bg-cool-green/25 dark:hover:bg-cool-green/35" : "dark:bg-neutral-900 dark:hover:bg-neutral-900/50"}`
-        )}
-        {...props}
+            onClick={() => {
+                onClick && onClick()
+            }}
+            className={cn(
+                clsx(toggleVariants({ variant, size })),
+                `${toggleValue ? "dark:bg-cool-green/25 dark:hover:bg-cool-green/35" : "dark:bg-neutral-900 dark:hover:bg-neutral-900/50"}`,
+                className
+            )}
+            {...props}
         >
             <div>{children}</div>
             {toggleValue ? <Check /> : <X />}
