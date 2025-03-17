@@ -48,10 +48,6 @@ export const ExportLogs = ({
 
         if (!address) return
 
-        if (clientId) {
-            axios.put("")
-        }
-
         const url = new URL(`${address}/register`)
 
         axios({
@@ -61,7 +57,7 @@ export const ExportLogs = ({
             .then((res) => {
                 if (res.status === 200) {
                     setClientId(res.data.clientId)
-                    setInterval(heartbeat, 1000)
+                    heartbeat(address, res.data.clientId)
                 }
             })
             .catch((e: Error) => {
@@ -70,35 +66,38 @@ export const ExportLogs = ({
             })
     }
 
+    let heartbeatIntervalId: NodeJS.Timeout | null = null
     const heartbeat = (address: string, clientId: string) => {
-        axios
-            .get(`${address}/hearbeat`, {
-                headers: {
-                    "x-client-id": clientId,
-                },
-            })
-            .then((res) => {
-                if (res.status !== 200) {
-                    console.log("Heartbeat bad")
-                    return
-                }
-                console.log("heartbeat good")
-            })
+        heartbeatIntervalId = setInterval(() => {
+            if (!clientId) {
+                heartbeatIntervalId && clearInterval(heartbeatIntervalId)
+                return
+            }
+            axios
+                .get(`${address}/heartbeat/${clientId}`, {})
+                .then(() => {
+                    console.log("Heartbeat good")
+                })
+                .catch((res) => {
+                    console.log("Hearbeat bad")
+                    setClientId(undefined)
+                    addNotification(
+                        "error",
+                        res.response.data.error,
+                        "Heartbeat Failed"
+                    )
+                    heartbeatIntervalId && clearInterval(heartbeatIntervalId)
+                })
+        }, 10000)
     }
 
     const disconnect = (clientId: string) => {
         const address = eventUserSettings[eventData.id].exportAddress
+        console.log("Disconnected")
 
-        axios
-            .put(`${address}/deregister`, {
-                headers: {
-                    "x-client-id": clientId,
-                },
-            })
-            .then(() => {
-                console.log("Disconnected")
-                setClientId(undefined)
-            })
+        axios.put(`${address}/deregister/${clientId}`)
+        setClientId(undefined)
+        heartbeatIntervalId && clearInterval(heartbeatIntervalId)
     }
 
     const syncLogs = () => {
@@ -111,6 +110,47 @@ export const ExportLogs = ({
             // })
         })
     }
+
+    const sse = (value: string) => {
+        const parsedMessage: { type: string; message?: string; data?: any } =
+            JSON.parse(value)
+        console.log(parsedMessage)
+
+        switch (parsedMessage.type) {
+            case "hello":
+                addNotification("default", parsedMessage.message)
+                break
+        }
+    }
+
+    const enableSynchronization = () => {
+        const address = eventUserSettings[eventData.id].exportAddress
+
+        axios
+            .get(`${address}/sse/enableSynchronization/${clientId}`, {
+                headers: {
+                    Accept: "text/event-stream",
+                },
+                responseType: "stream",
+                adapter: "fetch",
+            })
+            .then(async (response) => {
+                const stream = response.data
+
+                const reader = stream
+                    .pipeThrough(new TextDecoderStream())
+                    .getReader()
+                while (true) {
+                    const { value, done } = await reader.read()
+                    if (done) break
+                    sse(value)
+                }
+            })
+    }
+
+    useEffect(() => {
+        return () => (clientId ? disconnect(clientId) : console.log("opoioopp"))
+    }, [])
 
     return (
         <div className="flex w-full flex-col gap-1">
@@ -126,13 +166,18 @@ export const ExportLogs = ({
                     }
                     className="col-span-3 row-start-2"
                 />
+                <Button onClick={enableSynchronization}>
+                    enableSynchronization
+                </Button>
                 <Button
-                    className="px-8"
+                    className="w-full max-w-32"
                     onClick={() =>
-                        clientId ? disconnect(clientId) : registerClient()
+                        clientId !== undefined
+                            ? disconnect(clientId)
+                            : registerClient()
                     }
                 >
-                    Connect
+                    {clientId !== undefined ? "Disconnect" : "Connect"}
                 </Button>
             </div>
             {clientId}

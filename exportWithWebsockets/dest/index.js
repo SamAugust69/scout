@@ -5,14 +5,14 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const PORT = 155;
-const INACTIVITYTIME = 10; // seconds
+const INACTIVITYTIME = 100; // seconds
 function generateUniqueId() {
     return Math.random().toString(36).substring(2, 9);
 }
 const app = (0, express_1.default)();
 const clients = new Map();
 // Sync stuff
-const clientsToSync = new Set();
+const clientsToSync = new Map();
 let syncTarget = null;
 const findClientId = (clientId) => {
     if (clientId && clients.has(clientId)) {
@@ -24,9 +24,10 @@ const findClientId = (clientId) => {
 };
 // Every request updates lastseen
 app.use((req, res, next) => {
-    const client = findClientId(req.headers["x-client-id"]);
+    const { clientId } = req.params;
+    const client = findClientId(clientId);
     if (client) {
-        console.log("Last seen updated");
+        console.log(`Last seen updated for ${client}`);
         client.lastSeen = Date.now();
     }
     next();
@@ -39,85 +40,110 @@ app.get("/register", (req, res) => {
         console.log(`id ${id} already present in clients, not registering`);
         return;
     }
-    clients.set(id, { lastSeen: Date.now(), messages: [] });
+    clients.set(id, { lastSeen: Date.now() });
     console.log(`Registered client ${id}`);
     res.json({ clientId: id });
 });
-app.put("/deregister", (req, res) => {
-    const clientId = req.headers["x-client-id"];
+// Degister clientID
+app.put("/deregister/:clientId", (req, res) => {
+    const { clientId } = req.params;
     const client = findClientId(clientId);
-    if (!client)
+    if (!client) {
+        res.status(400).send({ error: `No client with id ${clientId}` });
         return;
+    }
     disconnectClient(clientId);
 });
-app.get("/toggleSync", (req, res) => {
+// Send over synchronization list
+app.get("/synchronizationList", (req, res) => {
     res.status(200).send(Array.from(clientsToSync));
 });
-app.put("/toggleSync", (req, res) => {
-    const clientId = req.headers["x-client-id"];
-    const client = findClientId(clientId);
-    console.log(`Client toggle sync: ${clientId}`);
-    if (!client) {
-        console.log(`No client with id ${clientId} found!`);
-        res.status(404).send({ error: `Client with id ${clientId} not found` });
+app.post("/sendLogs", (req, res) => {
+    var _a;
+    if (!syncTarget) {
+        res.status(400).send({ error: "No sync target set" });
         return;
     }
-    // Remove client from sync list
-    if (clientsToSync.has(clientId)) {
-        clientsToSync.delete(clientId);
-        console.log(`Removed client ${clientId} to clientsToSync`);
-        res.status(200).send();
+    const clientToSync = clients.get(syncTarget);
+    if (!clientToSync) {
+        res.status(404).json({ error: "Client to sync not found" });
         return;
     }
-    // Add client to sync list
-    clientsToSync.add(clientId);
-    console.log(`Added client ${clientId} to clientsToSync`);
-    res.status(201).send();
+    const data = { data: "hi" };
+    (_a = clientToSync.response) === null || _a === void 0 ? void 0 : _a.write(JSON.stringify({ type: "data", data }));
+    res.status(200).send({ message: "Successfully sent data" });
 });
-app.post("/startSync", (req, res) => {
-    const clientId = req.headers["x-client-id"];
-    const client = findClientId(clientId);
-    if (!client) {
-        res.status(404).send({ error: `Client with id ${clientId} not found` });
-        return;
-    }
-    syncTarget = clientId;
-    res.status(200).send({ message: "Started syncing" });
-    for (const [id] of clientsToSync.entries()) {
-        console.log(`Attempting to pull from ${id} to ${clientId}`);
-        const client = findClientId(id);
-        client === null || client === void 0 ? void 0 : client.messages.push();
-    }
-});
-app.get("/sse/:clientId", (req, res) => {
+// ---- SSE ----
+app.get("/sse/enableSynchronization/:clientId", (req, res) => {
     const { clientId } = req.params;
-    if (!clients.has(clientId)) {
+    const client = clients.get(clientId);
+    if (!client) {
+        console.error("Client not found");
         res.status(404).json({ error: "Client not found" });
         return;
     }
     // Set up SSE headers
+    res.setTimeout(0);
     res.setHeader("Content-Type", "text/event-stream");
     res.setHeader("Cache-Control", "no-cache");
     res.setHeader("Connection", "keep-alive");
-    // Store the response object for the sync target
-    const client = clients.get(clientId);
-    if (client) {
-        client.response = res;
-    }
-    // Send a heartbeat to keep the connection alive
+    res.flushHeaders();
+    // Add client to syncList
+    clientsToSync.set(clientId, res);
+    console.log(`Added client ${clientId} to clientsToSync`);
+    res.write(JSON.stringify({
+        type: "hello",
+        message: "Connected to SSE, waiting for synchronization request",
+    }));
     const heartbeatInterval = setInterval(() => {
-        res.write(": heartbeat\n\n");
-    }, 30000);
-    // Clean up when the client disconnects
+        var _a;
+        (_a = client.response) === null || _a === void 0 ? void 0 : _a.write(": keep-alive\n\n");
+    }, 29000);
     req.on("close", () => {
+        console.log("Sync closed");
+        clientsToSync.delete(clientId);
         clearInterval(heartbeatInterval);
-        if (client) {
-            client.response = undefined; // Clear the response object
-        }
     });
 });
-app.get("/heartbeat", (req, res) => {
-    const clientId = req.headers["x-client-id"];
+app.get("/sse/synchronize/:clientId", (req, res) => {
+    const { clientId } = req.params;
+    const client = clients.get(clientId);
+    if (!client) {
+        console.error("Client not found");
+        res.status(404).json({ error: "Client not found" });
+        return;
+    }
+    // Set up SSE headers
+    res.setTimeout(0);
+    res.setHeader("Content-Type", "text/event-stream");
+    res.setHeader("Cache-Control", "no-cache");
+    res.setHeader("Connection", "keep-alive");
+    res.flushHeaders();
+    // Set response and syncId
+    client.response = res;
+    syncTarget = clientId;
+    for (const [id, res] of clientsToSync.entries()) {
+        console.log(`Requesting data from ${id}`);
+        res.write(JSON.stringify({ type: "requestData" }));
+    }
+    // Send a heartbeat to keep the connection alive- not working?
+    const heartbeatInterval = setInterval(() => {
+        var _a;
+        (_a = client.response) === null || _a === void 0 ? void 0 : _a.write(": keep-alive\n\n");
+    }, 29000);
+    res.write(JSON.stringify({
+        type: "hello",
+        message: `Connected to SSE, sending requests to ${clientsToSync.size} clients`,
+    }));
+    req.on("close", () => {
+        console.log("Sync target closed");
+        syncTarget = null;
+        client.response = undefined;
+        clearInterval(heartbeatInterval);
+    });
+});
+app.get("/heartbeat/:clientId", (req, res) => {
+    const { clientId } = req.params;
     const client = findClientId(clientId);
     if (!client) {
         res.status(404).send({ error: `Client with id ${clientId} not found` });

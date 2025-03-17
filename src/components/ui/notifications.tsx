@@ -98,13 +98,15 @@ const Notification = ({ variant, id, message, title }: Notification) => {
             }}
             className={clsx(
                 notificationVariants({ variant }),
-                "relative z-50 flex w-72 flex-col justify-between "
+                "relative z-50 flex w-72 flex-col justify-between"
             )}
         >
             <Heading>
                 {title ?? variant.charAt(0).toUpperCase() + variant.slice(1)}
             </Heading>
-            <Paragraph size="sm">{message}</Paragraph>
+            <Paragraph size="sm" className="break-normal">
+                {message}
+            </Paragraph>
             <Button
                 onClick={() => {
                     removeNotifications(id)
