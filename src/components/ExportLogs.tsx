@@ -7,6 +7,8 @@ import { addNotification } from "./ui/notifications"
 import axios from "axios"
 import { Toggle } from "./ui/toggle"
 import { Paragraph } from "./ui/paragraph"
+import { Log, logConfig } from "./forms/formConfig"
+import { getLogs } from "@/lib/getLogs"
 
 const startSyncing = async (address: string, clientId: string) => {
     const response = await fetch(`${address}/startSync`, {
@@ -132,20 +134,57 @@ export const ExportLogs = ({
         })
     }
 
-    const sse = (value: string) => {
-        const parsedMessage: { type: string; message?: string; data?: any } =
-            JSON.parse(value)
+    var toSync: number | undefined = undefined
+    var logsRecievedAmount = 0
+    const logsRecieved: Log<keyof typeof logConfig>[] = []
+
+    const sse = (value: MessageEvent<any>, eventSource?: EventSource) => {
+        const parsedMessage: {
+            type: string
+            message?: string
+            data?: any
+            toSend?: number
+        } = JSON.parse(value.data)
         console.log(parsedMessage)
 
         switch (parsedMessage.type) {
             case "hello":
                 addNotification("default", parsedMessage.message)
+                toSync = parsedMessage.toSend
                 break
+            case "requestData":
+                // sends data to the sync host
+                const logs = getLogs(eventData?.match_logs || [])
+                const address = eventUserSettings[eventData.id].exportAddress
+                console.log("tryna send data")
+                axios
+                    .post(`${address}/sendLogs`, {
+                        logs,
+                    })
+                    .then(() => {
+                        console.log("I sent my data!")
+                    })
+                break
+            case "data":
+                // got data!
+                console.log("Got data!", parsedMessage.data)
+                logsRecieved.push(parsedMessage.data)
+                logsRecievedAmount++
+
+                console.log(logsRecievedAmount, toSync)
+
+                if (logsRecievedAmount === toSync) {
+                    toSync = undefined
+                    logsRecievedAmount = 0
+                    console.log(logsRecieved)
+                    eventSource && eventSource.close()
+                }
         }
     }
     const [eventSource, setEventSource] = useState<EventSource | undefined>(
         undefined
     )
+
     const openSynchronization = () => {
         const address = eventUserSettings[eventData.id].exportAddress
 
@@ -159,7 +198,7 @@ export const ExportLogs = ({
         }
 
         eventSource.addEventListener("message", (message) => {
-            console.log(message)
+            sse(message)
         })
     }
 
@@ -172,12 +211,12 @@ export const ExportLogs = ({
     const synchronize = () => {
         const address = eventUserSettings[eventData.id].exportAddress
 
-        axios.get(`${address}/see/synchronize/${clientId}`, {
-            headers: {
-                Accept: "text/event-stream",
-            },
-            responseType: "stream",
-            adapter: "fetch",
+        const url = `${address}/sse/synchronize/${clientId}`
+
+        const eventSource = new EventSource(url)
+
+        eventSource.addEventListener("message", (message) => {
+            sse(message, eventSource)
         })
     }
 
@@ -226,7 +265,7 @@ export const ExportLogs = ({
                 </Button>
             </div>
             {clientId}
-            <Button onClick={syncLogs}>Sync</Button>
+            <Button onClick={synchronize}>Sync</Button>
         </div>
     )
 }

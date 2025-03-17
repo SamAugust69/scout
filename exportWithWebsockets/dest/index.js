@@ -4,12 +4,16 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
+const cors_1 = __importDefault(require("cors"));
+const body_parser_1 = __importDefault(require("body-parser"));
 const PORT = 155;
 const INACTIVITYTIME = 100; // seconds
 function generateUniqueId() {
     return Math.random().toString(36).substring(2, 9);
 }
 const app = (0, express_1.default)();
+app.use((0, cors_1.default)());
+app.use(body_parser_1.default.json());
 const clients = new Map();
 // Sync stuff
 const clientsToSync = new Map();
@@ -66,13 +70,13 @@ app.post("/sendLogs", (req, res) => {
         res.status(400).send({ error: "No sync target set" });
         return;
     }
+    console.log(req.body.logs);
     const clientToSync = clients.get(syncTarget);
     if (!clientToSync) {
         res.status(404).json({ error: "Client to sync not found" });
         return;
     }
-    const data = { data: "hi" };
-    (_a = clientToSync.response) === null || _a === void 0 ? void 0 : _a.write(JSON.stringify({ type: "data", data }));
+    (_a = clientToSync.response) === null || _a === void 0 ? void 0 : _a.write(`data: ${JSON.stringify({ type: "data", data: req.body.logs })}\n\n`);
     res.status(200).send({ message: "Successfully sent data" });
 });
 // ---- SSE ----
@@ -130,10 +134,11 @@ app.get("/sse/synchronize/:clientId", (req, res) => {
         var _a;
         (_a = client.response) === null || _a === void 0 ? void 0 : _a.write(": keep-alive\n\n");
     }, 29000);
-    res.write(JSON.stringify({
+    res.write(`data: ${JSON.stringify({
         type: "hello",
         message: `Connected to SSE, sending requests to ${clientsToSync.size} clients`,
-    }));
+        toSend: clientsToSync.size,
+    })}\n\n`);
     req.on("close", () => {
         console.log("Sync target closed");
         syncTarget = null;

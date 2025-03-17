@@ -15,6 +15,7 @@ import { EventSettings } from "@/lib/types/eventSettings"
 import { getLogs } from "@/lib/getLogs"
 import { Log, logConfig } from "../forms/formConfig"
 import { ExportLogs } from "../ExportLogs"
+import { ExportLogsWebsocket } from "../ExportLogsWebsocket"
 
 const pullSchedules = async (key: string): Promise<MatchInfo[] | null> => {
     const data: any[] | null = await fetchTBA({
@@ -271,15 +272,27 @@ export const DashboardSettings = ({
                     </div>
                 </div>
             </div>
-            <div className="flex flex-col gap-2 rounded bg-neutral-100 p-4 dark:bg-[#302E2E]">
-                <Heading>Export Event Logs</Heading>
-                {/* <ExportLogsWebsocket eventData={eventData} /> */}
-                <ExportLogs
-                    eventData={eventData}
-                    eventUserSettings={eventUserSettings}
-                    editEventUserSettings={editEventUserSettings}
-                />
-                <Button onClick={exportEvent}>Export to .json</Button>
+            <div className="flex flex-col gap-2 rounded bg-neutral-100 dark:bg-[#302E2E]">
+                <div className="flex flex-col p-4">
+                    <Heading className="pb-2">Export Event Logs</Heading>
+                    <Button onClick={exportEvent}>Export to .json</Button>
+                </div>
+                <Paragraph className="border-t border-neutral-600 px-4 pt-2 font-semibold">
+                    Experimental Export (RESTful)
+                </Paragraph>
+                <div className="border-b border-neutral-600 bg-neutral-800 px-4 py-2">
+                    <ExportLogsWebsocket eventData={eventData} />
+                </div>
+                <Paragraph className="px-4 font-semibold">
+                    Legacy Export (wss)
+                </Paragraph>
+                <div className="border-neutral-600 bg-neutral-800 px-4 py-4">
+                    <ExportLogs
+                        eventData={eventData}
+                        eventUserSettings={eventUserSettings}
+                        editEventUserSettings={editEventUserSettings}
+                    />
+                </div>
             </div>
         </>
     )

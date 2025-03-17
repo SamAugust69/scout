@@ -1,4 +1,6 @@
 import express, { Response } from "express"
+import cors from "cors"
+import bodyParser from "body-parser"
 
 const PORT = 155
 const INACTIVITYTIME = 100 // seconds
@@ -13,6 +15,8 @@ function generateUniqueId(): string {
 }
 
 const app = express()
+app.use(cors())
+app.use(bodyParser.json())
 const clients = new Map<string, Client>()
 
 // Sync stuff
@@ -82,6 +86,8 @@ app.post("/sendLogs", (req, res) => {
         return
     }
 
+    console.log(req.body.logs)
+
     const clientToSync = clients.get(syncTarget)
 
     if (!clientToSync) {
@@ -89,8 +95,9 @@ app.post("/sendLogs", (req, res) => {
         return
     }
 
-    const data = { data: "hi" }
-    clientToSync.response?.write(JSON.stringify({ type: "data", data }))
+    clientToSync.response?.write(
+        `data: ${JSON.stringify({ type: "data", data: req.body.logs })}\n\n`
+    )
 
     res.status(200).send({ message: "Successfully sent data" })
 })
@@ -165,10 +172,11 @@ app.get("/sse/synchronize/:clientId", (req, res) => {
     }, 29000)
 
     res.write(
-        JSON.stringify({
+        `data: ${JSON.stringify({
             type: "hello",
             message: `Connected to SSE, sending requests to ${clientsToSync.size} clients`,
-        })
+            toSend: clientsToSync.size,
+        })}\n\n`
     )
 
     req.on("close", () => {
