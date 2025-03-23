@@ -225,26 +225,22 @@ export const ExportLogs = ({
     }, [])
 
     return (
-        <div className="flex w-full flex-col gap-1">
-            <div className="flex gap-1">
-                <div className="w-full">
-                    <Paragraph size="sm">Server Address</Paragraph>
-                    <Input
-                        placeholder="http://localhost:155"
-                        defaultValue={
-                            eventUserSettings[eventData.id].exportAddress
-                        }
-                        onChange={(e) =>
-                            editEventUserSettings(eventData.id, {
-                                ...eventUserSettings[eventData.id],
-                                exportAddress: e.target.value,
-                            })
-                        }
-                        className="col-span-3 row-start-2 dark:placeholder:text-neutral-600"
-                    />
-                </div>
+        <div className="flex w-full flex-col gap-1 px-3 py-2">
+            <Paragraph size="sm">Server Address</Paragraph>
+            <div className="grid grid-cols-6 grid-rows-2 gap-2 md:grid-rows-1">
+                <Input
+                    placeholder="http://localhost:155"
+                    defaultValue={eventUserSettings[eventData.id].exportAddress}
+                    onChange={(e) =>
+                        editEventUserSettings(eventData.id, {
+                            ...eventUserSettings[eventData.id],
+                            exportAddress: e.target.value,
+                        })
+                    }
+                    className="col-span-6 md:col-span-4 dark:placeholder:text-neutral-600"
+                />
                 <Toggle
-                    className="w-12"
+                    className="col-span-3"
                     disabled={clientId === undefined}
                     toggleValue={eventSource !== undefined}
                     onClick={() =>
@@ -252,9 +248,11 @@ export const ExportLogs = ({
                             ? closeSynchronization()
                             : openSynchronization()
                     }
-                ></Toggle>
+                >
+                    Send Logs
+                </Toggle>
                 <Button
-                    className="w-full max-w-32"
+                    className="col-span-3 md:col-span-2 md:col-start-5 md:row-start-1"
                     onClick={() =>
                         clientId !== undefined
                             ? disconnect(clientId)

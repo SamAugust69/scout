@@ -1,16 +1,28 @@
-import { createContext, useContext, useEffect, useState } from "react"
+import { cn } from "@/lib/utils"
+import {
+    createContext,
+    HTMLAttributes,
+    ReactNode,
+    useContext,
+    useState,
+} from "react"
+import { Button } from "./button"
+import { ChevronDown } from "lucide-react"
 
-type ItemType = {
-    id: string
+type AccordionItemContextType = {
     open: boolean
+    toggleOpen: () => void
 }
 
-type AccordionContextType = {
-    items: ItemType[]
-    addItem: (item: ItemType) => void
-}
+// <Accordion> <- handles state for each accordion
 
-const AccordionContext = createContext<AccordionContextType | undefined>(
+//      <AccordionItem>
+
+//      </AccordionItem>
+
+// </Accordion>
+
+const AccordionContext = createContext<AccordionItemContextType | undefined>(
     undefined
 )
 
@@ -27,53 +39,71 @@ const useAccordionContext = () => {
     return context
 }
 
-interface AccordionInterface {
+const Accordion = ({
+    className,
+    children,
+}: HTMLAttributes<HTMLUListElement>) => {
+    return <ul className={cn("flex w-full flex-col", className)}>{children}</ul>
+}
+
+interface AccordionItemInterface extends HTMLAttributes<HTMLLIElement> {
+    isOpen?: boolean
     children?: React.ReactNode
 }
 
-const Accordion = ({ children }: AccordionInterface) => {
-    const [items, setItems] = useState<ItemType[]>([])
+const AccordionItem = ({
+    children,
+    className,
+    isOpen,
+}: AccordionItemInterface) => {
+    const [open, setOpen] = useState(isOpen || false)
 
-    const addItem = (item: ItemType) => {
-        return setItems((prev) => {
-            return [...prev, item]
-        })
-    }
+    const toggleOpen = () => setOpen(!open)
 
     return (
-        <AccordionContext.Provider value={{ items, addItem }}>
-            {items.length}
-            {children}
+        <AccordionContext.Provider value={{ open, toggleOpen }}>
+            <li
+                className={cn(
+                    `flex flex-col rounded-t border-b border-neutral-600 last:border-b-0 dark:bg-[#302E2E] dark:even:bg-[#302E2E]/75 ${open ? "last:border-b" : null}`,
+                    className
+                )}
+            >
+                {children}
+            </li>
         </AccordionContext.Provider>
     )
 }
 
-interface AccordionItemInterface {
-    index: number
-    label?: string
-    children?: React.ReactNode
+const AccordionLabel = ({
+    children,
+    className,
+}: HTMLAttributes<HTMLButtonElement>) => {
+    const { open, toggleOpen } = useAccordionContext()
+    return (
+        <Button
+            onClick={toggleOpen}
+            variant="none"
+            className={cn(
+                "flex justify-between rounded-none p-2 font-semibold select-none",
+                className
+            )}
+        >
+            {children}
+            <ChevronDown className={`${open ? "rotate-180" : null}`} />
+        </Button>
+    )
 }
 
-const AccordionItem = ({}: AccordionItemInterface) => {
-    const { items, addItem } = useAccordionContext()
-    const [item, setItem] = useState<ItemType | undefined>(undefined)
+const AccordionItemContent = ({ children }: { children?: ReactNode }) => {
+    const { open } = useAccordionContext()
 
-    const newItem = { id: crypto.randomUUID(), open: false }
-    useEffect(() => {
-        if (!item === undefined && items.find((item) => item.id !== newItem.id))
-            return
-
-        setItem(newItem)
-        addItem(newItem)
-
-        console.log(items)
-    }, [])
-
-    return <div>{item?.id}</div>
+    return open ? (
+        <div className="border-t border-neutral-600 bg-neutral-800 p-2">
+            {children}
+        </div>
+    ) : (
+        <></>
+    )
 }
 
-const AccordionItemContent = ({}) => {
-    return
-}
-
-export { Accordion, AccordionItem, AccordionItemContent }
+export { Accordion, AccordionItem, AccordionLabel, AccordionItemContent }

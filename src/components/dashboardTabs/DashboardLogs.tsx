@@ -1,12 +1,13 @@
 import { Event } from "@/lib/types/eventType"
 import { Button } from "../ui/button"
-import { useEffect, useState, useMemo, useCallback } from "react"
+import { useEffect, useState, useMemo, useCallback, createRef } from "react"
 import { LogElement } from "../LogElement"
 import { getLogs } from "@/lib/getLogs"
 import { Log, logConfig } from "../forms/formConfig"
 import { FilterLogList } from "../FilterLogList"
 import { useFormContext } from "@/lib/context/formContext"
 import { ScoreBreakdown } from "../ScoreBreakdown"
+import { Input } from "../ui/input"
 
 const filterLogsAsTeams = (
     allLogs: Log<keyof typeof logConfig>[]
@@ -89,6 +90,38 @@ export const DashboardLogs = ({ eventData }: { eventData: Event | null }) => {
         },
         []
     )
+    const scrollRef = createRef<HTMLDivElement>()
+
+    const [fixedTeamName, setFixedTeamName] = useState<string | undefined>(
+        undefined
+    )
+
+    useEffect(() => {
+        if (!scrollRef.current) return
+
+        const scrollEvent = scrollRef.current.addEventListener(
+            "scroll",
+            (e) => {
+                const target = e.target as HTMLDivElement
+                target.childNodes.forEach((child) => {
+                    const fchild = child as HTMLDivElement
+
+                    const span = fchild.firstChild?.lastChild as HTMLSpanElement
+
+                    if (!span) return
+                    const posFromTop =
+                        fchild.getBoundingClientRect().top -
+                        target.getBoundingClientRect().top
+
+                    if (posFromTop < 0) setFixedTeamName(span.innerText)
+                })
+            }
+        )
+
+        return () => {
+            scrollRef.current?.removeEventListener("scroll", scrollEvent)
+        }
+    }, [scrollRef])
 
     useEffect(() => {
         setFilteredLogs(
@@ -113,15 +146,23 @@ export const DashboardLogs = ({ eventData }: { eventData: Event | null }) => {
                 ></Button>
             </div>
 
+            <Input />
+
             <FilterLogList
                 year={eventData.year as keyof typeof logConfig}
                 selectedFilters={selectedFilters}
                 setSelectedFilters={setSelectedFilters}
             />
-            <div className="flex gap-2 rounded bg-neutral-100 p-4 dark:bg-[#302E2E]">
-                
-            </div>
-            <div className="flex flex-col gap-2">
+
+            <div
+                ref={scrollRef}
+                className="relative flex flex-col gap-2 overflow-y-scroll"
+            >
+                <div
+                    className={`fixed z-10 bg-neutral-600 p-2 transition-opacity ${!fixedTeamName ? "opacity-0" : "opacity-100"}`}
+                >
+                    {fixedTeamName}
+                </div>
                 {renderList
                     ? Object.entries(filteredLogs).map(([team, logs]) => {
                           return (

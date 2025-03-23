@@ -16,6 +16,12 @@ import { getLogs } from "@/lib/getLogs"
 import { Log, logConfig } from "../forms/formConfig"
 import { ExportLogs } from "../ExportLogs"
 import { ExportLogsWebsocket } from "../ExportLogsWebsocket"
+import {
+    Accordion,
+    AccordionItem,
+    AccordionItemContent,
+    AccordionLabel,
+} from "../ui/accordion"
 
 const pullSchedules = async (key: string): Promise<MatchInfo[] | null> => {
     const data: any[] | null = await fetchTBA({
@@ -272,27 +278,45 @@ export const DashboardSettings = ({
                     </div>
                 </div>
             </div>
-            <div className="flex flex-col gap-2 rounded bg-neutral-100 dark:bg-[#302E2E]">
-                <div className="flex flex-col p-4">
-                    <Heading className="pb-2">Export Event Logs</Heading>
-                    <Button onClick={exportEvent}>Export to .json</Button>
+
+            <div className="flex flex-col gap-3 rounded bg-neutral-100 dark:bg-[#302E2E]">
+                <Heading className="px-4 pt-3">Export Event Logs</Heading>
+                <div className="flex flex-col gap-2 px-4">
+                    <Button onClick={exportEvent}>Export To .json</Button>
+                    <Button
+                        onClick={() =>
+                            addNotification(
+                                "error",
+                                "Havent added this feature yet, try exporting to .json",
+                                "Sorry!"
+                            )
+                        }
+                    >
+                        Export With QR
+                    </Button>
                 </div>
-                <Paragraph className="border-t border-neutral-600 px-4 pt-2 font-semibold">
-                    Experimental Export (RESTful)
-                </Paragraph>
-                <div className="border-b border-neutral-600 bg-neutral-800 px-4 py-2">
-                    <ExportLogsWebsocket eventData={eventData} />
-                </div>
-                <Paragraph className="px-4 font-semibold">
-                    Legacy Export (wss)
-                </Paragraph>
-                <div className="border-neutral-600 bg-neutral-800 px-4 py-4">
-                    <ExportLogs
-                        eventData={eventData}
-                        eventUserSettings={eventUserSettings}
-                        editEventUserSettings={editEventUserSettings}
-                    />
-                </div>
+                <Accordion className="border-y border-neutral-600 p-2">
+                    <AccordionItem isOpen>
+                        <AccordionLabel className="bg-neutral-700">
+                            Experimental Export (RESTful)
+                        </AccordionLabel>
+                        <AccordionItemContent>
+                            <ExportLogs
+                                eventData={eventData}
+                                eventUserSettings={eventUserSettings}
+                                editEventUserSettings={editEventUserSettings}
+                            />
+                        </AccordionItemContent>
+                    </AccordionItem>
+                    <AccordionItem>
+                        <AccordionLabel className="bg-neutral-700">
+                            Legacy Export (wss)
+                        </AccordionLabel>
+                        <AccordionItemContent>
+                            <ExportLogsWebsocket eventData={eventData} />
+                        </AccordionItemContent>
+                    </AccordionItem>
+                </Accordion>
             </div>
         </>
     )

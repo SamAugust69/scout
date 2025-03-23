@@ -101,7 +101,10 @@ export const ScoreBreakdown = ({ logs, team }: ScoreBreakdownInterface) => {
                     </Button>
                 </div>
             </div>
-            <ChartContainer config={chartConfig} className="py-4 dark:bg-neutral-800/50">
+            <ChartContainer
+                config={chartConfig}
+                className="py-4 dark:bg-neutral-800/50"
+            >
                 <AreaChart
                     data={logScores}
                     margin={{
@@ -109,7 +112,7 @@ export const ScoreBreakdown = ({ logs, team }: ScoreBreakdownInterface) => {
                         top: 1,
                     }}
                 >
-                    <CartesianGrid vertical={false} />
+                    <CartesianGrid vertical={false} stroke={`#585858`} />
                     <YAxis
                         dataKey={breakdownAuto ? "autoScore" : "teleopScore"}
                     />
@@ -139,9 +142,9 @@ export const ScoreBreakdown = ({ logs, team }: ScoreBreakdownInterface) => {
                     />
                 </AreaChart>
             </ChartContainer>
-            <ul className="border-t dark:border-neutral-600 only:border-b">
+            <ul className="border-t only:border-b dark:border-neutral-600">
                 {logs.map((log, i) => (
-                    <LogBreakdown key={i} log={log}/>
+                    <LogBreakdown key={i} log={log} />
                 ))}
             </ul>
         </div>

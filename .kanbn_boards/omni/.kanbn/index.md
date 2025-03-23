@@ -34,11 +34,12 @@ completedColumns:
 ## In Progress
 
 - [way-to-view-make-schedule-edit-schedule](tasks/way-to-view-make-schedule-edit-schedule.md)
-- [convert-ws-to-rest-api](tasks/convert-ws-to-rest-api.md)
+- [scroll-down-keep-teamname-on-top-loc](tasks/scroll-down-keep-teamname-on-top-loc.md)
 
 ## Done
 
 - [notification-system](tasks/notification-system.md)
 - [settings-you-have-unsaved-changes](tasks/settings-you-have-unsaved-changes.md)
+- [convert-ws-to-rest-api](tasks/convert-ws-to-rest-api.md)
 - [make-form-common-have-pages-swap-out-for-each-year-boss](tasks/make-form-common-have-pages-swap-out-for-each-year-boss.md)
 - [store-export-address-in-local-storage](tasks/store-export-address-in-local-storage.md)
