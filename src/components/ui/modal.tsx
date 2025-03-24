@@ -6,6 +6,7 @@ import React, {
     cloneElement,
     createContext,
     HTMLAttributes,
+    ReactNode,
     useContext,
 } from "react"
 
@@ -19,7 +20,7 @@ const ModalContext = createContext<
 >(undefined)
 
 interface ModalProps {
-    children: React.ReactNode
+    children: ReactNode
     isOpen: boolean
     setIsOpen: React.Dispatch<React.SetStateAction<boolean>>
     onClose?: () => void

@@ -30,7 +30,7 @@ export const buttonVariants = vs({
                 "bg-neutral-100 enabled:hover:bg-neutral-50 dark:bg-neutral-700 enabled:dark:hover:bg-neutral-600/75 dark:text-neutral-300",
             secondary:
                 "dark:text-neutral-300 dark:hover:bg-neutral-600 dark:bg-neutral-700 bg-neutral-300 hover:bg-neutral-200",
-            dark: "dark:text-neutral-300 dark:hover:bg-neutral-600 dark:bg-neutral-700 bg-neutral-300 hover:bg-neutral-200",
+            dark: "dark:border-neutral-800 dark:bg-neutral-900 dark:hover:bg-neutral-900/50 dark:text-neutral-300  bg-neutral-300 hover:bg-neutral-200",
             link: "hover:underline dark:bg-transparent dark:hover:bg-transparent hover:text-neutral-700 dark:hover:text-neutral-300/65",
             none: "",
         },

@@ -36,10 +36,10 @@ export const FilterLogList = ({
     }
 
     return (
-        <div className="flex-col rounded p-2 dark:bg-[#302E2E]">
+        <div className="absolute top-14 z-20 flex-col rounded p-2 dark:bg-neutral-900">
             {/* Render Auto buttons */}
             <Paragraph>Auto</Paragraph>
-            <div className="flex gap-2 flex-wrap">
+            <div className="flex flex-wrap gap-2">
                 {logKeys.auto.map((key, i) => {
                     const autoKey = key as keyof Log<typeof year>["auto"]
                     return (

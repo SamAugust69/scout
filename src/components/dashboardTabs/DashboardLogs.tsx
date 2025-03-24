@@ -8,6 +8,9 @@ import { FilterLogList } from "../FilterLogList"
 import { useFormContext } from "@/lib/context/formContext"
 import { ScoreBreakdown } from "../ScoreBreakdown"
 import { Input } from "../ui/input"
+import { Modal, ModalContent, ModalTrigger } from "../ui/modal"
+import { Filter } from "lucide-react"
+import { Dialog, DialogContent, DialogTrigger } from "../ui/dialog"
 
 const filterLogsAsTeams = (
     allLogs: Log<keyof typeof logConfig>[]
@@ -133,6 +136,8 @@ export const DashboardLogs = ({ eventData }: { eventData: Event | null }) => {
         setRenderList(value)
     }, [])
 
+    const [showFilters, setShowFilters] = useState(false)
+
     return (
         <>
             <div className="flex justify-end gap-2">
@@ -146,13 +151,26 @@ export const DashboardLogs = ({ eventData }: { eventData: Event | null }) => {
                 ></Button>
             </div>
 
-            <Input />
-
-            <FilterLogList
-                year={eventData.year as keyof typeof logConfig}
-                selectedFilters={selectedFilters}
-                setSelectedFilters={setSelectedFilters}
-            />
+            <div className="relative flex gap-2">
+                <Input />
+                <Dialog>
+                    <DialogTrigger>
+                        <Button
+                            className={`p-3 ${showFilters ? "dark:bg-cool-green hover:dark:bg-cool-green/50" : null}`}
+                            variant="dark"
+                        >
+                            <Filter />
+                        </Button>
+                    </DialogTrigger>
+                    <DialogContent>
+                        <FilterLogList
+                            year={eventData.year as keyof typeof logConfig}
+                            selectedFilters={selectedFilters}
+                            setSelectedFilters={setSelectedFilters}
+                        />
+                    </DialogContent>
+                </Dialog>
+            </div>
 
             <div
                 ref={scrollRef}

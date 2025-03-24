@@ -279,9 +279,9 @@ export const DashboardSettings = ({
                 </div>
             </div>
 
-            <div className="flex flex-col gap-3 rounded bg-neutral-100 dark:bg-[#302E2E]">
-                <Heading className="px-4 pt-3">Export Event Logs</Heading>
-                <div className="flex flex-col gap-2 px-4">
+            <div className="flex flex-col gap-4 rounded bg-neutral-100 px-4 py-3 dark:bg-[#302E2E]">
+                <Heading className="">Export Event Logs</Heading>
+                <div className="flex flex-col gap-2">
                     <Button onClick={exportEvent}>Export To .json</Button>
                     <Button
                         onClick={() =>
@@ -295,7 +295,7 @@ export const DashboardSettings = ({
                         Export With QR
                     </Button>
                 </div>
-                <Accordion className="border-y border-neutral-600 p-2">
+                <Accordion className="border-neutral-600">
                     <AccordionItem isOpen>
                         <AccordionLabel className="bg-neutral-700">
                             Experimental Export (RESTful)
