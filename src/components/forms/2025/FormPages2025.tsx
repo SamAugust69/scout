@@ -351,7 +351,7 @@ const Finishing2025 = ({ handleChange, formChanges }: FormPageInterface) => {
             <FormField>
                 <FormInputToggle
                     defaultChecked={formChanges.defence}
-                    className="dark:border-blue-400 dark:bg-blue-500/25 enabled:hover:dark:bg-blue-500/20"
+                    className="dark:border-blue-400 dark:bg-blue-500/35 enabled:hover:dark:bg-blue-500/20"
                     onChange={(e) =>
                         handleChange("defence", e.currentTarget.checked)
                     }
@@ -366,7 +366,7 @@ const Finishing2025 = ({ handleChange, formChanges }: FormPageInterface) => {
             <FormField>
                 <FormInputToggle
                     defaultChecked={formChanges.damaged}
-                    className="dark:border-yellow-400 dark:bg-yellow-500/25 enabled:hover:dark:bg-yellow-500/20"
+                    className="dark:border-yellow-400 dark:bg-yellow-500/35 enabled:hover:dark:bg-yellow-500/20"
                     onChange={(e) =>
                         handleChange("damaged", e.currentTarget.checked)
                     }
@@ -380,21 +380,7 @@ const Finishing2025 = ({ handleChange, formChanges }: FormPageInterface) => {
             <FormField>
                 <FormInputToggle
                     defaultChecked={formChanges.broken}
-                    className="dark:border-red-400 dark:bg-red-500/25 enabled:hover:dark:bg-red-500/20"
-                    onChange={(e) =>
-                        handleChange("broken", e.currentTarget.checked)
-                    }
-                >
-                    <FormInputTitle>Broken Robot</FormInputTitle>
-                    <FormInputDescription>
-                        Did your robot fully break and disable during the match?
-                    </FormInputDescription>
-                </FormInputToggle>
-            </FormField>
-            <FormField>
-                <FormInputToggle
-                    defaultChecked={formChanges.broken}
-                    className="dark:border-orange-400 dark:bg-orange-500/25 enabled:hover:dark:bg-orange-500/20"
+                    className="dark:border-red-400 dark:bg-red-500/35 enabled:hover:dark:bg-red-500/20"
                     onChange={(e) =>
                         handleChange("broken", e.currentTarget.checked)
                     }
