@@ -5,19 +5,16 @@ import { LogElement } from "../LogElement"
 import { getLogs } from "@/lib/getLogs"
 import { Log, logConfig } from "../forms/formConfig"
 import { FilterLogList } from "../FilterLogList"
-import { useFormContext } from "@/lib/context/formContext"
 import { ScoreBreakdown } from "../ScoreBreakdown"
 import { Input } from "../ui/input"
-import { Filter } from "lucide-react"
-import { Dialog, DialogContent, DialogTrigger } from "../ui/dialog"
+import { ChevronFirst, ChevronLast, ChevronLeft, Filter } from "lucide-react"
+import { Dialog, DialogContent } from "../ui/dialog"
 import { Heading } from "../ui/heading"
 import {
     Dropdown,
     DropdownButton,
     DropdownContent,
     DropdownItem,
-    DropdownRadioButton,
-    DropdownRadioGroup,
 } from "../ui/dropdown"
 import { usePagination } from "@/lib/usePagination"
 
@@ -56,7 +53,6 @@ export const DashboardLogs = ({ eventData }: { eventData: Event | null }) => {
     if (!eventData) return null
 
     const [renderList, setRenderList] = useState<boolean>(true)
-    const { formIsOpen, setFormIsOpen } = useFormContext()
 
     const filteredLogsAsTeams = useMemo(
         () => filterLogsAsTeams(getLogs(eventData.match_logs)),
@@ -168,7 +164,14 @@ export const DashboardLogs = ({ eventData }: { eventData: Event | null }) => {
         setRenderList(value)
     }, [])
 
-    const { currentPage } = usePagination(
+    const {
+        currentPage,
+        totalPages,
+        goToStep,
+        currentStepNumber,
+        backwards,
+        forwards,
+    } = usePagination(
         5,
         Object.entries(filteredLogs).filter((log) => {
             return log[0].includes(filterTeam)
@@ -176,6 +179,11 @@ export const DashboardLogs = ({ eventData }: { eventData: Event | null }) => {
     )
 
     const [searchDropdownOpen, setSearchDropdownOpen] = useState(false)
+
+    const onEnterKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+        setSearchDropdownOpen(false)
+        e.currentTarget.blur()
+    }
 
     return (
         <>
@@ -205,12 +213,15 @@ export const DashboardLogs = ({ eventData }: { eventData: Event | null }) => {
                 >
                     <DropdownButton>
                         <Input
+                            onKeyUp={(e) => {
+                                e.key === "Enter" && onEnterKeyPress(e)
+                            }}
                             type="number"
                             value={filterTeam}
                             onChange={(e) =>
                                 setFilterTeam(e.currentTarget.value)
                             }
-                            className="h-full"
+                            className="h-12"
                         />
                     </DropdownButton>
                     <DropdownContent className="max-h-60 w-full overflow-y-scroll">
@@ -221,6 +232,7 @@ export const DashboardLogs = ({ eventData }: { eventData: Event | null }) => {
                             .map((team) => {
                                 return (
                                     <DropdownItem
+                                        key={team}
                                         onClick={() => {
                                             setFilterTeam(team)
                                             setSearchDropdownOpen(false)
@@ -233,7 +245,10 @@ export const DashboardLogs = ({ eventData }: { eventData: Event | null }) => {
                     </DropdownContent>
                 </Dropdown>
                 <Dialog isOpen={showFilters} setIsOpen={setShowFilters}>
-                    <DialogContent className={`absolute w-full max-w-full p-0`}>
+                    <DialogContent
+                        overlayInvisible
+                        className={`absolute top-14 left-0 z-10 max-h-full w-full max-w-full p-0`}
+                    >
                         <FilterLogList
                             year={eventData.year as keyof typeof logConfig}
                             selectedFilters={selectedFilters}
@@ -269,7 +284,7 @@ export const DashboardLogs = ({ eventData }: { eventData: Event | null }) => {
 
             <div
                 ref={scrollRef}
-                className="relative flex flex-col gap-2 overflow-y-scroll"
+                className="relative flex flex-col gap-2 overflow-y-scroll rounded"
             >
                 <Heading
                     className={`fixed z-[9] bg-neutral-700/20 px-4 py-2 font-bold transition-opacity ${
@@ -302,9 +317,30 @@ export const DashboardLogs = ({ eventData }: { eventData: Event | null }) => {
                 ) : null}
             </div>
 
-            <Button onClick={() => setFormIsOpen(!formIsOpen)} size="lg">
-                Scout Now
-            </Button>
+            <div className="mx-auto flex gap-2">
+                <Button variant="link" onClick={() => goToStep(0)}>
+                    <ChevronFirst className="w-5" />
+                </Button>
+                <Button variant="link" onClick={backwards}>
+                    <ChevronLeft className="w-5" />
+                </Button>
+                {Array.from(Array(totalPages || 1)).map((_, i) => {
+                    return (
+                        <Button
+                            className={`px-4 py-2 ${currentStepNumber === i ? "dark:bg-cool-green bg-cool-green hover:enabled:bg-cool-green/50 dark:enabled:hover:bg-cool-green/50" : ""}`}
+                            onClick={() => goToStep(i)}
+                        >
+                            {i}
+                        </Button>
+                    )
+                })}
+                <Button variant="link" onClick={forwards}>
+                    <ChevronLeft className="w-5 rotate-180" />
+                </Button>
+                <Button variant="link" onClick={() => goToStep(totalPages - 1)}>
+                    <ChevronLast className="w-5" />
+                </Button>
+            </div>
         </>
     )
 }

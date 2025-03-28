@@ -1,47 +1,43 @@
-import { useEffect, useState } from "react"
+import { useMemo, useState } from "react"
 
 const usePagination = (elementsPerPage: number, data: any[]) => {
-    const [currentPage, setCurrentPage] = useState(0)
-    const [splitData, setSplitData] = useState<any[][]>([])
+    const [currentPageNumber, setCurrentPageNumber] = useState(0)
 
-    const updatePagination = () => {
-        var arr = []
-
-        for (var i = 0; i < data.length; i += elementsPerPage) {
-            arr.push(data.slice(i, i + elementsPerPage))
+    const paginatedData = useMemo(() => {
+        const pages = []
+        for (let i = 0; i < data.length; i += elementsPerPage) {
+            pages.push(data.slice(i, i + elementsPerPage))
         }
-
-        setSplitData(arr)
-    }
-
-    useEffect(() => {
-        updatePagination()
+        return pages
     }, [data])
 
+    const currentPage = paginatedData[currentPageNumber] || []
+    const totalPages = paginatedData.length
+
     const goToStep = (step: number) => {
-        setCurrentPage(step)
+        setCurrentPageNumber(step)
     }
 
     const forwards = () => {
-        if (currentPage == splitData.length - 1) return
-        setCurrentPage(currentPage + 1)
+        if (currentPageNumber == totalPages - 1) return
+        setCurrentPageNumber(currentPageNumber + 1)
     }
 
     const backwards = () => {
-        if (currentPage == 0) return
-        setCurrentPage(currentPage - 1)
+        if (currentPageNumber == 0) return
+        setCurrentPageNumber(currentPageNumber - 1)
     }
 
     return {
-        currentPage: splitData[currentPage],
-        numButtons: splitData.length,
+        currentPage,
+        totalPages,
         goToStep,
         currentStep: currentPage,
+        currentStepNumber: currentPageNumber,
         forwards,
         backwards,
-        isFirst: currentPage == 0,
-        isLast: currentPage == splitData.length,
-        updatePagination,
+        isFirst: currentPageNumber == 0,
+        isLast: currentPageNumber == totalPages - 1,
     }
 }
 

@@ -78,7 +78,7 @@ const DialogOverlay = ({
     return (
         <div
             onClick={close}
-            className={`fixed top-0 left-0 z-30 flex h-full w-full items-center justify-center overflow-hidden ${!overlayInvisible ? "bg-neutral-950/50" : ""}`}
+            className={`fixed top-0 left-0 z-[2] flex h-full w-full items-center justify-center overflow-hidden ${!overlayInvisible ? "bg-neutral-950/50" : ""}`}
             {...props}
         >
             {children}
@@ -139,10 +139,7 @@ const DialogContent = ({
 
     if (isOpen) {
         return (
-            <DialogOverlay
-                onKeyUp={onKeyUp}
-                overlayInvisible={overlayInvisible}
-            >
+            <>
                 <motion.div
                     initial={{ scale: 0.975, opacity: 0.9 }}
                     animate={{ scale: 1, opacity: 1 }}
@@ -151,13 +148,17 @@ const DialogContent = ({
                         e.stopPropagation()
                     }
                     className={cn(
-                        `w-full max-w-[26rem] rounded-md bg-neutral-300 p-4 text-neutral-800 shadow-md shadow-neutral-500 dark:bg-neutral-800 dark:shadow-neutral-900`,
+                        `relative z-[3] w-full max-w-[26rem] rounded-md bg-neutral-300 p-4 text-neutral-800 shadow-md shadow-neutral-500 dark:bg-neutral-800 dark:shadow-neutral-900`,
                         className
                     )}
                 >
                     {children}
                 </motion.div>
-            </DialogOverlay>
+                <DialogOverlay
+                    onKeyUp={onKeyUp}
+                    overlayInvisible={overlayInvisible}
+                />
+            </>
         )
     }
     return null

@@ -10,29 +10,6 @@ import { Paragraph } from "./ui/paragraph"
 import { Log, logConfig } from "./forms/formConfig"
 import { getLogs } from "@/lib/getLogs"
 
-const startSyncing = async (address: string, clientId: string) => {
-    const response = await fetch(`${address}/startSync`, {
-        method: "POST",
-        headers: { "x-client-id": clientId },
-    })
-    const result = await response.json()
-    console.log(result)
-}
-
-const setupSSE = (address: string, clientId: string) => {
-    const eventSource = new EventSource(`${address}/sse/${clientId}`)
-
-    eventSource.onmessage = (event) => {
-        const logs = JSON.parse(event.data)
-        console.log("Received logs:", logs)
-    }
-
-    eventSource.onerror = () => {
-        console.error("SSE connection error")
-        eventSource.close()
-    }
-}
-
 interface ExportLogsInterface {
     eventData: Event
     eventUserSettings: { [key: string]: EventSettings }
@@ -121,17 +98,6 @@ export const ExportLogs = ({
         axios.put(`${address}/deregister/${clientId}`)
         setClientId(undefined)
         heartbeatIntervalId && clearInterval(heartbeatIntervalId)
-    }
-
-    const syncLogs = () => {
-        const address = eventUserSettings[eventData.id].exportAddress
-
-        if (!address) return
-        registerClient().then(() => {
-            // startSyncing(address, clientId).then(() => {
-            //     setupSSE(address, clientId)
-            // })
-        })
     }
 
     var toSync: number | undefined = undefined
