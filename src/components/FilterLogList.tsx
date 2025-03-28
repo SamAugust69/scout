@@ -36,7 +36,7 @@ export const FilterLogList = ({
     }
 
     return (
-        <div className="absolute top-14 z-20 flex-col rounded p-2 dark:bg-neutral-900">
+        <div className="flex-col rounded p-2 dark:bg-neutral-900">
             {/* Render Auto buttons */}
             <Paragraph>Auto</Paragraph>
             <div className="flex flex-wrap gap-2">

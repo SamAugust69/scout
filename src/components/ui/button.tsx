@@ -48,7 +48,7 @@ export const buttonVariants = vs({
     },
 })
 
-interface ButtonInterface
+export interface ButtonInterface
     extends MotionProps,
         GetVariantProps<typeof buttonVariants>,
         Omit<ButtonHTMLAttributes<HTMLButtonElement>, keyof MotionProps> {}

@@ -61,7 +61,7 @@ export const ScoreBreakdown = ({ logs, team }: ScoreBreakdownInterface) => {
 
     return (
         <div className="rounded dark:bg-[#302E2E]">
-            <Heading className="px-4 py-2">
+            <Heading className="relative z-9 bg-[#302E2E] px-4 py-2">
                 Team <span>{team}</span>
             </Heading>
             <div className="flex justify-between border-y dark:border-neutral-600">

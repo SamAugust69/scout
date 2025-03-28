@@ -49,7 +49,7 @@ const Fart = ({ value, logs }: FartInterface) => {
                     {value[1].notes.map((note, i) => {
                         return (
                             <div key={i} className="max-h-32 overflow-scroll">
-                                {note}
+                                "{note}"
                             </div>
                         )
                     })}

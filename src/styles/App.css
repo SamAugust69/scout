@@ -25,3 +25,7 @@
         border-color: var(--color-gray-200, currentColor);
     }
 }
+
+:root {
+    --container-2xl-custom: calc(var(--container-2xl) - 32px);
+}

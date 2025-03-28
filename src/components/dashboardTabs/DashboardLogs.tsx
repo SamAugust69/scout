@@ -8,9 +8,18 @@ import { FilterLogList } from "../FilterLogList"
 import { useFormContext } from "@/lib/context/formContext"
 import { ScoreBreakdown } from "../ScoreBreakdown"
 import { Input } from "../ui/input"
-import { Modal, ModalContent, ModalTrigger } from "../ui/modal"
 import { Filter } from "lucide-react"
 import { Dialog, DialogContent, DialogTrigger } from "../ui/dialog"
+import { Heading } from "../ui/heading"
+import {
+    Dropdown,
+    DropdownButton,
+    DropdownContent,
+    DropdownItem,
+    DropdownRadioButton,
+    DropdownRadioGroup,
+} from "../ui/dropdown"
+import { usePagination } from "@/lib/usePagination"
 
 const filterLogsAsTeams = (
     allLogs: Log<keyof typeof logConfig>[]
@@ -31,6 +40,16 @@ const filterLogsAsTeams = (
 export type FilterButtonsType = {
     auto: (keyof Log<keyof typeof logConfig>["auto"])[]
     teleop: (keyof Log<keyof typeof logConfig>["teleop"])[]
+}
+
+function throttle(fn: Function, delay: number) {
+    let lastCall = 0
+    return function (...args: any[]) {
+        const now = new Date().getTime()
+        if (now - lastCall < delay) return
+        lastCall = now
+        return fn(...args)
+    }
 }
 
 export const DashboardLogs = ({ eventData }: { eventData: Event | null }) => {
@@ -98,33 +117,46 @@ export const DashboardLogs = ({ eventData }: { eventData: Event | null }) => {
     const [fixedTeamName, setFixedTeamName] = useState<string | undefined>(
         undefined
     )
+    const [showFilters, setShowFilters] = useState(false)
+    const [filterTeam, setFilterTeam] = useState("")
 
     useEffect(() => {
         if (!scrollRef.current) return
 
-        const scrollEvent = scrollRef.current.addEventListener(
-            "scroll",
-            (e) => {
-                const target = e.target as HTMLDivElement
-                target.childNodes.forEach((child) => {
-                    const fchild = child as HTMLDivElement
+        const handleScroll = throttle((e: globalThis.Event) => {
+            const target = e.target as HTMLDivElement
+            let newFixedName: string | undefined = undefined
 
-                    const span = fchild.firstChild?.lastChild as HTMLSpanElement
+            requestAnimationFrame(() => {
+                target.childNodes.forEach((child) => {
+                    const element = child as HTMLElement
+                    const span = element.querySelector("span:last-child")
 
                     if (!span) return
+
                     const posFromTop =
-                        fchild.getBoundingClientRect().top -
+                        element.getBoundingClientRect().top -
                         target.getBoundingClientRect().top
 
-                    if (posFromTop < 0) setFixedTeamName(span.innerText)
+                    if (posFromTop < 0) {
+                        newFixedName = span.textContent || undefined
+                    }
                 })
-            }
-        )
+
+                // Only update state if value changed
+                setFixedTeamName((prev) =>
+                    prev !== newFixedName ? newFixedName : prev
+                )
+            })
+        }, 20) // Throttle to 100ms
+
+        const scrollElement = scrollRef.current
+        scrollElement.addEventListener("scroll", handleScroll)
 
         return () => {
-            scrollRef.current?.removeEventListener("scroll", scrollEvent)
+            scrollElement.removeEventListener("scroll", handleScroll)
         }
-    }, [scrollRef])
+    }, [scrollRef, filterTeam])
 
     useEffect(() => {
         setFilteredLogs(
@@ -136,7 +168,14 @@ export const DashboardLogs = ({ eventData }: { eventData: Event | null }) => {
         setRenderList(value)
     }, [])
 
-    const [showFilters, setShowFilters] = useState(false)
+    const { currentPage } = usePagination(
+        5,
+        Object.entries(filteredLogs).filter((log) => {
+            return log[0].includes(filterTeam)
+        })
+    )
+
+    const [searchDropdownOpen, setSearchDropdownOpen] = useState(false)
 
     return (
         <>
@@ -151,9 +190,65 @@ export const DashboardLogs = ({ eventData }: { eventData: Event | null }) => {
                 ></Button>
             </div>
 
-            <div className="relative flex gap-2">
-                <Input />
-                <Dialog>
+            <div className="relative flex items-center gap-2 px-0.5">
+                <Button
+                    variant="link"
+                    className="absolute right-23 z-[2] h-full text-sm"
+                    onClick={() => setFilterTeam("")}
+                >
+                    Clear
+                </Button>
+                <Dropdown
+                    className="relative w-full"
+                    isOpen={searchDropdownOpen}
+                    setIsOpen={setSearchDropdownOpen}
+                >
+                    <DropdownButton>
+                        <Input
+                            type="number"
+                            value={filterTeam}
+                            onChange={(e) =>
+                                setFilterTeam(e.currentTarget.value)
+                            }
+                            className="h-full"
+                        />
+                    </DropdownButton>
+                    <DropdownContent className="max-h-60 w-full overflow-y-scroll">
+                        {Object.keys(filteredLogs)
+                            .filter((log) => {
+                                return log.includes(filterTeam)
+                            })
+                            .map((team) => {
+                                return (
+                                    <DropdownItem
+                                        onClick={() => {
+                                            setFilterTeam(team)
+                                            setSearchDropdownOpen(false)
+                                        }}
+                                    >
+                                        {team}
+                                    </DropdownItem>
+                                )
+                            })}
+                    </DropdownContent>
+                </Dropdown>
+                <Dialog isOpen={showFilters} setIsOpen={setShowFilters}>
+                    <DialogContent className={`absolute w-full max-w-full p-0`}>
+                        <FilterLogList
+                            year={eventData.year as keyof typeof logConfig}
+                            selectedFilters={selectedFilters}
+                            setSelectedFilters={setSelectedFilters}
+                        />
+                    </DialogContent>
+                </Dialog>
+                <Button
+                    className={`p-3 ${showFilters ? "dark:bg-cool-green hover:dark:bg-cool-green/50" : null}`}
+                    variant="dark"
+                    onClick={() => setShowFilters(!showFilters)}
+                >
+                    <Filter />
+                </Button>
+                {/* <Dialog>
                     <DialogTrigger>
                         <Button
                             className={`p-3 ${showFilters ? "dark:bg-cool-green hover:dark:bg-cool-green/50" : null}`}
@@ -169,20 +264,23 @@ export const DashboardLogs = ({ eventData }: { eventData: Event | null }) => {
                             setSelectedFilters={setSelectedFilters}
                         />
                     </DialogContent>
-                </Dialog>
+                </Dialog> */}
             </div>
 
             <div
                 ref={scrollRef}
                 className="relative flex flex-col gap-2 overflow-y-scroll"
             >
-                <div
-                    className={`fixed z-10 bg-neutral-600 p-2 transition-opacity ${!fixedTeamName ? "opacity-0" : "opacity-100"}`}
+                <Heading
+                    className={`fixed z-[9] bg-neutral-700/20 px-4 py-2 font-bold transition-opacity ${
+                        !fixedTeamName ? "opacity-0" : "opacity-100"
+                    }`}
                 >
-                    {fixedTeamName}
-                </div>
-                {renderList
-                    ? Object.entries(filteredLogs).map(([team, logs]) => {
+                    Team <span>{fixedTeamName}</span>
+                </Heading>
+
+                {renderList && currentPage
+                    ? currentPage.map(([team, logs]) => {
                           return (
                               <ScoreBreakdown
                                   key={team}
@@ -193,14 +291,20 @@ export const DashboardLogs = ({ eventData }: { eventData: Event | null }) => {
                       })
                     : null}
 
-                {!renderList
-                    ? eventData.match_logs.map((log, i) => (
-                          <LogElement key={i} logInfo={log} />
-                      ))
-                    : null}
+                {!renderList ? (
+                    <>
+                        <p>This aint done, dont care about it</p>
+
+                        {eventData.match_logs.map((log, i) => (
+                            <LogElement key={i} logInfo={log} />
+                        ))}
+                    </>
+                ) : null}
             </div>
 
-            <Button onClick={() => setFormIsOpen(!formIsOpen)}>Scout</Button>
+            <Button onClick={() => setFormIsOpen(!formIsOpen)} size="lg">
+                Scout Now
+            </Button>
         </>
     )
 }

@@ -22,6 +22,7 @@ import {
     AccordionItemContent,
     AccordionLabel,
 } from "../ui/accordion"
+import confetti from "../../assets/confetti.gif"
 
 const pullSchedules = async (key: string): Promise<MatchInfo[] | null> => {
     const data: any[] | null = await fetchTBA({
@@ -318,6 +319,7 @@ export const DashboardSettings = ({
                     </AccordionItem>
                 </Accordion>
             </div>
+            <img src={confetti} />
         </>
     )
 }

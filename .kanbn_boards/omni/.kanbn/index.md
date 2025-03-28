@@ -19,8 +19,6 @@ completedColumns:
 
 ## Todo
 
-- [memo-zie-score-breakdown](tasks/memo-zie-score-breakdown.md)
-- [paganize-score-breakdown](tasks/paganize-score-breakdown.md)
 - [navbar-search-bar](tasks/navbar-search-bar.md)
 - [automatically-pull-team-names](tasks/automatically-pull-team-names.md)
 - [store-3-log-versions-match-team-and-all](tasks/store-3-log-versions-match-team-and-all.md)
@@ -35,9 +33,11 @@ completedColumns:
 
 - [way-to-view-make-schedule-edit-schedule](tasks/way-to-view-make-schedule-edit-schedule.md)
 - [scroll-down-keep-teamname-on-top-loc](tasks/scroll-down-keep-teamname-on-top-loc.md)
+- [paganize-score-breakdown](tasks/paganize-score-breakdown.md)
 
 ## Done
 
+- [memo-zie-score-breakdown](tasks/memo-zie-score-breakdown.md)
 - [notification-system](tasks/notification-system.md)
 - [settings-you-have-unsaved-changes](tasks/settings-you-have-unsaved-changes.md)
 - [convert-ws-to-rest-api](tasks/convert-ws-to-rest-api.md)
