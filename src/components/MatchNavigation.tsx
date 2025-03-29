@@ -2,7 +2,7 @@ import { ScheduleMatchView } from "./ScheduleMatchView"
 import { useAppContext } from "@/lib/context/appContext"
 import { Paragraph } from "./ui/paragraph"
 import { Input } from "./ui/input"
-import { createRef, useEffect, useMemo, useRef, useState } from "react"
+import { useEffect, useMemo, useRef, useState } from "react"
 import { MatchInfo } from "@/lib/types/eventType"
 import {
     Dropdown,
