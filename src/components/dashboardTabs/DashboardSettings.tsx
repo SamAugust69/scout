@@ -5,8 +5,8 @@ import { Paragraph } from "../ui/paragraph"
 import { Button } from "../ui/button"
 import fetchTBA from "@/lib/fetchTBA"
 import { addNotification } from "../ui/notifications"
-import { useEffect, useState } from "react"
-import { Search, View } from "lucide-react"
+import { createRef, useEffect, useState } from "react"
+import { Download, Import, Search, View } from "lucide-react"
 import { useAppContext } from "@/lib/context/appContext"
 import { db } from "@/lib/db"
 import { Divider } from "../ui/divider"
@@ -23,6 +23,14 @@ import {
     AccordionLabel,
 } from "../ui/accordion"
 import confetti from "../../assets/confetti.gif"
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogTitle,
+    DialogTrigger,
+} from "../ui/dialog"
+import { Navigate } from "react-router-dom"
 
 const pullSchedules = async (key: string): Promise<MatchInfo[] | null> => {
     const data: any[] | null = await fetchTBA({
@@ -172,6 +180,44 @@ export const DashboardSettings = ({
         return filteredLogs
     }
 
+    const importScheduleRef = createRef<HTMLInputElement>()
+
+    const uploadSchedule = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const files = e.target.files
+        if (!files) return
+
+        const fileReader = new FileReader()
+
+        if (!fileReader) return
+
+        fileReader.readAsText(files[0])
+
+        fileReader.onload = (e) => {
+            db.events.update(eventData, {
+                ...eventData,
+                schedule: JSON.parse(e.target?.result as string),
+            })
+        }
+    }
+
+    const exportSchedule = () => {
+        const blob = new Blob([JSON.stringify(eventData.schedule, null, 2)], {
+            type: "application/json",
+        })
+        const url = URL.createObjectURL(blob)
+        const a = document.createElement("a")
+        a.download = `${eventData.id}Schedule`
+        a.href = url
+        document.body.appendChild(a)
+        a.click()
+        document.body.removeChild(a)
+    }
+    const deleteEvent = () => {
+        db.events.delete(eventData.id)
+        Navigate({ to: "/" })
+        addNotification("default", "Deleted event")
+    }
+
     return (
         <>
             <div className="rounded bg-neutral-100 p-4 dark:bg-[#302E2E]">
@@ -182,6 +228,22 @@ export const DashboardSettings = ({
                     >
                         {schedule?.length} Matches
                         <div className="flex gap-4">
+                            <input
+                                onChange={uploadSchedule}
+                                className="hidden"
+                                type="file"
+                                ref={importScheduleRef}
+                            />
+                            <Button onClick={exportSchedule}>
+                                <Download className="w-5" />
+                            </Button>
+                            <Button
+                                onClick={() =>
+                                    importScheduleRef.current?.click()
+                                }
+                            >
+                                <Import className="w-5" />
+                            </Button>
                             <Button
                                 onClick={() => getScheduleFromAPI()}
                                 disabled={!connectionState}
@@ -276,6 +338,20 @@ export const DashboardSettings = ({
                             Delete All Logs{" "}
                             <span>{eventData.match_logs.length}</span>
                         </Button> */}
+                        <Dialog>
+                            <DialogTrigger>
+                                <Button>Delete Event</Button>
+                            </DialogTrigger>
+                            <DialogContent className="absolute">
+                                <DialogTitle>
+                                    You sure you wanna remove thing?
+                                </DialogTitle>
+                                <DialogDescription>Fremove</DialogDescription>
+                                <Button onClick={() => deleteEvent()}>
+                                    Delete
+                                </Button>
+                            </DialogContent>
+                        </Dialog>
                     </div>
                 </div>
             </div>
