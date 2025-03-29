@@ -15,8 +15,11 @@ import {
     DropdownButton,
     DropdownContent,
     DropdownItem,
+    DropdownText,
 } from "../ui/dropdown"
 import { usePagination } from "@/lib/usePagination"
+import { Paragraph } from "../ui/paragraph"
+import { useFormContext } from "@/lib/context/formContext"
 
 const filterLogsAsTeams = (
     allLogs: Log<keyof typeof logConfig>[]
@@ -53,6 +56,7 @@ export const DashboardLogs = ({ eventData }: { eventData: Event | null }) => {
     if (!eventData) return null
 
     const [renderList, setRenderList] = useState<boolean>(true)
+    const { setFormIsOpen, formIsOpen } = useFormContext()
 
     const filteredLogsAsTeams = useMemo(
         () => filterLogsAsTeams(getLogs(eventData.match_logs)),
@@ -201,7 +205,7 @@ export const DashboardLogs = ({ eventData }: { eventData: Event | null }) => {
             <div className="relative flex items-center gap-2 px-0.5">
                 <Button
                     variant="link"
-                    className="absolute right-23 z-[2] h-full text-sm"
+                    className="absolute right-16 z-[2] h-full text-sm"
                     onClick={() => setFilterTeam("")}
                 >
                     Clear
@@ -221,10 +225,15 @@ export const DashboardLogs = ({ eventData }: { eventData: Event | null }) => {
                             onChange={(e) =>
                                 setFilterTeam(e.currentTarget.value)
                             }
-                            className="h-12"
+                            className="h-12 [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
                         />
                     </DropdownButton>
                     <DropdownContent className="max-h-60 w-full overflow-y-scroll">
+                        {Object.keys(filteredLogs).filter((log) => {
+                            return log.includes(filterTeam)
+                        }).length <= 0 ? (
+                            <DropdownText>Nutting to display</DropdownText>
+                        ) : null}
                         {Object.keys(filteredLogs)
                             .filter((log) => {
                                 return log.includes(filterTeam)
@@ -247,7 +256,7 @@ export const DashboardLogs = ({ eventData }: { eventData: Event | null }) => {
                 <Dialog isOpen={showFilters} setIsOpen={setShowFilters}>
                     <DialogContent
                         overlayInvisible
-                        className={`absolute top-14 left-0 z-10 max-h-full w-full max-w-full p-0`}
+                        className={`absolute top-14 left-0 z-10 max-h-full w-full max-w-full translate-none p-0`}
                     >
                         <FilterLogList
                             year={eventData.year as keyof typeof logConfig}
@@ -284,7 +293,7 @@ export const DashboardLogs = ({ eventData }: { eventData: Event | null }) => {
 
             <div
                 ref={scrollRef}
-                className="relative flex flex-col gap-2 overflow-y-scroll rounded"
+                className="relative flex h-screen flex-col gap-2 overflow-y-scroll rounded"
             >
                 <Heading
                     className={`fixed z-[9] bg-neutral-700/20 px-4 py-2 font-bold transition-opacity ${
@@ -294,6 +303,21 @@ export const DashboardLogs = ({ eventData }: { eventData: Event | null }) => {
                     Team <span>{fixedTeamName}</span>
                 </Heading>
 
+                {renderList && currentPage.length <= 0 ? (
+                    <div className="m-auto flex flex-col gap-2 rounded px-8 py-3 dark:bg-[#302E2E]">
+                        <Paragraph className="text-sm font-bold">
+                            Nothing to display :{"< "}
+                        </Paragraph>
+                        <Button
+                            size="none"
+                            variant="link"
+                            className="text-sm underline"
+                            onClick={() => setFormIsOpen(!formIsOpen)}
+                        >
+                            Scout a Match?
+                        </Button>
+                    </div>
+                ) : null}
                 {renderList && currentPage
                     ? currentPage.map(([team, logs]) => {
                           return (

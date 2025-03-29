@@ -19,7 +19,7 @@ const usePagination = (elementsPerPage: number, data: any[]) => {
     }
 
     const forwards = () => {
-        if (currentPageNumber == totalPages - 1) return
+        if (currentPageNumber + 1 > totalPages) return
         setCurrentPageNumber(currentPageNumber + 1)
     }
 

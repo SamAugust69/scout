@@ -239,8 +239,8 @@ const LogForm = ({
             isOpen={isOpen}
             setIsOpen={setIsOpen}
         >
-            <ModalContent className="m-4 grid h-full max-h-screen w-full max-w-[900px] grid-cols-1 grid-rows-[auto_auto_1fr_auto] gap-2 bg-neutral-200 md:grid-cols-6 md:grid-rows-[1fr_auto] dark:bg-[#272424] dark:text-white">
-                <div className="relative row-span-1 flex items-center justify-center gap-4 overflow-y-scroll rounded bg-neutral-300 p-4 md:col-span-2 md:row-span-2 md:flex-col md:justify-between md:p-2 md:pt-8 dark:bg-neutral-900/75">
+            <ModalContent className="relative m-4 grid h-full max-h-screen w-full max-w-[900px] grid-cols-1 grid-rows-[auto_auto_1fr_auto] gap-2 bg-neutral-200 md:grid-cols-6 md:grid-rows-[1fr_auto] dark:bg-[#272424] dark:text-white">
+                <div className="row-span-1 flex items-center justify-center gap-4 overflow-y-scroll rounded bg-neutral-300 p-4 md:col-span-2 md:row-span-2 md:flex-col md:justify-between md:p-2 md:pt-8 dark:bg-neutral-900/75">
                     {titles.map((title, i) => {
                         return (
                             <button
@@ -268,8 +268,14 @@ const LogForm = ({
                             </button>
                         )
                     })}
+                    <Button
+                        className="mt-auto hidden underline md:block"
+                        variant="link"
+                    >
+                        Close
+                    </Button>
                     <textarea
-                        className="text-md mt-auto hidden h-40 w-full resize-none rounded border-neutral-700 bg-neutral-800/25 p-2 outline-0 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 md:block"
+                        className="text-md absolute mx-auto hidden h-40 w-full resize-none rounded border-neutral-700 bg-neutral-800/25 p-2 outline-0 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 md:block"
                         placeholder="Notes"
                         value={formChanges.notes}
                         onChange={(e) =>
@@ -280,7 +286,7 @@ const LogForm = ({
                     <Dialog isOpen={notesOpen} setIsOpen={setNotesOpen}>
                         <DialogContent
                             overlayInvisible
-                            className={`absolute top-22 m-1 flex h-48 max-w-[89%] flex-col rounded border border-neutral-500 bg-neutral-200 md:hidden dark:border-neutral-700 dark:bg-neutral-900`}
+                            className={`absolute top-26 m-1 mx-auto flex h-48 flex-col rounded border border-neutral-500 bg-neutral-200 md:hidden dark:border-neutral-700 dark:bg-neutral-900`}
                         >
                             <textarea
                                 className="text-md mx-2 mt-2 h-full resize-none rounded border-neutral-700 bg-neutral-800/25 p-2 outline-0 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 dark:text-neutral-200 dark:placeholder:text-neutral-500"
@@ -307,6 +313,7 @@ const LogForm = ({
                 >
                     Open Notes
                 </Button>
+
                 <div className="row-span-1 flex flex-col gap-1 overflow-y-auto rounded bg-neutral-300 p-4 md:col-span-4 md:row-span-1 dark:bg-neutral-900/75">
                     <div className="flex items-center justify-between">
                         <div className="flex gap-1">
@@ -362,6 +369,16 @@ const LogForm = ({
                             Next
                         </Button>
                     )}
+                </div>
+                <Button
+                    variant="link"
+                    className="absolute bottom-0 mx-auto w-24 text-sm underline"
+                    onClick={() => setIsOpen(!isOpen)}
+                >
+                    close
+                </Button>
+                <div className="absolute bottom-0 m-auto w-full max-w-20">
+                    fart
                 </div>
             </ModalContent>
         </Modal>

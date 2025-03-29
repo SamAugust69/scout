@@ -9,6 +9,8 @@ import { Toggle } from "./ui/toggle"
 import { Paragraph } from "./ui/paragraph"
 import { Log, logConfig } from "./forms/formConfig"
 import { getLogs } from "@/lib/getLogs"
+import { submitLog } from "@/lib/submitLog"
+import { db } from "@/lib/db"
 
 interface ExportLogsInterface {
     eventData: Event
@@ -104,7 +106,7 @@ export const ExportLogs = ({
     var logsRecievedAmount = 0
     const logsRecieved: Log<keyof typeof logConfig>[] = []
 
-    const sse = (value: MessageEvent<any>, eventSource?: EventSource) => {
+    const sse = async (value: MessageEvent<any>, eventSource?: EventSource) => {
         const parsedMessage: {
             type: string
             message?: string
@@ -134,7 +136,7 @@ export const ExportLogs = ({
             case "data":
                 // got data!
                 console.log("Got data!", parsedMessage.data)
-                logsRecieved.push(parsedMessage.data)
+                logsRecieved.push(...parsedMessage.data)
                 logsRecievedAmount++
 
                 console.log(logsRecievedAmount, toSync)
@@ -143,6 +145,24 @@ export const ExportLogs = ({
                     toSync = undefined
                     logsRecievedAmount = 0
                     console.log(logsRecieved)
+
+                    await db.transaction(
+                        "rw",
+                        db.events,
+                        async (transaction) => {
+                            for (const log of logsRecieved) {
+                                console.log(
+                                    "Submitting log:",
+                                    log.match,
+                                    log.team
+                                )
+                                await submitLog(transaction, eventData.id, log)
+                            }
+
+                            console.log("All logs submitted successfully")
+                        }
+                    )
+
                     eventSource && eventSource.close()
                 }
         }
@@ -157,6 +177,8 @@ export const ExportLogs = ({
         const url = `${address}/sse/enableSynchronization/${clientId}`
 
         const eventSource = new EventSource(url)
+
+        console.log("attempting to connect to SSE")
 
         eventSource.onopen = () => {
             addNotification("success", "Syncing logs!", "Opened SSE")

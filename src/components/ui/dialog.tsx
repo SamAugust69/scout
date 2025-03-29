@@ -148,7 +148,7 @@ const DialogContent = ({
                         e.stopPropagation()
                     }
                     className={cn(
-                        `relative z-[3] w-full max-w-[26rem] rounded-md bg-neutral-300 p-4 text-neutral-800 shadow-md shadow-neutral-500 dark:bg-neutral-800 dark:shadow-neutral-900`,
+                        `absolute top-1/2 left-1/2 z-[3] w-full max-w-[26rem] -translate-x-1/2 -translate-y-1/2 rounded-md bg-neutral-300 p-4 text-neutral-800 shadow-md shadow-neutral-500 dark:bg-neutral-800 dark:shadow-neutral-900`,
                         className
                     )}
                 >

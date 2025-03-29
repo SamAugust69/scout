@@ -10,6 +10,7 @@ import React, {
 import { motion } from "framer-motion"
 import { cn } from "../../lib/utils"
 import { Button, ButtonInterface } from "./button"
+import { Paragraph } from "./paragraph"
 
 // design/naming scheme heavily inspired by shad/cn
 // https://ui.shadcn.com/docs/components/dropdown-menu
@@ -263,6 +264,19 @@ const DropdownItem = ({ children, ...props }: DropdownItemInterface) => {
     )
 }
 
+interface DropdownTextInterface extends HTMLAttributes<HTMLParagraphElement> {}
+
+const DropdownText = ({ children, ...props }: DropdownTextInterface) => {
+    return (
+        <Paragraph
+            {...props}
+            className="flex h-8 items-center rounded-sm px-2 text-left text-sm font-medium dark:text-neutral-800"
+        >
+            {children}
+        </Paragraph>
+    )
+}
+
 export {
     Dropdown,
     DropdownButton,
@@ -273,4 +287,5 @@ export {
     DropdownRadioButton,
     DropdownItem,
     DropdownIcon,
+    DropdownText,
 }

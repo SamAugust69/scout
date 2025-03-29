@@ -25,8 +25,10 @@ import {
 import confetti from "../../assets/confetti.gif"
 import {
     Dialog,
+    DialogClose,
     DialogContent,
     DialogDescription,
+    DialogFooter,
     DialogTitle,
     DialogTrigger,
 } from "../ui/dialog"
@@ -342,14 +344,20 @@ export const DashboardSettings = ({
                             <DialogTrigger>
                                 <Button>Delete Event</Button>
                             </DialogTrigger>
-                            <DialogContent className="absolute">
-                                <DialogTitle>
-                                    You sure you wanna remove thing?
-                                </DialogTitle>
-                                <DialogDescription>Fremove</DialogDescription>
-                                <Button onClick={() => deleteEvent()}>
-                                    Delete
-                                </Button>
+                            <DialogContent className="">
+                                <DialogTitle>Delete Event?</DialogTitle>
+                                <DialogDescription>
+                                    Are you really sure you wanna delete this
+                                    event?
+                                </DialogDescription>
+                                <DialogFooter className="flex justify-between">
+                                    <Button onClick={() => deleteEvent()}>
+                                        Delete
+                                    </Button>
+                                    <DialogClose>
+                                        <Button>Close</Button>
+                                    </DialogClose>
+                                </DialogFooter>
                             </DialogContent>
                         </Dialog>
                     </div>
