@@ -44,7 +44,7 @@ const averageScores = (
 
 export const ScoreBreakdown = ({ logs, team }: ScoreBreakdownInterface) => {
     const logScores = extractScoresFromLogs(logs)
-    const [breakdownAuto, setBreakdownAuto] = useState(true)
+    const [breakdownAuto, setBreakdownAuto] = useState(false)
 
     const averages = averageScores(logScores)
 

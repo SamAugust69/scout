@@ -18,6 +18,7 @@ import { EventScout } from "./pages/event/EventScout"
 import { EventSchedule } from "./pages/event/EventSchedule"
 import { MatchInfo } from "./lib/types/eventType"
 import { EventStats } from "./pages/EventStats"
+import { TeamDashboard } from "./pages/event/team/TeamDashboard"
 
 function App() {
     const [dark, setDark] = useLocalStorage<boolean>(false, "theme")
@@ -95,6 +96,12 @@ function App() {
                                 errorElement={<NavigationError />}
                                 element={<EventSchedule />}
                             />
+                            <Route
+                                path="/event/:id/team/:team"
+                                errorElement={<NavigationError />}
+                                element={<TeamDashboard />}
+                            />
+
                             <Route
                                 path="/help"
                                 errorElement={<NavigationError />}

@@ -168,6 +168,12 @@ export const DashboardLogs = ({ eventData }: { eventData: Event | null }) => {
         setRenderList(value)
     }, [])
 
+    const [logsToDisplay, setLogsToDisplay] = useState(
+        Object.entries(filteredLogs).filter(([team]) => {
+            return team.includes(filterTeam)
+        })
+    )
+
     const {
         currentPage,
         totalPages,
@@ -175,18 +181,25 @@ export const DashboardLogs = ({ eventData }: { eventData: Event | null }) => {
         currentStepNumber,
         backwards,
         forwards,
-    } = usePagination(
-        5,
-        Object.entries(filteredLogs).filter((log) => {
-            return log[0].includes(filterTeam)
-        })
-    )
+    } = usePagination(5, logsToDisplay)
+    useEffect(() => {
+        setLogsToDisplay(
+            Object.entries(filteredLogs).filter(([team]) => {
+                return team.includes(filterTeam)
+            })
+        )
+        goToStep(0)
+    }, [filteredLogs, filterTeam])
 
     const [searchDropdownOpen, setSearchDropdownOpen] = useState(false)
 
     const onEnterKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
         setSearchDropdownOpen(false)
         e.currentTarget.blur()
+    }
+
+    const fillRange = (start: number, end: number) => {
+        return [...Array(end - start + 1)].map((_, i) => start + i)
     }
 
     return (
@@ -229,9 +242,7 @@ export const DashboardLogs = ({ eventData }: { eventData: Event | null }) => {
                         />
                     </DropdownButton>
                     <DropdownContent className="max-h-60 w-full overflow-y-scroll">
-                        {Object.keys(filteredLogs).filter((log) => {
-                            return log.includes(filterTeam)
-                        }).length <= 0 ? (
+                        {logsToDisplay.length <= 0 ? (
                             <DropdownText>Nutting to display</DropdownText>
                         ) : null}
                         {Object.keys(filteredLogs)
@@ -341,29 +352,44 @@ export const DashboardLogs = ({ eventData }: { eventData: Event | null }) => {
                 ) : null}
             </div>
 
-            <div className="mx-auto flex gap-2">
-                <Button variant="link" onClick={() => goToStep(0)}>
-                    <ChevronFirst className="w-5" />
-                </Button>
-                <Button variant="link" onClick={backwards}>
-                    <ChevronLeft className="w-5" />
-                </Button>
-                {Array.from(Array(totalPages || 1)).map((_, i) => {
-                    return (
-                        <Button
-                            className={`px-4 py-2 ${currentStepNumber === i ? "dark:bg-cool-green bg-cool-green hover:enabled:bg-cool-green/50 dark:enabled:hover:bg-cool-green/50" : ""}`}
-                            onClick={() => goToStep(i)}
-                        >
-                            {i}
-                        </Button>
-                    )
-                })}
-                <Button variant="link" onClick={forwards}>
-                    <ChevronLeft className="w-5 rotate-180" />
-                </Button>
-                <Button variant="link" onClick={() => goToStep(totalPages - 1)}>
-                    <ChevronLast className="w-5" />
-                </Button>
+            <div className="mx-auto flex w-full max-w-lg items-center justify-between gap-2">
+                <div>
+                    <Button variant="link" onClick={() => goToStep(0)}>
+                        <ChevronFirst className="w-5" />
+                    </Button>
+                    <Button variant="link" onClick={backwards}>
+                        <ChevronLeft className="w-5" />
+                    </Button>
+                </div>
+                <div className="flex gap-3">
+                    {fillRange(
+                        currentStepNumber - 2 <= 0 ? 0 : currentStepNumber - 2,
+                        currentStepNumber + 2 >= totalPages
+                            ? totalPages - 1
+                            : currentStepNumber + 2
+                    ).map((num) => {
+                        return (
+                            <Button
+                                key={num}
+                                className={`px-4 py-2 ${currentStepNumber === num ? "dark:bg-cool-green bg-cool-green hover:enabled:bg-cool-green/50 dark:enabled:hover:bg-cool-green/50" : ""}`}
+                                onClick={() => goToStep(num)}
+                            >
+                                {num}
+                            </Button>
+                        )
+                    })}
+                </div>
+                <div>
+                    <Button variant="link" onClick={forwards}>
+                        <ChevronLeft className="w-5 rotate-180" />
+                    </Button>
+                    <Button
+                        variant="link"
+                        onClick={() => goToStep(totalPages - 1)}
+                    >
+                        <ChevronLast className="w-5" />
+                    </Button>
+                </div>
             </div>
         </>
     )

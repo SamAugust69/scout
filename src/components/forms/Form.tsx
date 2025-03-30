@@ -275,7 +275,7 @@ const LogForm = ({
                         Close
                     </Button>
                     <textarea
-                        className="text-md absolute mx-auto hidden h-40 w-full resize-none rounded border-neutral-700 bg-neutral-800/25 p-2 outline-0 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 md:block"
+                        className="text-md mx-auto hidden h-40 w-full resize-none rounded border-neutral-700 bg-neutral-800/25 p-2 outline-0 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 md:block"
                         placeholder="Notes"
                         value={formChanges.notes}
                         onChange={(e) =>
@@ -372,14 +372,11 @@ const LogForm = ({
                 </div>
                 <Button
                     variant="link"
-                    className="absolute bottom-0 mx-auto w-24 text-sm underline"
+                    className="absolute bottom-0 mx-auto w-24 text-sm underline md:hidden"
                     onClick={() => setIsOpen(!isOpen)}
                 >
                     close
                 </Button>
-                <div className="absolute bottom-0 m-auto w-full max-w-20">
-                    fart
-                </div>
             </ModalContent>
         </Modal>
     )

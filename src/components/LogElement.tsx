@@ -13,7 +13,6 @@ export const LogElement = ({ logInfo }: LogElementInterface) => {
         () => logInfo.logs.map((log) => log.team),
         [logInfo.logs]
     )
-    console.log(logInfo.statistics)
 
     return (
         <div className="grid grid-cols-2 gap-3 rounded bg-neutral-100 p-4 dark:bg-[#302E2E]">

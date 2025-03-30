@@ -108,7 +108,7 @@ const Auto2025 = ({ handleChange, formChanges }: FormPageInterface) => {
                     }
                     defaultValue={formChanges.auto?.net}
                 />
-                <InputLabel>Algae Thrown in Net</InputLabel>
+                <InputLabel>Algae Thrown in Net (By Robot)</InputLabel>
             </FormField>
         </>
     )
@@ -268,7 +268,7 @@ const Teleop2025 = ({ handleChange, formChanges }: FormPageInterface) => {
                         }
                         defaultValue={formChanges.teleop?.net}
                     />
-                    <InputLabel>Algae Thrown in Net</InputLabel>
+                    <InputLabel>Algae Thrown in Net (By Robot)</InputLabel>
                 </FormField>
             </div>
             <Paragraph>Barge</Paragraph>
