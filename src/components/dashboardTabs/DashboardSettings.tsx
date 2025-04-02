@@ -22,7 +22,6 @@ import {
     AccordionItemContent,
     AccordionLabel,
 } from "../ui/accordion"
-import confetti from "../../assets/confetti.gif"
 import {
     Dialog,
     DialogClose,
@@ -236,7 +235,11 @@ export const DashboardSettings = ({
                                 type="file"
                                 ref={importScheduleRef}
                             />
-                            <Button onClick={exportSchedule}>
+                            <Button
+                                onClick={exportSchedule}
+                                className="py-2"
+                                disabled={schedule?.length <= 0}
+                            >
                                 <Download className="w-5" />
                             </Button>
                             <Button
@@ -403,7 +406,7 @@ export const DashboardSettings = ({
                     </AccordionItem>
                 </Accordion>
             </div>
-            <img src={confetti} />
+            {/* <img src={confetti} /> */}
         </>
     )
 }

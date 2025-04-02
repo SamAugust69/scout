@@ -363,10 +363,21 @@ export const DashboardLogs = ({ eventData }: { eventData: Event | null }) => {
                 </div>
                 <div className="flex gap-3">
                     {fillRange(
-                        currentStepNumber - 2 <= 0 ? 0 : currentStepNumber - 2,
-                        currentStepNumber + 2 >= totalPages
-                            ? totalPages - 1
-                            : currentStepNumber + 2
+                        Math.max(
+                            0,
+                            currentStepNumber -
+                                2 -
+                                Math.max(
+                                    0,
+                                    currentStepNumber + 2 - totalPages + 1
+                                )
+                        ),
+                        Math.min(
+                            totalPages - 1,
+                            currentStepNumber +
+                                2 +
+                                Math.max(0, 2 - currentStepNumber)
+                        )
                     ).map((num) => {
                         return (
                             <Button

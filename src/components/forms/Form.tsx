@@ -7,7 +7,6 @@ import { Event, MatchLog } from "@/lib/types/eventType"
 import { addNotification } from "../ui/notifications"
 import { LogStatistics } from "@/lib/types/logTypes"
 import { db } from "@/lib/db"
-import { scoreLog } from "@/lib/types/logCommonType"
 import { Paragraph } from "../ui/paragraph"
 import { Button } from "../ui/button"
 import { ChevronUp, Dot } from "lucide-react"
@@ -15,6 +14,7 @@ import { Divider } from "../ui/divider"
 import { Heading } from "../ui/heading"
 import { Dialog, DialogContent } from "../ui/dialog"
 import { EventSettings } from "@/lib/types/eventSettings"
+import { scoreLog } from "@/lib/scoreLog"
 
 interface LogFormInterface {
     isOpen: boolean
@@ -66,6 +66,19 @@ const LogForm = ({
                 const [parentKey, childKey] = keys
                 const parentValue = prev[parentKey] || {} // ensures that the parent value is always an object, and it spreadable
 
+                // if false value, remove key
+                console.log("Setting to:", value)
+                if (value === false) {
+                    const newParentValue = { ...parentValue }
+                    delete newParentValue?.[childKey]
+                    console.log("its false")
+                    return {
+                        ...prev,
+                        [parentKey]: {
+                            ...newParentValue,
+                        },
+                    }
+                }
                 return {
                     ...prev,
                     [parentKey]: {
