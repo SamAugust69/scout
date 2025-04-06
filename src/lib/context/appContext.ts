@@ -3,7 +3,7 @@ import { Settings } from "../types/settingsType"
 import { MatchInfo } from "../types/eventType"
 
 export type AppContextType = {
-    connectionState: boolean
+    internetConnected: boolean
     settings: Settings
     setSettings: Dispatch<SetStateAction<Settings>>
     schedule: MatchInfo[] | null

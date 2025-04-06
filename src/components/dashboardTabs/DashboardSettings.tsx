@@ -44,10 +44,13 @@ const pullSchedules = async (key: string): Promise<MatchInfo[] | null> => {
 
     const formatted: MatchInfo[] = data.reduce((result, match) => {
         if (match.comp_level !== "qm") return result
+
+        console.log(match)
         return [
             ...result,
             {
                 match_number: match.match_number,
+                time: match.predicted_time,
                 red: match.alliances.red.team_keys.map((team: string) =>
                     team.replace("frc", "")
                 ),
@@ -79,11 +82,12 @@ export const DashboardSettings = ({
 
     const [schedule, setSchedule] = useState<MatchInfo[]>(eventData.schedule)
 
-    const { connectionState } = useAppContext()
+    const { internetConnected } = useAppContext()
 
     const getScheduleFromAPI = async () => {
         const key = `${eventData?.year}${eventData?.event_code}`
         const schedule = await pullSchedules(key)
+
         if (schedule) {
             db.events.update(eventData, { ...eventData, schedule: schedule })
             setSchedule(schedule)
@@ -251,7 +255,7 @@ export const DashboardSettings = ({
                             </Button>
                             <Button
                                 onClick={() => getScheduleFromAPI()}
-                                disabled={!connectionState}
+                                disabled={!internetConnected}
                             >
                                 <Search className="w-5" />
                             </Button>

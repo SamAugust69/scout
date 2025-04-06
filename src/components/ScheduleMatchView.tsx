@@ -12,6 +12,7 @@ export const ScheduleMatchView = React.memo(
         tabletNumber?: number
     } & HTMLAttributes<HTMLDivElement>) => {
         if (!match) return
+        const date = new Date(match.time)
         return (
             <div
                 className={cn(
@@ -20,8 +21,10 @@ export const ScheduleMatchView = React.memo(
                 )}
             >
                 <div className="border-b-2 border-neutral-400 px-3 py-2 dark:border-neutral-900/50">
-                    Qualifier {match.match_number}
+                    Qualifier {match.match_number} {date.getHours()} :{" "}
+                    {date.getMinutes()} : {date.getSeconds()}
                 </div>
+
                 <div className="grid h-12 grid-cols-3 border-b-2 border-[#a37979] bg-[#be8d8e] px-3 py-2 dark:border-[#774B4C] dark:bg-[#9A6364]">
                     <p className={`${tabletNumber === 1 ? "underline" : ""}`}>
                         {match.red[0]}

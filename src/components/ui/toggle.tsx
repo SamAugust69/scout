@@ -5,13 +5,16 @@ import { Check, X } from "lucide-react"
 import { ButtonHTMLAttributes } from "react"
 
 export const toggleVariants = vs({
-    base: "rounded dark:text-neutral-300 text-left flex justify-between",
+    base: "rounded dark:text-neutral-300 text-left flex justify-between items-center gap-1 hover:cursor-pointer",
     variants: {
         variant: {
-            default: "",
+            default: "dark:bg-neutral-900 dark:hover:bg-neutral-900/50",
+            box: "borde dark:border-neutral-900 dark:bg-neutral-500/25 dark:text-neutral-500",
         },
         size: {
             default: "w-full px-3 py-2",
+            sm: "p-1.5",
+            md: "py-1 px-2 text-xs",
         },
     },
     defaultVariants: {
@@ -43,13 +46,17 @@ export const Toggle = ({
             }}
             className={cn(
                 clsx(toggleVariants({ variant, size })),
-                `${toggleValue ? "dark:bg-cool-green/25 dark:hover:bg-cool-green/35" : "dark:bg-neutral-900 dark:hover:bg-neutral-900/50"}`,
+                `${toggleValue ? "dark:bg-cool-green/25 dark:hover:bg-cool-green/35" : null}`,
                 className
             )}
             {...props}
         >
-            <div>{children}</div>
-            {toggleValue ? <Check /> : <X />}
+            {children && <div>{children}</div>}
+            {toggleValue ? (
+                <Check className="h-4 w-4" />
+            ) : (
+                <X className="h-4 w-4" />
+            )}
         </button>
     )
 }

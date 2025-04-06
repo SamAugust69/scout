@@ -11,6 +11,15 @@ interface SettingsInterface {
     isOpen: boolean
 }
 
+const isValidUrl = (string: string) => {
+    try {
+        new URL(string)
+        return true
+    } catch (err) {
+        return false
+    }
+}
+
 export const SettingsMenu = ({ isOpen, setIsOpen }: SettingsInterface) => {
     const [changes, setChanges] = useState<Partial<Settings>>({})
     const { settings, setSettings } = useAppContext()
@@ -66,6 +75,28 @@ export const SettingsMenu = ({ isOpen, setIsOpen }: SettingsInterface) => {
                             }
                         />
                     </div>
+                    <div className="flex flex-col">
+                        <label
+                            htmlFor="teamInput"
+                            className="text-xs dark:text-neutral-200"
+                        >
+                            Server Address
+                        </label>
+                        <Input
+                            id="teamInput"
+                            defaultValue={settings?.serverAddr || ""}
+                            placeholder="Server Address"
+                            className={`${(changes.serverAddr ?? settings.serverAddr) === undefined ? "ring-red-400 dark:border-red-400" : ""} border`}
+                            onChange={(e) =>
+                                onChange(
+                                    isValidUrl(e.target.value)
+                                        ? e.target.value
+                                        : undefined,
+                                    "serverAddr"
+                                )
+                            }
+                        />
+                    </div>
                     <Toggle
                         toggleValue={
                             changes.animationsDisabled ??
@@ -85,8 +116,7 @@ export const SettingsMenu = ({ isOpen, setIsOpen }: SettingsInterface) => {
                     </Toggle>
                     <Toggle
                         toggleValue={
-                            changes.disableNavbar ??
-                            settings.disableNavbar
+                            changes.disableNavbar ?? settings.disableNavbar
                         }
                         onClick={() =>
                             onChange(

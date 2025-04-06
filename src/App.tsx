@@ -23,7 +23,12 @@ import { TeamDashboard } from "./pages/event/team/TeamDashboard"
 function App() {
     const [dark, setDark] = useLocalStorage<boolean>(false, "theme")
     const [settings, setSettings] = useLocalStorage<Settings>(
-        { team: "", animationsDisabled: false, disableNavbar: false }, // Default settings value,
+        {
+            team: "",
+            serverAddr: undefined,
+            animationsDisabled: false,
+            disableNavbar: false,
+        }, // Default settings value,
         "settings"
     )
     const [schedule, setSchedule] = useState<MatchInfo[] | null>(null)
@@ -51,7 +56,7 @@ function App() {
                 {/* TODO:  move app context to db */}
                 <AppContextContext.Provider
                     value={{
-                        connectionState: connected,
+                        internetConnected: connected,
                         settings: settings,
                         setSettings,
                         schedule,

@@ -46,7 +46,7 @@ const searchEvents = async (
 }
 
 export const EventSearcher = () => {
-    const { connectionState } = useAppContext()
+    const { internetConnected } = useAppContext()
     const [year, setYear] = useState<number>(new Date().getFullYear())
     const { settings } = useAppContext()
 
@@ -57,7 +57,7 @@ export const EventSearcher = () => {
 
     const search = async () => {
         const events = await searchEvents(
-            connectionState,
+            internetConnected,
             parseInt(settings ? settings.team || "0" : "0"),
             year
         )
@@ -94,10 +94,10 @@ export const EventSearcher = () => {
 
     return (
         <div
-            className={`relative flex flex-col gap-4 rounded bg-neutral-100 p-3 dark:bg-[#302E2E] ${!connectionState ? "select-none" : ""}`}
+            className={`relative flex flex-col gap-4 rounded bg-neutral-100 p-3 dark:bg-[#302E2E] ${!internetConnected ? "select-none" : ""}`}
         >
             <div
-                className={`absolute top-0 left-0 h-full w-full cursor-not-allowed bg-red-100/25 select-none ${connectionState ? "hidden" : ""}`}
+                className={`absolute top-0 left-0 h-full w-full cursor-not-allowed bg-red-100/25 select-none ${internetConnected ? "hidden" : ""}`}
             ></div>
             <div>
                 <Heading>Event Searcher</Heading>
@@ -105,7 +105,9 @@ export const EventSearcher = () => {
                     Input year, and search for events
                 </Paragraph>
             </div>
-            <div className={`relative flex w-full gap-3 ${ !connectionState || settings.team == "" ? "pointer-events-none" : "pointer-events-auto"}`}>
+            <div
+                className={`relative flex w-full gap-3 ${!internetConnected || settings.team == "" ? "pointer-events-none" : "pointer-events-auto"}`}
+            >
                 <Input
                     placeholder="Year"
                     className="bg-neutral-200"
@@ -135,14 +137,14 @@ export const EventSearcher = () => {
             </div>
             <span
                 className={`absolute -bottom-4 left-0 text-xs text-red-500 ${
-                    connectionState ? "hidden" : ""
+                    internetConnected ? "hidden" : ""
                 }`}
             >
                 connect to the internet to use the search button
             </span>
             <span
                 className={`absolute -bottom-4 left-0 text-xs text-red-500 ${
-                    !connectionState === false && settings.team == ""
+                    !internetConnected === false && settings.team == ""
                         ? ""
                         : "hidden"
                 }`}

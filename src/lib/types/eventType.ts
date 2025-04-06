@@ -2,6 +2,7 @@ import { Log, logConfig } from "@/components/forms/formConfig"
 
 export type MatchInfo = {
     match_number: number
+    time: number
     red: string[]
     blue: string[]
 }

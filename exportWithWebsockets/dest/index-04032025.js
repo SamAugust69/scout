@@ -7,7 +7,7 @@ const express_1 = __importDefault(require("express"));
 const cors_1 = __importDefault(require("cors"));
 const body_parser_1 = __importDefault(require("body-parser"));
 const PORT = 155;
-const INACTIVITYTIME = 31; // seconds
+const INACTIVITYTIME = 100; // seconds
 function generateUniqueId() {
     return Math.random().toString(36).substring(2, 9);
 }
@@ -37,27 +37,16 @@ app.use((req, res, next) => {
     }
     next();
 });
-app.get("/", (req, res) => {
-    res.status(200).send();
-});
 // Register clientID
 app.get("/register", (req, res) => {
     const id = generateUniqueId();
-    const tabletNumber = req.headers["x-tablet-number"];
     if (clients.has(id)) {
         res.status(500);
         console.log(`id ${id} already present in clients, not registering`);
         return;
     }
-    clients.forEach((client) => {
-        console.log(client);
-        if (client.response)
-            sseWrite(client.response, {
-                type: "getClients",
-            });
-    });
-    clients.set(id, { lastSeen: Date.now(), tabletNumber });
-    console.log(`Registered client ${id} ${tabletNumber}`);
+    clients.set(id, { lastSeen: Date.now() });
+    console.log(`Registered client ${id}`);
     res.json({ clientId: id });
 });
 // Degister clientID
@@ -71,60 +60,54 @@ app.put("/deregister/:clientId", (req, res) => {
     disconnectClient(clientId);
 });
 // Send over synchronization list
-app.get("/clientList", (req, res) => {
-    console.log("Getting client list");
-    const clientTablet = [];
-    clients.forEach(({ tabletNumber }, key) => {
-        clientTablet.push({ id: key, tabletNumber });
-    });
-    res.status(200).send(clientTablet);
+app.get("/synchronizationList", (req, res) => {
+    console.log("Getting sync list");
+    res.status(200).send(Array.from(clientsToSync.keys()));
 });
-app.post("/recieveLogs", (req, res) => {
-    const fromId = req.headers["x-clientid"];
+app.post("/sendLogs", (req, res) => {
+    var _a;
     if (!syncTarget) {
         res.status(400).send({ error: "No sync target set" });
         return;
     }
-    const { logs, sendTo } = req.body;
-    console.log(req.headers);
-    const clientToSync = clients.get(sendTo);
+    console.log(req.body.logs);
+    const clientToSync = clients.get(syncTarget);
     if (!clientToSync) {
         res.status(404).json({ error: "Client to sync not found" });
         return;
     }
-    if (!clientToSync.response)
-        return;
-    console.log(fromId);
-    sseWrite(clientToSync.response, {
-        type: "recievedLogs",
-        data: logs,
-        from: fromId,
-    });
+    (_a = clientToSync.response) === null || _a === void 0 ? void 0 : _a.write(`data: ${JSON.stringify({ type: "data", data: req.body.logs })}\n\n`);
     res.status(200).send({ message: "Successfully sent data" });
 });
-app.put("/beginSync/:targetId", (req, res) => {
-    const { targetId } = req.params;
-    if (!targetId) {
-        res.status(404).send({ error: `No target ID provided` });
-        return;
-    }
-    const client = findClientId(targetId);
+// ---- SSE ----
+app.get("/sse/enableSynchronization/:clientId", (req, res) => {
+    const { clientId } = req.params;
+    const client = clients.get(clientId);
     if (!client) {
-        res.status(400).send({ error: `No client with id ${targetId}` });
+        console.error("Client not found");
+        res.status(404).json({ error: "Client not found" });
         return;
     }
-    const toRequest = req.body;
-    toRequest.map((id) => {
-        const clientToSync = findClientId(id);
-        if (!clientToSync || !clientToSync.response)
-            return;
-        sseWrite(clientToSync.response, {
-            type: "requestData",
-            targetId: targetId,
-        });
+    // Set up SSE headers
+    res.setTimeout(0);
+    res.setHeader("Content-Type", "text/event-stream");
+    res.setHeader("Cache-Control", "no-cache");
+    res.setHeader("Connection", "keep-alive");
+    res.flushHeaders();
+    // Add client to syncList
+    clientsToSync.set(clientId, res);
+    console.log(`Added client ${clientId} to clientsToSync`);
+    res.write(`data: ${JSON.stringify({ type: "hello", message: "Connected to SSE, waiting for synchronization request" })}\n\n`);
+    const heartbeatInterval = setInterval(() => {
+        var _a;
+        (_a = client.response) === null || _a === void 0 ? void 0 : _a.write(": keep-alive\n\n");
+    }, 29000);
+    req.on("close", () => {
+        console.log("Sync closed");
+        clientsToSync.delete(clientId);
+        clearInterval(heartbeatInterval);
     });
 });
-// ---- SSE ----
 app.get("/sse/synchronize/:clientId", (req, res) => {
     const { clientId } = req.params;
     const client = clients.get(clientId);
@@ -142,19 +125,20 @@ app.get("/sse/synchronize/:clientId", (req, res) => {
     // Set response and syncId
     client.response = res;
     syncTarget = clientId;
-    // for (const [id, res] of clientsToSync.entries()) {
-    //     console.log(`Requesting data from ${id}`)
-    //     res.write(`data: ${JSON.stringify({ type: "requestData" })}\n\n`)
-    // }
+    for (const [id, res] of clientsToSync.entries()) {
+        console.log(`Requesting data from ${id}`);
+        res.write(`data: ${JSON.stringify({ type: "requestData" })}\n\n`);
+    }
     // Send a heartbeat to keep the connection alive- not working?
     const heartbeatInterval = setInterval(() => {
         var _a;
         (_a = client.response) === null || _a === void 0 ? void 0 : _a.write(": keep-alive\n\n");
     }, 29000);
-    sseWrite(res, {
+    res.write(`data: ${JSON.stringify({
         type: "hello",
-        message: `Connected to SSE, hi`,
-    });
+        message: `Connected to SSE, sending requests to ${clientsToSync.size} clients`,
+        toSend: clientsToSync.size,
+    })}\n\n`);
     req.on("close", () => {
         console.log("Sync target closed");
         syncTarget = null;
@@ -162,9 +146,6 @@ app.get("/sse/synchronize/:clientId", (req, res) => {
         clearInterval(heartbeatInterval);
     });
 });
-const sseWrite = (res, data) => {
-    res.write(`data: ${JSON.stringify(data)}\n\n`);
-};
 app.get("/heartbeat/:clientId", (req, res) => {
     const { clientId } = req.params;
     const client = findClientId(clientId);
@@ -177,17 +158,9 @@ app.get("/heartbeat/:clientId", (req, res) => {
 const disconnectClient = (clientId) => {
     clients.delete(clientId);
     clientsToSync.has(clientId) && clientsToSync.delete(clientId);
-    // force all other clients to re-request other clients
-    // for tablet list
-    clients.forEach(({ response }) => {
-        if (response)
-            sseWrite(response, {
-                type: "getClients",
-            });
-    });
     console.log(`Client ${clientId} removed`);
 };
-// every 10 seconds, check if each client has been inactive for INACTIVITYTIMEs, if so, remove
+// Every 10 seconds, check if each client has been inactive for INACTIVITYTIMEs, if so, remove
 setInterval(() => {
     const now = Date.now();
     const disconnetionTime = INACTIVITYTIME * 1000;
@@ -201,4 +174,4 @@ setInterval(() => {
 app.listen(PORT, () => {
     console.log(`Example app listening on port ${PORT}`);
 });
-//# sourceMappingURL=index.js.map
+//# sourceMappingURL=index-04032025.js.map
