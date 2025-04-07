@@ -121,11 +121,14 @@ function useServerConnection(
                 console.log("Received data:", message.data)
                 break
             case "requestData":
-                axios.post(`${serverAddr}/recieveLogs`, {
-                    logs: getLogs(eventData.match_logs),
-                    sendTo: message.targetId,
-                    headers: { "x-clientid": "FART" },
-                })
+                axios.post(
+                    `${serverAddr}/recieveLogs`,
+                    {
+                        logs: getLogs(eventData.match_logs),
+                        sendTo: message.targetId,
+                    },
+                    { headers: { "x-clientid": clientIdRef.current } }
+                )
                 addNotification(
                     "default",
                     `${message.targetId} requesting data`,
@@ -136,7 +139,7 @@ function useServerConnection(
                 console.log(message.data)
                 addNotification(
                     "success",
-                    `Got ${message.data.length} from ${message.from}`
+                    `Got ${message.data.length} logs from ${message.from}`
                 )
 
                 db.transaction("rw", db.events, async (trans) => {
@@ -254,7 +257,7 @@ export const ExportLogs = ({
         settings.serverAddr,
         tabletNumber,
         onGetClientList,
-        eventData.match_logs
+        eventData
     )
 
     const toggleSync = (id: string) => {
@@ -365,6 +368,7 @@ export const ExportLogs = ({
                                 Nobody else connected
                             </Paragraph>
                         )}
+                        <div className="rounded-b p-2 px-4 dark:bg-neutral-900"></div>
                     </>
                 ) : (
                     <Paragraph className="mx-auto rounded bg-neutral-900/50 px-4 py-1.5 text-sm">
