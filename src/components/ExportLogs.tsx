@@ -347,7 +347,7 @@ export const ExportLogs = ({
                         {otherClients.map(({ id, tabletNumber }) => (
                             <li
                                 key={id}
-                                className="mb-0.5 flex items-center justify-between bg-neutral-900/50 p-2 last:mb-0 even:bg-neutral-900/25"
+                                className="mb-0.5 flex items-center justify-between bg-neutral-900/50 p-2 last:mb-0 last:rounded-b even:bg-neutral-900/25"
                             >
                                 <Paragraph className="text-xs">
                                     Tablet {tabletNumber}
@@ -364,11 +364,10 @@ export const ExportLogs = ({
                             </li>
                         ))}
                         {otherClients.length === 0 && (
-                            <Paragraph className="mx-auto my-2 rounded bg-neutral-900/50 px-4 py-1.5 text-xs">
+                            <Paragraph className="w-full rounded-b bg-neutral-900/50 px-4 py-3 text-center text-sm">
                                 Nobody else connected
                             </Paragraph>
                         )}
-                        <div className="rounded-b p-2 px-4 dark:bg-neutral-900"></div>
                     </>
                 ) : (
                     <Paragraph className="mx-auto rounded bg-neutral-900/50 px-4 py-1.5 text-sm">
