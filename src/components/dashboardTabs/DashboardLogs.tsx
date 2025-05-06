@@ -1,6 +1,6 @@
 import { Event } from "@/lib/types/eventType"
 import { Button } from "../ui/button"
-import { useEffect, useState, useMemo, useCallback, createRef } from "react"
+import { useEffect, useState, useMemo, useCallback } from "react"
 import { LogElement } from "../LogElement"
 import { getLogs } from "@/lib/getLogs"
 import { Log, logConfig } from "../forms/formConfig"
@@ -9,7 +9,6 @@ import { ScoreBreakdown } from "../ScoreBreakdown"
 import { Input } from "../ui/input"
 import { ChevronFirst, ChevronLast, ChevronLeft, Filter } from "lucide-react"
 import { Dialog, DialogContent } from "../ui/dialog"
-import { Heading } from "../ui/heading"
 import {
     Dropdown,
     DropdownButton,
@@ -40,16 +39,6 @@ const filterLogsAsTeams = (
 export type FilterButtonsType = {
     auto: (keyof Log<keyof typeof logConfig>["auto"])[]
     teleop: (keyof Log<keyof typeof logConfig>["teleop"])[]
-}
-
-function throttle(fn: Function, delay: number) {
-    let lastCall = 0
-    return function (...args: any[]) {
-        const now = new Date().getTime()
-        if (now - lastCall < delay) return
-        lastCall = now
-        return fn(...args)
-    }
 }
 
 export const DashboardLogs = ({ eventData }: { eventData: Event | null }) => {
@@ -112,51 +101,9 @@ export const DashboardLogs = ({ eventData }: { eventData: Event | null }) => {
         },
         []
     )
-    const scrollRef = createRef<HTMLDivElement>()
 
-    const [fixedTeamName, setFixedTeamName] = useState<string | undefined>(
-        undefined
-    )
     const [showFilters, setShowFilters] = useState(false)
     const [filterTeam, setFilterTeam] = useState("")
-
-    useEffect(() => {
-        if (!scrollRef.current) return
-
-        const handleScroll = throttle((e: globalThis.Event) => {
-            const target = e.target as HTMLDivElement
-            let newFixedName: string | undefined = undefined
-
-            requestAnimationFrame(() => {
-                target.childNodes.forEach((child) => {
-                    const element = child as HTMLElement
-                    const span = element.querySelector("span:last-child")
-
-                    if (!span) return
-
-                    const posFromTop =
-                        element.getBoundingClientRect().top -
-                        target.getBoundingClientRect().top
-
-                    if (posFromTop < 0) {
-                        newFixedName = span.textContent || undefined
-                    }
-                })
-
-                // Only update state if value changed
-                setFixedTeamName((prev) =>
-                    prev !== newFixedName ? newFixedName : prev
-                )
-            })
-        }, 20) // Throttle to 100ms
-
-        const scrollElement = scrollRef.current
-        scrollElement.addEventListener("scroll", handleScroll)
-
-        return () => {
-            scrollElement.removeEventListener("scroll", handleScroll)
-        }
-    }, [scrollRef, filterTeam])
 
     useEffect(() => {
         setFilteredLogs(
@@ -302,18 +249,7 @@ export const DashboardLogs = ({ eventData }: { eventData: Event | null }) => {
                 </Dialog> */}
             </div>
 
-            <div
-                ref={scrollRef}
-                className="relative flex h-screen flex-col gap-2 overflow-y-scroll rounded"
-            >
-                <Heading
-                    className={`fixed z-[9] bg-neutral-700/20 px-4 py-2 font-bold transition-opacity ${
-                        !fixedTeamName ? "opacity-0" : "opacity-100"
-                    }`}
-                >
-                    Team <span>{fixedTeamName}</span>
-                </Heading>
-
+            <div className="relative flex h-screen flex-col gap-2 overflow-y-scroll rounded">
                 {renderList && currentPage.length <= 0 ? (
                     <div className="m-auto flex flex-col gap-2 rounded px-8 py-3 dark:bg-[#302E2E]">
                         <Paragraph className="text-sm font-bold">

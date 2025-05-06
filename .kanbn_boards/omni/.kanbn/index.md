@@ -25,21 +25,22 @@ completedColumns:
 - [password-lock-settings](tasks/password-lock-settings.md)
 - [better-data-breakdown](tasks/better-data-breakdown.md)
 - [previous-event-average-on-previous-event](tasks/previous-event-average-on-previous-event.md)
-- [make-export-toggle-nicer-looking](tasks/make-export-toggle-nicer-looking.md)
 - [log-data-to-pretty-name-map-coral-l1-coral-l1](tasks/log-data-to-pretty-name-map-coral-l1-coral-l1.md)
 - [confeti-when-submit](tasks/confeti-when-submit.md)
 
 ## In Progress
 
 - [way-to-view-make-schedule-edit-schedule](tasks/way-to-view-make-schedule-edit-schedule.md)
-- [paganize-score-breakdown](tasks/paganize-score-breakdown.md)
+- [new-log-storage](tasks/new-log-storage.md)
 
 ## Done
 
 - [memo-zie-score-breakdown](tasks/memo-zie-score-breakdown.md)
+- [paganize-score-breakdown](tasks/paganize-score-breakdown.md)
 - [scroll-down-keep-teamname-on-top-loc](tasks/scroll-down-keep-teamname-on-top-loc.md)
 - [notification-system](tasks/notification-system.md)
 - [settings-you-have-unsaved-changes](tasks/settings-you-have-unsaved-changes.md)
 - [convert-ws-to-rest-api](tasks/convert-ws-to-rest-api.md)
 - [make-form-common-have-pages-swap-out-for-each-year-boss](tasks/make-form-common-have-pages-swap-out-for-each-year-boss.md)
 - [store-export-address-in-local-storage](tasks/store-export-address-in-local-storage.md)
+- [make-export-toggle-nicer-looking](tasks/make-export-toggle-nicer-looking.md)

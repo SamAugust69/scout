@@ -9,9 +9,8 @@ import { useAppContext } from "@/lib/context/appContext"
 import { db } from "@/lib/db"
 import { getLogs } from "@/lib/getLogs"
 import { submitLog } from "@/lib/submitLog"
-import { Event, MatchLog } from "@/lib/types/eventType"
+import { Event } from "@/lib/types/eventType"
 import { EventSettings } from "@/lib/types/eventSettings"
-import { Log, logConfig } from "./forms/formConfig"
 
 // Types
 interface ClientListItem {

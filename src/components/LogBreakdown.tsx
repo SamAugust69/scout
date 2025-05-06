@@ -14,10 +14,10 @@ export const LogBreakdown = ({ log }: LogBreakdownInterface) => {
     return (
         <Button
             variant="none"
-            className="w-full rounded-none border-b p-0 text-left last:border-0 hover:cursor-pointer dark:border-neutral-600"
+            className="relative w-full rounded-none border-b p-0 text-left last:border-0 hover:cursor-pointer dark:border-neutral-600"
             onClick={() => setOpen(!open)}
         >
-            <div className="flex justify-between px-3 py-2">
+            <div className="sticky top-10 flex justify-between bg-[#302E2E] px-3 py-2">
                 <Paragraph size="sm">Match {log.match}</Paragraph>
                 <div className="flex items-center gap-4">
                     {log.damaged ? (
