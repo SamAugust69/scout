@@ -68,6 +68,7 @@ app.put("/deregister/:clientId", (req, res) => {
         res.status(400).send({ error: `No client with id ${clientId}` });
         return;
     }
+    res.status(200);
     disconnectClient(clientId);
 });
 // Send over synchronization list
@@ -157,7 +158,7 @@ app.get("/sse/synchronize/:clientId", (req, res) => {
     });
     req.on("close", () => {
         console.log("Sync target closed");
-        syncTarget = null;
+        disconnectClient(clientId);
         client.response = undefined;
         clearInterval(heartbeatInterval);
     });

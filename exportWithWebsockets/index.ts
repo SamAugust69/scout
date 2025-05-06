@@ -86,6 +86,8 @@ app.put("/deregister/:clientId", (req, res) => {
         return
     }
 
+    res.status(200)
+
     disconnectClient(clientId)
 })
 
@@ -198,7 +200,9 @@ app.get("/sse/synchronize/:clientId", (req, res) => {
 
     req.on("close", () => {
         console.log("Sync target closed")
-        syncTarget = null
+
+        disconnectClient(clientId)
+
         client.response = undefined
         clearInterval(heartbeatInterval)
     })
