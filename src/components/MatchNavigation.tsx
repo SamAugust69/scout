@@ -14,8 +14,9 @@ import {
 export const MatchNavigation = () => {
     const { schedule } = useAppContext()
     const containerRef = useRef<HTMLDivElement>(null)
+    const { settings } = useAppContext()
 
-    const [searchState, setSearchState] = useState("")
+    const [searchState, setSearchState] = useState(settings.team || "")
 
     const [filteredSchedule, setFilteredSchedule] = useState<MatchInfo[]>(
         schedule || []

@@ -367,9 +367,10 @@ const Finishing2025 = ({ handleChange, formChanges }: FormPageInterface) => {
                 <FormInputToggle
                     defaultChecked={formChanges.damaged}
                     className="dark:border-yellow-400 dark:bg-yellow-500/35 enabled:hover:dark:bg-yellow-500/20"
-                    onChange={(e) =>
+                    onChange={(e) => {
                         handleChange("damaged", e.currentTarget.checked)
-                    }
+                        handleChange("broken", false)
+                    }}
                 >
                     <FormInputTitle>Partially Broken Robot</FormInputTitle>
                     <FormInputDescription>
@@ -381,9 +382,10 @@ const Finishing2025 = ({ handleChange, formChanges }: FormPageInterface) => {
                 <FormInputToggle
                     defaultChecked={formChanges.broken}
                     className="dark:border-red-400 dark:bg-red-500/35 enabled:hover:dark:bg-red-500/20"
-                    onChange={(e) =>
+                    onChange={(e) => {
                         handleChange("broken", e.currentTarget.checked)
-                    }
+                        handleChange("damaged", false)
+                    }}
                 >
                     <FormInputTitle>Broken Robot</FormInputTitle>
                     <FormInputDescription>

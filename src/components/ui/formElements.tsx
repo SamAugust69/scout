@@ -187,14 +187,13 @@ const FormInputNumber = ({
 
 interface FormToggleInterface extends InputHTMLAttributes<HTMLInputElement> {}
 
-const  FormInputToggle = ({
+const FormInputToggle = ({
     children,
     className,
     defaultChecked,
     ...props
 }: FormToggleInterface) => {
     const [toggled, setToggled] = useState(defaultChecked || false)
-    const inputRef = useRef<HTMLInputElement>(null)
 
     const fieldContext = useContext(FormFieldContext)
 
@@ -205,15 +204,15 @@ const  FormInputToggle = ({
 
     useEffect(() => {
         setShowChildren(toggled)
-    })
+    }, [toggled])
 
     const onClick = () => {
-        if (!inputRef.current) return
-        inputRef.current.click()
-        const newValue = inputRef.current.checked
-        setToggled(newValue)
-        setShowChildren(newValue)
+        setToggled(!toggled)
     }
+
+    useEffect(() => {
+        setToggled(defaultChecked || false)
+    }, [defaultChecked])
 
     return (
         <Button
@@ -229,10 +228,10 @@ const  FormInputToggle = ({
             <div className="flex flex-col items-start">{children}</div>
             {toggled ? <Check className="mr-4" /> : null}
             <input
-                ref={inputRef}
                 className="hidden"
                 type="checkbox"
-                defaultChecked={toggled}
+                checked={toggled}
+                onChange={() => {}}
                 {...props}
             />
         </Button>

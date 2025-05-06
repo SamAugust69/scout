@@ -8,6 +8,7 @@ import { SettingsMenu } from "./Settings"
 import { Link } from "react-router-dom"
 import { cn } from "@/lib/utils"
 import { MatchNavigation } from "./MatchNavigation"
+import { useAppContext } from "@/lib/context/appContext"
 
 export const Navbar = () => {
     // const [open, setOpen] = useState(false)
@@ -66,6 +67,7 @@ export const Navbar = () => {
                 </motion.div>
             </AnimatePresence>
 
+            {/* footer */}
             <div
                 className={`flex ${
                     width === openWidth ? "justify-between" : "justify-center"
