@@ -7,6 +7,7 @@ export const ScheduleMatchView = React.memo(
         tabletNumber,
         match,
         className,
+        ...props
     }: {
         match: MatchInfo
         tabletNumber?: number
@@ -14,6 +15,7 @@ export const ScheduleMatchView = React.memo(
         if (!match) return
         return (
             <div
+                {...props}
                 className={cn(
                     "w-full rounded bg-neutral-200 dark:bg-[#272424]",
                     className

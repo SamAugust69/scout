@@ -31,8 +31,7 @@ export const CreateEventManual = () => {
         if (
             !eventChanges.year ||
             !eventChanges.name ||
-            !eventChanges.event_code ||
-            !eventChanges.week
+            !eventChanges.event_code
         ) {
             addNotification("error", "Please fill in all required fields.")
             return
@@ -130,13 +129,14 @@ export const CreateEventManual = () => {
                 <Heading>New Event</Heading>
                 <div className="grid gap-2 md:grid-cols-2 md:grid-rows-2">
                     <div className="">
-                        <Paragraph size="sm">Name</Paragraph>
+                        <Paragraph size="sm">Event Name</Paragraph>
                         <Input
                             className="bg-neutral-300"
                             defaultValue={eventChanges.name}
                             onChange={(e) =>
                                 updateChanges("name", e.currentTarget.value)
                             }
+                            required
                         />
                     </div>
                     <div className="">

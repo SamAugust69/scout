@@ -62,10 +62,12 @@ export const Home = () => {
                                         "flex w-full flex-col items-center justify-center font-bold"
                                     )}
                                 >
-                                    {event.name}
+                                    <Paragraph className="w-full max-w-96 truncate text-left sm:text-center">
+                                        {event.name}
+                                    </Paragraph>
                                     <Paragraph
                                         size="xs"
-                                        className="flex h-4 items-center"
+                                        className="flex h-4 w-full items-center justify-start sm:justify-center"
                                     >
                                         {event.year} <Dot /> {event.event_code}
                                     </Paragraph>
