@@ -5,8 +5,8 @@ import { addNotification } from "@/components/ui/notifications"
 import { db } from "@/lib/db"
 import { MatchInfo } from "@/lib/types/eventType"
 import { useLiveQuery } from "dexie-react-hooks"
-import { GripVertical, Plus, X } from "lucide-react"
-import { createRef, useEffect, useState } from "react"
+import { GripVertical, X } from "lucide-react"
+import { useEffect, useState } from "react"
 import { useParams } from "react-router-dom"
 
 export const EventSchedule = () => {
@@ -101,7 +101,7 @@ export const EventSchedule = () => {
         setSwapTo(null)
     }
 
-    const matchRef = createRef<HTMLInputElement>()
+    //const matchRef = createRef<HTMLInputElement>()
 
     return (
         <section className="mx-auto flex w-full max-w-2xl flex-col gap-2 p-4">
