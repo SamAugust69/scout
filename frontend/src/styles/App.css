@@ -41,4 +41,14 @@
         -moz-appearance: textfield;
         appearance: textfield;
     }
+
+    .dots {
+        background-image: radial-gradient(
+            circle,
+            currentColor 1px,
+            transparent 1px
+        );
+        background-size: 20px 20px;
+        background-repeat: repeat;
+    }
 }

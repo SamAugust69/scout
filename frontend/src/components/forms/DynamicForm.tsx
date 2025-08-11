@@ -20,15 +20,19 @@ export const DynamicForm = ({
     return (
         <form
             className={cn(
-                "grid w-full max-w-xl grid-cols-1 grid-rows-[1fr_6fr] bg-red-200 md:grid-cols-[1fr_4fr] md:grid-rows-1",
+                "grid w-full max-w-2xl grid-cols-1 grid-rows-[1fr_7fr] gap-2 rounded bg-neutral-200 p-2 dark:bg-[#272424]",
                 className
             )}
             {...props}
         >
             {/* Form navigation */}
-            <nav className="col-span-1 bg-blue-300 md:col-span-1">nav</nav>
+            <nav className="col-span-1 rounded md:col-span-1 dark:bg-neutral-900/75">
+                nav
+            </nav>
             {/* Form Content */}
-            <section className="col-span-1 bg-blue-500">content</section>
+            <section className="col-span-1 rounded dark:bg-neutral-900/75">
+                content
+            </section>
         </form>
     )
 }

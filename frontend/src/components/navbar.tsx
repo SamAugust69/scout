@@ -20,8 +20,9 @@ export const Navbar = () => {
     const navRef = useRef<HTMLDivElement>(null)
 
     useEffect(() => {
+        if (!open) return // had issues where navRef.current was always always null
+
         const handleClickOutside = (event: MouseEvent) => {
-            console.log(event.target)
             if (
                 open &&
                 navRef.current &&
@@ -35,7 +36,7 @@ export const Navbar = () => {
         document.addEventListener("mousedown", handleClickOutside)
         return () =>
             document.removeEventListener("mousedown", handleClickOutside)
-    }, [])
+    }, [open])
 
     return (
         <>
