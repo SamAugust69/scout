@@ -2,24 +2,26 @@ import { Navbar } from "@/components/navbar"
 import { useLocalStorage } from "@/lib/useLocalStorage"
 import { DarkModeContext } from "@/lib/context/darkModeContext"
 import { AppContextContext } from "./lib/context/appContext"
-import { BrowserRouter, Route, Routes } from "react-router-dom"
+import { BrowserRouter, Route, Routes, useLocation } from "react-router-dom"
 import { NavigationError } from "./components/NavigationError"
-import { Home } from "./pages/Home"
-import { Create } from "./pages/CreateEvent"
-import { ConfigNewDevice } from "./pages/ConfigNewDevice"
+import { Home } from "./components/pages/Home"
+import { Create } from "./components/pages/CreateEvent"
+import { ConfigNewDevice } from "./components/pages/ConfigNewDevice"
 import { handleConnection } from "./lib/checkContectivity"
 import { useEffect, useState } from "react"
 import { Settings } from "./lib/types/settingsType"
-import { CreateEventManual } from "./pages/CreateEventManual"
-import { EventDashboard } from "./pages/event/EventDashboad"
-import { Help } from "./pages/Help"
+import { CreateEventManual } from "./components/pages/CreateEventManual"
+import { EventDashboard } from "./components/pages/event/EventDashboad"
+import { Help } from "./components/pages/Help"
 import { Notifications } from "./components/ui/notifications"
-import { EventScout } from "./pages/event/EventScout"
-import { EventSchedule } from "./pages/event/EventSchedule"
+import { EventScout } from "./components/pages/event/EventScout"
+import { EventSchedule } from "./components/pages/event/EventSchedule"
 import { MatchInfo } from "./lib/types/eventType"
-import { EventStats } from "./pages/EventStats"
-import { TeamDashboard } from "./pages/event/team/TeamDashboard"
-import { FormBuilder } from "./pages/FormBuilder"
+import { EventStats } from "./components/pages/EventStats"
+import { TeamDashboard } from "./components/pages/event/team/TeamDashboard"
+import { FormBuilder } from "./components/pages/FormBuilder"
+import { MainLayout } from "./components/layouts/MainLayout"
+import { NoNavLayout } from "./components/layouts/NoNavLayout"
 
 function App() {
     const [dark, setDark] = useLocalStorage<boolean>(false, "theme")
@@ -65,65 +67,51 @@ function App() {
                     }}
                 >
                     <BrowserRouter>
-                        <Navbar />
                         <Routes>
-                            <Route
-                                errorElement={<NavigationError />}
-                                path="/"
-                                element={<Home />}
-                            />
-                            <Route
-                                errorElement={<NavigationError />}
-                                path="/create"
-                                element={<Create />}
-                            />
-                            <Route
-                                errorElement={<NavigationError />}
-                                path="/create/manual"
-                                element={<CreateEventManual />}
-                            />
-                            <Route
-                                errorElement={<NavigationError />}
-                                path="/setup"
-                                element={<ConfigNewDevice />}
-                            />
-                            <Route
-                                path="/event/:id"
-                                errorElement={<NavigationError />}
-                                element={<EventDashboard />}
-                            />
-                            <Route
-                                path="/event/:id/scout"
-                                errorElement={<NavigationError />}
-                                element={<EventScout />}
-                            />
-                            <Route
-                                path="/event/:id/schedule"
-                                errorElement={<NavigationError />}
-                                element={<EventSchedule />}
-                            />
-                            <Route
-                                path="/event/:id/team/:team"
-                                errorElement={<NavigationError />}
-                                element={<TeamDashboard />}
-                            />
+                            {/* All routes with navbar */}
+                            <Route element={<MainLayout />}>
+                                <Route path="/" element={<Home />} />
+                                <Route path="/create" element={<Create />} />
+                                <Route
+                                    path="/create/manual"
+                                    element={<CreateEventManual />}
+                                />
+                                <Route
+                                    path="/setup"
+                                    element={<ConfigNewDevice />}
+                                />
+                                <Route
+                                    path="/event/:id"
+                                    element={<EventDashboard />}
+                                />
+                                <Route
+                                    path="/event/:id/scout"
+                                    element={<EventScout />}
+                                />
+                                <Route
+                                    path="/event/:id/schedule"
+                                    element={<EventSchedule />}
+                                />
+                                <Route
+                                    path="/event/:id/team/:team"
+                                    element={<TeamDashboard />}
+                                />
+                                <Route path="/help" element={<Help />} />
+                                <Route
+                                    path="/eventStats"
+                                    element={<EventStats />}
+                                />
+                            </Route>
 
-                            <Route
-                                path="/help"
-                                errorElement={<NavigationError />}
-                                element={<Help />}
-                            />
-                            <Route
-                                path="/eventStats"
-                                errorElement={<NavigationError />}
-                                element={<EventStats />}
-                            />
-                            <Route
-                                path="/FormBuilder"
-                                errorElement={<NavigationError />}
-                                element={<FormBuilder />}
-                            />
+                            {/* Routes without navbar */}
+                            <Route element={<NoNavLayout />}>
+                                <Route
+                                    path="/FormBuilder"
+                                    element={<FormBuilder />}
+                                />
+                            </Route>
                         </Routes>
+
                         <Notifications />
                     </BrowserRouter>
                 </AppContextContext.Provider>

@@ -77,7 +77,7 @@ export const Navbar = () => {
                             size="none"
                             variant="secondary"
                             onClick={() => setSettingsOpen(!settingsOpen)}
-                            className="flex h-12 w-full items-center justify-center"
+                            className="flex h-15 w-full items-center justify-center"
                         >
                             <Settings className="size-6" />
                         </Button>
@@ -85,7 +85,7 @@ export const Navbar = () => {
                             size="none"
                             variant="secondary"
                             onClick={() => setDark(!dark)}
-                            className="flex h-12 w-full items-center justify-center"
+                            className="flex h-15 w-full items-center justify-center"
                         >
                             <Sun
                                 className={`${dark ? "size-0" : "size-6"} transition-all`}
