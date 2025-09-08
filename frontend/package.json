@@ -12,6 +12,7 @@
     "dependencies": {
         "@tailwindcss/vite": "^4.0.0-beta.3",
         "@vtechguys/vs": "^0.0.5",
+        "date-fns": "^4.1.0",
         "lucide-react": "^0.460.0",
         "motion": "^11.11.17",
         "react": "^18.3.1",

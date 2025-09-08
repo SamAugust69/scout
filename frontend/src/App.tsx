@@ -1,9 +1,7 @@
-import { Navbar } from "@/components/navbar"
 import { useLocalStorage } from "@/lib/useLocalStorage"
 import { DarkModeContext } from "@/lib/context/darkModeContext"
 import { AppContextContext } from "./lib/context/appContext"
 import { BrowserRouter, Route, Routes, useLocation } from "react-router-dom"
-import { NavigationError } from "./components/NavigationError"
 import { Home } from "./components/pages/Home"
 import { Create } from "./components/pages/CreateEvent"
 import { ConfigNewDevice } from "./components/pages/ConfigNewDevice"
@@ -22,6 +20,7 @@ import { TeamDashboard } from "./components/pages/event/team/TeamDashboard"
 import { FormBuilder } from "./components/pages/FormBuilder"
 import { MainLayout } from "./components/layouts/MainLayout"
 import { NoNavLayout } from "./components/layouts/NoNavLayout"
+import { FormDashboard } from "./components/pages/FormDashboard"
 
 function App() {
     const [dark, setDark] = useLocalStorage<boolean>(false, "theme")
@@ -106,7 +105,11 @@ function App() {
                             {/* Routes without navbar */}
                             <Route element={<NoNavLayout />}>
                                 <Route
-                                    path="/FormBuilder"
+                                    path="/form-dashboard"
+                                    element={<FormDashboard />}
+                                />
+                                <Route
+                                    path="/form-dashboard/:id"
                                     element={<FormBuilder />}
                                 />
                             </Route>

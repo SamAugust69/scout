@@ -6,7 +6,8 @@ export const paragraphVariants = vs({
     base: "text-neutral-800 dark:text-neutral-300 break-all",
     variants: {
         size: {
-            lg: "text-",
+            xl: "text-2xl font-bold",
+            lg: "text-lg font-semibold",
             default: "",
             sm: "text-sm",
             xs: "text-xs",

@@ -171,7 +171,7 @@ export const DashboardLogs = ({ eventData }: { eventData: Event | null }) => {
                     Clear
                 </Button>
                 <Dropdown
-                    className="relative w-full"
+                    className="w-full"
                     isOpen={searchDropdownOpen}
                     setIsOpen={setSearchDropdownOpen}
                 >

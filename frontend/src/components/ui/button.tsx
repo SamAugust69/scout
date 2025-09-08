@@ -39,6 +39,8 @@ export const buttonVariants = vs({
             lg: "h-12 px-4 py-2",
             md: "px-4 py-1",
             default: "px-3 py-1",
+            sm: "py-1 px-3 text-sm",
+            xs: "px-2 py-1 text-xs",
             none: "",
         },
     },

@@ -11,6 +11,7 @@ import { motion } from "framer-motion"
 import { cn } from "../../lib/utils"
 import { Button, ButtonInterface } from "./button"
 import { Paragraph } from "./paragraph"
+import { ChevronDown } from "lucide-react"
 
 // design/naming scheme heavily inspired by shad/cn
 // https://ui.shadcn.com/docs/components/dropdown-menu
@@ -32,6 +33,7 @@ interface DropdownInterface {
     className?: string
     isOpen?: boolean
     setIsOpen?: React.Dispatch<React.SetStateAction<boolean>>
+    disabled?: boolean
 }
 
 const Dropdown = ({
@@ -41,6 +43,7 @@ const Dropdown = ({
     className,
     isOpen: propIsOpen,
     setIsOpen: propSetIsOpen,
+    disabled = false,
 }: DropdownInterface) => {
     const [internalIsOpen, setInternalIsOpen] = useState(false)
 
@@ -48,12 +51,13 @@ const Dropdown = ({
     const setIsOpen = propSetIsOpen ? propSetIsOpen : setInternalIsOpen
 
     const toggleOpen = () => {
+        if (disabled) return
         !isOpen ? onOpen && onOpen() : onClose && onClose()
         setIsOpen(!isOpen)
     }
 
     return (
-        <div className={cn`${className}`}>
+        <div className={cn("relative", className)}>
             <DropdownContext.Provider value={{ isOpen, toggleOpen }}>
                 {children}
             </DropdownContext.Provider>
@@ -73,7 +77,10 @@ const DropdownButton = ({ children }: DropdownButtonInterface) => {
     const { toggleOpen } = context
 
     return cloneElement(children, {
-        onClick: toggleOpen,
+        onClick: () => {
+            children.props.onClick()
+            toggleOpen()
+        },
         className: `${children.props.className} relative`,
     })
 }
@@ -144,7 +151,7 @@ const DropdownContent = ({ children, className }: DropdownContentInterface) => {
                     animate={{ opacity: 1 }}
                     transition={{ duration: 0.25 }}
                     className={cn(
-                        "absolute left-1/2 z-30 mt-1 flex w-52 -translate-x-1/2 flex-col rounded-sm border border-neutral-200 bg-neutral-100 p-2 shadow-md",
+                        "absolute left-1/2 z-30 mt-1 flex w-52 -translate-x-1/2 flex-col rounded-sm border border-neutral-200 bg-neutral-100 p-2 shadow-md dark:border-neutral-600 dark:bg-neutral-900",
                         className
                     )}
                     style={style}
@@ -172,7 +179,7 @@ interface DropdownDividerInterface extends HTMLAttributes<HTMLSpanElement> {}
 const DropdownDivider = ({ className, ...props }: DropdownDividerInterface) => {
     return (
         <span
-            className={`-mx-2 my-1 h-px bg-neutral-200 ${className}`}
+            className={`-mx-2 my-1 h-px bg-neutral-300 dark:bg-neutral-600 ${className}`}
             {...props}
         />
     )
@@ -240,24 +247,47 @@ const DropdownRadioButton = ({
     )
 }
 
-interface DropdownIconInterface {
+const DropdownItemIcon = ({
+    children,
+    className,
+}: {
     children: React.ReactElement
-}
-
-const DropdownIcon = ({ children }: DropdownIconInterface) => {
+    className?: string
+}) => {
     return cloneElement(children, {
-        className: `absolute right-4 w-6 text-neutral-600`,
+        className: cn(
+            `absolute right-4 w-5 h-5 text-neutral-600 dark:text-neutral-300`,
+            className
+        ),
     })
 }
 
 interface DropdownItemInterface extends ButtonInterface {}
 
-const DropdownItem = ({ children, ...props }: DropdownItemInterface) => {
+const DropdownItem = ({
+    children,
+    className,
+    onClick,
+    ...props
+}: DropdownItemInterface) => {
+    const context = useContext(DropdownContext)
+
+    if (context === undefined)
+        throw new Error("Context issue, dropdown context")
+    const { toggleOpen } = context
+
     return (
         <Button
             {...props}
             variant="none"
-            className="flex h-8 items-center rounded-sm px-2 text-left text-sm font-medium text-neutral-800 transition-colors hover:bg-neutral-200"
+            onClick={(e) => {
+                onClick && onClick(e)
+                toggleOpen()
+            }}
+            className={cn(
+                "flex h-8 items-center rounded-sm px-2 text-left text-sm font-medium text-neutral-800 transition-colors hover:bg-neutral-200 dark:text-neutral-300 dark:hover:bg-neutral-800/50",
+                className
+            )}
         >
             {children}
         </Button>
@@ -277,6 +307,15 @@ const DropdownText = ({ children, ...props }: DropdownTextInterface) => {
     )
 }
 
+const DropdownChevron = () => {
+    const context = useContext(DropdownContext)
+
+    if (context === undefined)
+        throw new Error("Context issue, dropdown context")
+    const { isOpen } = context
+    return <ChevronDown className={`${isOpen ? "rotate-180" : ""}`} />
+}
+
 export {
     Dropdown,
     DropdownButton,
@@ -286,6 +325,7 @@ export {
     DropdownRadioGroup,
     DropdownRadioButton,
     DropdownItem,
-    DropdownIcon,
+    DropdownItemIcon,
     DropdownText,
+    DropdownChevron,
 }
