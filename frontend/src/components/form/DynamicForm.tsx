@@ -56,7 +56,7 @@ export const DynamicForm = ({
             </nav>
             {/* Form Content */}
             <section className="col-span-1 rounded dark:bg-neutral-900/75">
-                content
+                {JSON.stringify(config[activePage].form)}
             </section>
         </form>
     )

@@ -1,9 +1,10 @@
 import { cn } from "@/lib/utils"
 import { HTMLAttributes } from "react"
 
-interface FormInputInterface {
-    numbersOnly: boolean
-    showStepper: boolean
+export interface FormInputInterface {
+    numbersOnly?: boolean
+    showStepper?: boolean
+    placeholder?: string
     label: string
 }
 export const FormInput = ({
@@ -11,6 +12,7 @@ export const FormInput = ({
     showStepper,
     label,
     className,
+    placeholder,
     ...props
 }: HTMLAttributes<HTMLInputElement> & FormInputInterface) => {
     const numberProps = numbersOnly
@@ -27,6 +29,7 @@ export const FormInput = ({
             <input
                 {...props}
                 {...numberProps}
+                placeholder={placeholder}
                 className={cn(
                     "w-full rounded-sm border-neutral-200 bg-neutral-300 px-4 py-2 placeholder-neutral-500 outline-hidden invalid:border-red-500 focus:ring-2 dark:border-neutral-800 dark:bg-neutral-900 dark:text-neutral-300 dark:placeholder-neutral-400",
                     className

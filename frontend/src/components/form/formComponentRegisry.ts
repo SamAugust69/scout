@@ -1,13 +1,33 @@
-import { FormInput } from "./FormInput"
+import {
+    Box,
+    LucideIcon,
+    SquareCheckBigIcon,
+    Text,
+    TextCursorInputIcon,
+    Type,
+} from "lucide-react"
+import { ButtonInterface } from "../ui/button"
+import { FormInput, FormInputInterface } from "./FormInput"
+import { FormToggle, FormToggleInterface } from "./FormToggle"
+import { Paragraph, paragraphVariants } from "../ui/paragraph"
+import { GetVariantProps } from "@vtechguys/vs"
+
+type RegistryItem<P> = {
+    name: string
+    component: React.ComponentType<P>
+    defaultProps: Partial<P>
+    configSchema: any[]
+    icon?: LucideIcon
+}
 
 export const formComponentRegistry = {
     text: {
         name: "Text Input",
         component: FormInput,
+        icon: TextCursorInputIcon,
         defaultProps: {
             label: "Text Field",
             placeholder: "Placeholder...",
-            required: false,
             showStepper: false,
             numbersOnly: false,
         },
@@ -19,7 +39,6 @@ export const formComponentRegistry = {
                 required: true,
             },
             { key: "placeholder", type: "text", label: "Placeholder" },
-            { key: "required", type: "boolean", label: "Required" },
             {
                 key: "showStepper",
                 type: "boolean",
@@ -31,22 +50,58 @@ export const formComponentRegistry = {
                 label: "Only Allow Numbers as Input",
             },
         ],
-    },
-    // toggle: {
-    //     name: "Toggle/Checkbox",
-    //     component: FormInput,
-    //     defaultProps: {
-    //         label: "Toggle",
-    //         defaultValue: false,
-    //     },
-    //     configSchema: [
-    //         {
-    //             key: "label",
-    //             type: "text",
-    //             label: "Checkbox Label",
-    //             required: true,
-    //         },
-    //         { key: "defaultValue", type: "boolean", label: "Default Checked" },
-    //     ],
-    // },
+    } satisfies RegistryItem<
+        FormInputInterface & React.HTMLAttributes<HTMLInputElement>
+    >,
+    toggle: {
+        name: "Toggle",
+        component: FormToggle,
+        defaultProps: {
+            label: "Toggle",
+            defaultChecked: false,
+        },
+        configSchema: [
+            {
+                key: "label",
+                type: "text",
+                label: "Checkbox Label",
+                required: true,
+            },
+            {
+                key: "defaultChecked",
+                type: "boolean",
+                label: "Default Checked",
+            },
+        ],
+        icon: SquareCheckBigIcon,
+    } satisfies RegistryItem<FormToggleInterface & ButtonInterface>,
+    paragraph: {
+        name: "Paragraph",
+        component: Paragraph,
+        defaultProps: {
+            children: "Paragraph",
+            size: "default",
+        },
+        configSchema: [
+            {
+                key: "children",
+                type: "string",
+                label: "Value",
+            },
+            {
+                key: "size",
+                type: "dropdown",
+                label: "Size",
+                options: [
+                    { label: "Small", value: "sm" },
+                    { label: "Default", value: "default" },
+                    { label: "Large", value: "lg" },
+                ],
+            },
+        ],
+        icon: Type,
+    } satisfies RegistryItem<
+        React.HTMLAttributes<HTMLParagraphElement> &
+            GetVariantProps<typeof paragraphVariants>
+    >,
 }

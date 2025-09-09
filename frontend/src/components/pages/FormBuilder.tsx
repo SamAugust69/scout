@@ -15,7 +15,14 @@ import {
     DropdownItemIcon,
 } from "../ui/dropdown"
 import { Button, buttonVariants } from "../ui/button"
-import { ChevronDown, Menu, Plus, GripVertical } from "lucide-react"
+import {
+    ChevronDown,
+    Menu,
+    Plus,
+    GripVertical,
+    Type,
+    LucideIcon,
+} from "lucide-react"
 import { Input } from "../ui/input"
 import { cn } from "@/lib/utils"
 import clsx from "clsx"
@@ -74,7 +81,7 @@ export const FormBuilder = () => {
 
     return (
         <div className="grid w-full grid-cols-1 grid-rows-[45px_1fr]">
-            <nav className="flex items-center justify-between border-b border-neutral-600 px-4 py-2 dark:bg-[#1b1919]">
+            <nav className="flex items-center justify-between border-b border-neutral-700 px-4 py-2 dark:bg-[#1b1919]">
                 <div className="flex items-center">
                     <Link
                         to={"/form-dashboard"}
@@ -104,9 +111,20 @@ export const FormBuilder = () => {
                     minSize={15}
                     maxSize={25}
                     defaultSize={15}
-                    className="border-r border-neutral-600 p-2"
+                    style={{
+                        overflow: "visible",
+                    }}
+                    className="border-r border-neutral-700"
                 >
-                    <ComponentPalette />
+                    {form && form.pages ? (
+                        <ComponentPalette
+                            currentPage={activePage}
+                            form={form}
+                            onUpdate={updateForm}
+                        />
+                    ) : (
+                        <div>Loading</div>
+                    )}
                 </ResizablePanel>
                 <ResizableHandle />
                 <ResizablePanel
@@ -128,18 +146,20 @@ export const FormBuilder = () => {
                     minSize={15}
                     maxSize={25}
                     defaultSize={15}
-                    className="border-l border-neutral-600 p-2"
+                    className="border-l border-neutral-700 p-2"
                 >
                     {form && form.pages ? (
                         selectedComponent ? (
                             <div></div>
                         ) : (
-                            <PageProperties
-                                currentPage={activePage}
-                                form={form}
-                                onUpdate={updateForm}
-                                onPageChange={(i) => setActivePage(i)}
-                            />
+                            <>
+                                <PageProperties
+                                    currentPage={activePage}
+                                    form={form}
+                                    onUpdate={updateForm}
+                                    onPageChange={(i) => setActivePage(i)}
+                                />
+                            </>
                         )
                     ) : (
                         <div>Loading</div>
@@ -148,6 +168,10 @@ export const FormBuilder = () => {
             </ResizablePanelGroup>
         </div>
     )
+}
+
+const ComponentProperties = () => {
+    return <div></div>
 }
 
 const PageProperties = ({
@@ -350,12 +374,85 @@ const PageProperties = ({
     )
 }
 
-const ComponentPalette = () => {
+const ComponentPalette = ({
+    onUpdate,
+    currentPage,
+    form,
+}: {
+    onUpdate: (updates: Partial<Form>) => void
+    currentPage: number
+    form: Form
+}) => {
+    const addComponent = (type: keyof typeof formComponentRegistry) => {
+        const componentRegistry = formComponentRegistry[type]
+        const newComponent = {
+            type: type,
+            props: {
+                ...componentRegistry.defaultProps,
+            },
+        }
+        onUpdate({
+            pages: form.pages.map((formPage, index) =>
+                index === currentPage
+                    ? { ...formPage, form: [...formPage.form, newComponent] }
+                    : formPage
+            ),
+        })
+    }
     return (
         <>
-            {Object.entries(formComponentRegistry).map(([component, props]) => {
-                return <props.component {...props.defaultProps} />
-            })}
+            <div className="flex items-center justify-between border-b border-neutral-700 px-4 py-3">
+                <Paragraph className="font-semibold">Elements</Paragraph>
+                <Dropdown disabled={false}>
+                    <DropdownButton>
+                        <Button
+                            size="sm"
+                            className="flex items-center gap-1"
+                            variant="link"
+                        >
+                            <Plus className="h-5 w-5" />
+                            Add
+                        </Button>
+                    </DropdownButton>
+                    <DropdownContent position="left" size="md" className="p-0">
+                        <Paragraph
+                            size="sm"
+                            className="border-b border-neutral-700 p-2 font-semibold"
+                        >
+                            Add Elements
+                        </Paragraph>
+                        <div className="grid grid-cols-3 gap-2 p-2">
+                            {Object.entries(formComponentRegistry).map(
+                                ([type, props]) => {
+                                    const Icon = (
+                                        props as typeof props & {
+                                            icon?: LucideIcon
+                                        }
+                                    ).icon
+
+                                    return (
+                                        <Button
+                                            className="flex h-20 flex-col items-center justify-center gap-1 text-sm"
+                                            size="none"
+                                            onClick={() =>
+                                                addComponent(
+                                                    type as keyof typeof formComponentRegistry
+                                                )
+                                            }
+                                        >
+                                            {Icon && (
+                                                <Icon className="h-5 w-5" />
+                                            )}{" "}
+                                            {props.name}
+                                        </Button>
+                                    )
+                                }
+                            )}
+                        </div>
+                    </DropdownContent>
+                </Dropdown>
+            </div>
+            <div className="p-2"></div>
         </>
     )
 }

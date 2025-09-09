@@ -12,6 +12,7 @@ import { cn } from "../../lib/utils"
 import { Button, ButtonInterface } from "./button"
 import { Paragraph } from "./paragraph"
 import { ChevronDown } from "lucide-react"
+import { GetVariantProps, vs } from "@vtechguys/vs"
 
 // design/naming scheme heavily inspired by shad/cn
 // https://ui.shadcn.com/docs/components/dropdown-menu
@@ -78,7 +79,7 @@ const DropdownButton = ({ children }: DropdownButtonInterface) => {
 
     return cloneElement(children, {
         onClick: () => {
-            children.props.onClick()
+            children.props.onClick && children.props.onClick()
             toggleOpen()
         },
         className: `${children.props.className} relative`,
@@ -106,9 +107,36 @@ const DropdownOverlay = ({ children }: DropdownOverlayInterface) => {
     )
 }
 
-interface DropdownContentInterface extends HTMLAttributes<HTMLDivElement> {}
+export const DropdownContentVariants = vs({
+    base: "flex flex-col absolute border-neutral-200 bg-neutral-100 p-2 shadow-md dark:border-neutral-600 dark:bg-neutral-900 z-30 mt-1 rounded-sm border",
+    variants: {
+        position: {
+            left: "left-0",
+            right: "right-0",
+            center: "left-1/2 -translate-x-1/2",
+        },
+        size: {
+            lg: "w-lg",
+            md: "w-96",
+            default: "w-52",
+        },
+    },
+    defaultVariants: {
+        position: "center",
+        size: "default",
+    },
+})
 
-const DropdownContent = ({ children, className }: DropdownContentInterface) => {
+interface DropdownContentInterface
+    extends HTMLAttributes<HTMLDivElement>,
+        GetVariantProps<typeof DropdownContentVariants> {}
+
+const DropdownContent = ({
+    children,
+    className,
+    position,
+    size,
+}: DropdownContentInterface) => {
     const context = useContext(DropdownContext)
 
     if (context === undefined)
@@ -151,7 +179,7 @@ const DropdownContent = ({ children, className }: DropdownContentInterface) => {
                     animate={{ opacity: 1 }}
                     transition={{ duration: 0.25 }}
                     className={cn(
-                        "absolute left-1/2 z-30 mt-1 flex w-52 -translate-x-1/2 flex-col rounded-sm border border-neutral-200 bg-neutral-100 p-2 shadow-md dark:border-neutral-600 dark:bg-neutral-900",
+                        DropdownContentVariants({ position, size }),
                         className
                     )}
                     style={style}

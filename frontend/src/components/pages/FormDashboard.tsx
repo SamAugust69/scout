@@ -57,7 +57,7 @@ export const FormDashboard = () => {
                                             <Ellipsis />
                                         </Button>
                                     </DropdownButton>
-                                    <DropdownContent className="absolute right-0 left-auto translate-x-0">
+                                    <DropdownContent>
                                         <DropdownItem>Edit </DropdownItem>
                                         <DropdownItem
                                             className="dark:text-red-500"
