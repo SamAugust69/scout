@@ -1,8 +1,7 @@
 import {
-    Box,
+    Divide,
     LucideIcon,
     SquareCheckBigIcon,
-    Text,
     TextCursorInputIcon,
     Type,
 } from "lucide-react"
@@ -11,6 +10,7 @@ import { FormInput, FormInputInterface } from "./FormInput"
 import { FormToggle, FormToggleInterface } from "./FormToggle"
 import { Paragraph, paragraphVariants } from "../ui/paragraph"
 import { GetVariantProps } from "@vtechguys/vs"
+import { FormDivider } from "./FormDivider"
 
 type RegistryItem<P> = {
     name: string
@@ -104,4 +104,21 @@ export const formComponentRegistry = {
         React.HTMLAttributes<HTMLParagraphElement> &
             GetVariantProps<typeof paragraphVariants>
     >,
+    divider: {
+        name: "Divider",
+        component: FormDivider,
+        defaultProps: {},
+        configSchema: [],
+        icon: Divide,
+    },
+}
+
+type FormComponentRegistry = typeof formComponentRegistry
+
+export type PageComponent<
+    K extends keyof FormComponentRegistry = keyof FormComponentRegistry,
+> = {
+    id: string
+    type: K
+    props: React.ComponentProps<FormComponentRegistry[K]["component"]>
 }

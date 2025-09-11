@@ -4,7 +4,7 @@ import {
     ResizablePanel,
     ResizablePanelGroup,
 } from "../ui/resizeable"
-import { useEffect, useState } from "react"
+import React, { useEffect, useState, useCallback } from "react"
 import {
     Dropdown,
     DropdownButton,
@@ -15,14 +15,7 @@ import {
     DropdownItemIcon,
 } from "../ui/dropdown"
 import { Button, buttonVariants } from "../ui/button"
-import {
-    ChevronDown,
-    Menu,
-    Plus,
-    GripVertical,
-    Type,
-    LucideIcon,
-} from "lucide-react"
+import { Plus, GripVertical, LucideIcon, Menu } from "lucide-react"
 import { Input } from "../ui/input"
 import { cn } from "@/lib/utils"
 import clsx from "clsx"
@@ -31,11 +24,14 @@ import { Paragraph } from "../ui/paragraph"
 import { Form, useFormStorage } from "@/lib/useFormStorage"
 import { Divider } from "../ui/divider"
 import { motion, Reorder } from "framer-motion"
-import { formComponentRegistry } from "../form/formComponentRegisry"
+import {
+    formComponentRegistry,
+    PageComponent,
+} from "../form/formComponentRegisry"
 
 export type FormPage = {
     name: string
-    form: any[]
+    form: PageComponent[]
 }
 
 export const FormBuilder = () => {
@@ -43,14 +39,13 @@ export const FormBuilder = () => {
     const { getForm, saveForm } = useFormStorage()
 
     const [form, setForm] = useState<Form | undefined>(undefined)
-    const [hasChanges, setHasChanges] = useState(false)
+    const [hasChanges, setHasChanges] = useState<boolean>(false)
 
     useEffect(() => {
         if (!id) return
 
-        console.log("FART")
-
-        setForm(getForm(id))
+        const formData = getForm(id)
+        setForm(formData)
     }, [id, getForm])
 
     const updateForm = (changes: Partial<Form>) => {
@@ -75,8 +70,44 @@ export const FormBuilder = () => {
     )
     const [activePage, setActivePage] = useState<number>(0)
 
+    // Use useCallback to memoize the function and include dependencies
+    const onKeyPress = useCallback(
+        (e: KeyboardEvent) => {
+            switch (e.key) {
+                case "Delete":
+                    if (!selectedComponent || !form) return
+                    // delete component from page
+                    const updatedPages = form.pages.map((page, index) =>
+                        index === activePage
+                            ? {
+                                  ...page,
+                                  form: page.form.filter(
+                                      (component) =>
+                                          component.id !== selectedComponent
+                                  ),
+                              }
+                            : page
+                    )
+
+                    updateForm({ pages: updatedPages })
+                    setSelectedComponent(null) // Clear selection after deletion
+                    break
+            }
+        },
+        [selectedComponent, form, activePage, updateForm]
+    )
+
+    useEffect(() => {
+        window.addEventListener("keyup", onKeyPress)
+
+        // Fixed cleanup function - it was missing 'return'
+        return () => {
+            window.removeEventListener("keyup", onKeyPress)
+        }
+    }, [onKeyPress]) // Include onKeyPress in dependency array
+
     if (!id) {
-        return <div>{id} Not Found</div>
+        return <div>Form Not Found</div>
     }
 
     return (
@@ -121,6 +152,8 @@ export const FormBuilder = () => {
                             currentPage={activePage}
                             form={form}
                             onUpdate={updateForm}
+                            selectedComponent={selectedComponent}
+                            setSelectedComponent={setSelectedComponent}
                         />
                     ) : (
                         <div>Loading</div>
@@ -128,7 +161,7 @@ export const FormBuilder = () => {
                 </ResizablePanel>
                 <ResizableHandle />
                 <ResizablePanel
-                    className="dots relative flex items-center justify-center p-2 text-neutral-700 dark:bg-[#1d1b1b]"
+                    className="dots relative flex items-center justify-center p-4 text-neutral-700 dark:bg-[#1d1b1b]"
                     minSize={35}
                 >
                     {form && form.pages ? (
@@ -150,16 +183,14 @@ export const FormBuilder = () => {
                 >
                     {form && form.pages ? (
                         selectedComponent ? (
-                            <div></div>
+                            <ComponentProperties />
                         ) : (
-                            <>
-                                <PageProperties
-                                    currentPage={activePage}
-                                    form={form}
-                                    onUpdate={updateForm}
-                                    onPageChange={(i) => setActivePage(i)}
-                                />
-                            </>
+                            <PageProperties
+                                currentPage={activePage}
+                                form={form}
+                                onUpdate={updateForm}
+                                onPageChange={(i) => setActivePage(i)}
+                            />
                         )
                     ) : (
                         <div>Loading</div>
@@ -171,7 +202,7 @@ export const FormBuilder = () => {
 }
 
 const ComponentProperties = () => {
-    return <div></div>
+    return <div>Component Properties Panel</div>
 }
 
 const PageProperties = ({
@@ -198,13 +229,12 @@ const PageProperties = ({
         onPageChange(form.pages.length)
     }
 
-    const updatePage = (page: number, changes: Partial<FormPage>) => {
+    const updatePage = (pageIndex: number, changes: Partial<FormPage>) => {
         onUpdate({
             pages: form.pages.map((formPage, index) =>
-                index === page ? { ...formPage, ...changes } : formPage
+                index === pageIndex ? { ...formPage, ...changes } : formPage
             ),
         })
-        console.log(page)
     }
 
     const handleReorderPages = (newOrder: FormPage[]) => {
@@ -378,14 +408,27 @@ const ComponentPalette = ({
     onUpdate,
     currentPage,
     form,
+    selectedComponent,
+    setSelectedComponent,
 }: {
     onUpdate: (updates: Partial<Form>) => void
     currentPage: number
     form: Form
+    setSelectedComponent: React.Dispatch<React.SetStateAction<string | null>>
+    selectedComponent: string | null
 }) => {
+    const [activePage, setActivePage] = useState<FormPage | undefined>(
+        undefined
+    )
+
+    useEffect(() => {
+        setActivePage(form.pages[currentPage])
+    }, [form, currentPage])
+
     const addComponent = (type: keyof typeof formComponentRegistry) => {
         const componentRegistry = formComponentRegistry[type]
-        const newComponent = {
+        const newComponent: PageComponent = {
+            id: crypto.randomUUID(),
             type: type,
             props: {
                 ...componentRegistry.defaultProps,
@@ -399,6 +442,7 @@ const ComponentPalette = ({
             ),
         })
     }
+
     return (
         <>
             <div className="flex items-center justify-between border-b border-neutral-700 px-4 py-3">
@@ -432,6 +476,7 @@ const ComponentPalette = ({
 
                                     return (
                                         <Button
+                                            key={type}
                                             className="flex h-20 flex-col items-center justify-center gap-1 text-sm"
                                             size="none"
                                             onClick={() =>
@@ -452,7 +497,37 @@ const ComponentPalette = ({
                     </DropdownContent>
                 </Dropdown>
             </div>
-            <div className="p-2"></div>
+            <div className="flex flex-col py-1">
+                {activePage &&
+                    activePage.form.map(({ id, type }) => {
+                        const component = formComponentRegistry[type]
+                        return (
+                            <>
+                                <div draggable>
+                                    <Button
+                                        key={id}
+                                        variant="link"
+                                        className={`relative flex items-center gap-2 rounded-none py-2 ${selectedComponent === id ? "dark:bg-blue-200/25 dark:hover:bg-blue-200/15" : ""}`}
+                                        size="sm"
+                                        onClick={() =>
+                                            selectedComponent !== id
+                                                ? setSelectedComponent(id)
+                                                : setSelectedComponent(null)
+                                        }
+                                    >
+                                        <component.icon className="h-3 w-3 dark:text-neutral-500" />
+                                        {component.name}
+                                    </Button>
+                                </div>
+                                <DropIndicator beforeId="-1" />
+                            </>
+                        )
+                    })}
+            </div>
         </>
     )
+}
+
+const DropIndicator = ({ beforeId }: { beforeId: string }) => {
+    return <span className="block h-0.5 w-full bg-blue-200/50"></span>
 }
