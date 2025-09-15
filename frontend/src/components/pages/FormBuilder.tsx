@@ -4,7 +4,7 @@ import {
     ResizablePanel,
     ResizablePanelGroup,
 } from "../ui/resizeable"
-import React, { useEffect, useState, useCallback } from "react"
+import React, { useEffect, useState, useCallback, HTMLAttributes } from "react"
 import {
     Dropdown,
     DropdownButton,
@@ -28,6 +28,7 @@ import {
     formComponentRegistry,
     PageComponent,
 } from "../form/formComponentRegisry"
+import { Draggable, Droppable } from "../ui/drag"
 
 export type FormPage = {
     name: string
@@ -443,6 +444,24 @@ const ComponentPalette = ({
         })
     }
 
+    const sortItems = (elementToDrag: number, draggingTo: number) => {
+        if (!activePage) return
+        console.log(" DID IT")
+        var copy = [...activePage.form]
+        const temp = copy[elementToDrag]
+        copy = copy.filter((_, i) => i !== elementToDrag)
+
+        copy.splice(draggingTo, 0, temp)
+
+        console.log(copy)
+
+        onUpdate({
+            pages: form.pages.map((formPage, index) =>
+                index === currentPage ? { ...formPage, form: copy } : formPage
+            ),
+        })
+    }
+
     return (
         <>
             <div className="flex items-center justify-between border-b border-neutral-700 px-4 py-3">
@@ -498,12 +517,12 @@ const ComponentPalette = ({
                 </Dropdown>
             </div>
             <div className="flex flex-col py-1">
-                {activePage &&
-                    activePage.form.map(({ id, type }) => {
-                        const component = formComponentRegistry[type]
-                        return (
-                            <>
-                                <div draggable>
+                {activePage && (
+                    <Droppable onDragEnd={sortItems}>
+                        {activePage.form.map(({ id, type }, i) => {
+                            const component = formComponentRegistry[type]
+                            return (
+                                <Draggable index={i}>
                                     <Button
                                         key={id}
                                         variant="link"
@@ -518,16 +537,12 @@ const ComponentPalette = ({
                                         <component.icon className="h-3 w-3 dark:text-neutral-500" />
                                         {component.name}
                                     </Button>
-                                </div>
-                                <DropIndicator beforeId="-1" />
-                            </>
-                        )
-                    })}
+                                </Draggable>
+                            )
+                        })}
+                    </Droppable>
+                )}
             </div>
         </>
     )
-}
-
-const DropIndicator = ({ beforeId }: { beforeId: string }) => {
-    return <span className="block h-0.5 w-full bg-blue-200/50"></span>
 }
