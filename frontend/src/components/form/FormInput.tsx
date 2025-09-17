@@ -3,9 +3,10 @@ import { HTMLAttributes } from "react"
 
 export interface FormInputInterface {
     numbersOnly?: boolean
+    label: string
     showStepper?: boolean
     placeholder?: string
-    label: string
+    jsonKey: string
 }
 export const FormInput = ({
     numbersOnly,

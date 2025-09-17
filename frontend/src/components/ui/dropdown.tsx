@@ -216,15 +216,15 @@ const DropdownDivider = ({ className, ...props }: DropdownDividerInterface) => {
 const RadioGroupContext = createContext<
     | {
           state: any
-          setState: (value: React.SetStateAction<any>) => void
+          setState: (value: any) => void
       }
     | undefined
 >(undefined)
 
 interface DropdownRadioGroupInterface {
     value: any
-    setValue: React.SetStateAction<any>
-    children: React.ReactNode
+    setValue: (value: any) => void
+    children?: React.ReactNode
 }
 
 const DropdownRadioGroup = ({
@@ -261,14 +261,14 @@ const DropdownRadioButton = ({
 
     return (
         <button
-            className="flex h-8 items-center rounded-sm text-left text-sm font-medium text-neutral-800 transition-colors hover:bg-neutral-200 disabled:text-neutral-600"
+            className="flex h-8 items-center rounded-sm text-left text-sm font-medium text-neutral-800 transition-colors hover:bg-neutral-300 disabled:text-neutral-600 dark:text-neutral-200 dark:hover:bg-neutral-800"
             onClick={() => setState(value)}
             {...props}
         >
             <div
                 className={`${
                     value === state ? "visible" : "invisible"
-                } mx-4 h-[3.5px] w-[3.5px] rounded-full bg-neutral-800`}
+                } mx-4 h-[3.5px] w-[3.5px] rounded-full bg-neutral-800 dark:bg-neutral-300`}
             ></div>
             {children}
         </button>

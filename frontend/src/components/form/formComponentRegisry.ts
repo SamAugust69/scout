@@ -12,11 +12,20 @@ import { Paragraph, paragraphVariants } from "../ui/paragraph"
 import { GetVariantProps } from "@vtechguys/vs"
 import { FormDivider } from "./FormDivider"
 
+export type SchemaTypes = "text" | "boolean" | "dropdown"
+export type Schema = {
+    propKey: string
+    type: SchemaTypes
+    label: string
+    question?: string
+    options?: { label: string; value: string }[]
+}
+
 type RegistryItem<P> = {
     name: string
     component: React.ComponentType<P>
     defaultProps: Partial<P>
-    configSchema: any[]
+    configSchema: Schema[]
     icon?: LucideIcon
 }
 
@@ -30,22 +39,27 @@ export const formComponentRegistry = {
             placeholder: "Placeholder...",
             showStepper: false,
             numbersOnly: false,
+            jsonKey: undefined,
         },
         configSchema: [
             {
-                key: "label",
+                propKey: "jsonKey",
+                type: "text",
+                label: "jsonKey",
+            },
+            {
+                propKey: "label",
                 type: "text",
                 label: "Text Label",
-                required: true,
             },
-            { key: "placeholder", type: "text", label: "Placeholder" },
+            { propKey: "placeholder", type: "text", label: "Placeholder" },
             {
-                key: "showStepper",
+                propKey: "showStepper",
                 type: "boolean",
                 label: "Show Incrementation Buttons",
             },
             {
-                key: "numbersOnly",
+                propKey: "numbersOnly",
                 type: "boolean",
                 label: "Only Allow Numbers as Input",
             },
@@ -59,16 +73,21 @@ export const formComponentRegistry = {
         defaultProps: {
             label: "Toggle",
             defaultChecked: false,
+            jsonKey: undefined,
         },
         configSchema: [
             {
-                key: "label",
+                propKey: "jsonKey",
                 type: "text",
-                label: "Checkbox Label",
-                required: true,
+                label: "jsonKey",
             },
             {
-                key: "defaultChecked",
+                propKey: "label",
+                type: "text",
+                label: "Checkbox Label",
+            },
+            {
+                propKey: "defaultChecked",
                 type: "boolean",
                 label: "Default Checked",
             },
@@ -84,12 +103,12 @@ export const formComponentRegistry = {
         },
         configSchema: [
             {
-                key: "children",
-                type: "string",
+                propKey: "children",
+                type: "text",
                 label: "Value",
             },
             {
-                key: "size",
+                propKey: "size",
                 type: "dropdown",
                 label: "Size",
                 options: [
@@ -120,5 +139,5 @@ export type PageComponent<
 > = {
     id: string
     type: K
-    props: React.ComponentProps<FormComponentRegistry[K]["component"]>
+    props: FormComponentRegistry[K]["defaultProps"]
 }

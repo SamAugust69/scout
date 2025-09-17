@@ -4,7 +4,7 @@ import {
     ResizablePanel,
     ResizablePanelGroup,
 } from "../ui/resizeable"
-import React, { useEffect, useState, useCallback, HTMLAttributes } from "react"
+import React, { useEffect, useState, useCallback } from "react"
 import {
     Dropdown,
     DropdownButton,
@@ -13,20 +13,22 @@ import {
     DropdownDivider,
     DropdownItem,
     DropdownItemIcon,
+    DropdownRadioButton,
+    DropdownRadioGroup,
 } from "../ui/dropdown"
 import { Button, buttonVariants } from "../ui/button"
-import { Plus, GripVertical, LucideIcon, Menu } from "lucide-react"
+import { Plus, LucideIcon, Menu } from "lucide-react"
 import { Input } from "../ui/input"
 import { cn } from "@/lib/utils"
 import clsx from "clsx"
 import { Link, useParams } from "react-router-dom"
 import { Paragraph } from "../ui/paragraph"
 import { Form, useFormStorage } from "@/lib/useFormStorage"
-import { Divider } from "../ui/divider"
-import { motion, Reorder } from "framer-motion"
 import {
     formComponentRegistry,
     PageComponent,
+    Schema,
+    SchemaTypes,
 } from "../form/formComponentRegisry"
 import { Draggable, Droppable } from "../ui/drag"
 
@@ -66,12 +68,11 @@ export const FormBuilder = () => {
         setHasChanges(false)
     }
 
-    const [selectedComponent, setSelectedComponent] = useState<string | null>(
-        null
-    )
+    const [selectedComponent, setSelectedComponent] = useState<
+        PageComponent | undefined
+    >(undefined)
     const [activePage, setActivePage] = useState<number>(0)
 
-    // Use useCallback to memoize the function and include dependencies
     const onKeyPress = useCallback(
         (e: KeyboardEvent) => {
             switch (e.key) {
@@ -84,14 +85,14 @@ export const FormBuilder = () => {
                                   ...page,
                                   form: page.form.filter(
                                       (component) =>
-                                          component.id !== selectedComponent
+                                          component.id !== selectedComponent.id
                                   ),
                               }
                             : page
                     )
 
                     updateForm({ pages: updatedPages })
-                    setSelectedComponent(null) // Clear selection after deletion
+                    setSelectedComponent(undefined)
                     break
             }
         },
@@ -177,14 +178,16 @@ export const FormBuilder = () => {
                 </ResizablePanel>
                 <ResizableHandle />
                 <ResizablePanel
-                    minSize={15}
-                    maxSize={25}
-                    defaultSize={15}
-                    className="border-l border-neutral-700 p-2"
+                    minSize={20}
+                    maxSize={35}
+                    defaultSize={20}
+                    className="border-l border-neutral-700"
                 >
                     {form && form.pages ? (
                         selectedComponent ? (
-                            <ComponentProperties />
+                            <ComponentProperties
+                                selectedComponent={selectedComponent}
+                            />
                         ) : (
                             <PageProperties
                                 currentPage={activePage}
@@ -202,8 +205,90 @@ export const FormBuilder = () => {
     )
 }
 
-const ComponentProperties = () => {
-    return <div>Component Properties Panel</div>
+const PropertySwitcher = ({
+    type,
+    propKey,
+    label,
+    options,
+    propValue,
+    editComponentProp,
+}: Schema & {
+    propValue: any
+    editComponentProp: (propKey: string, value: any) => void
+}) => {
+    switch (type) {
+        case "text":
+            return (
+                <div>
+                    <label>{label}</label>
+                    <Input value={propValue} />
+                </div>
+            )
+        case "boolean":
+            return (
+                <div>
+                    <label>{label}</label>
+                </div>
+            )
+        case "dropdown":
+            return (
+                <Dropdown>
+                    <DropdownButton>
+                        <div>test</div>
+                    </DropdownButton>
+                    <DropdownContent>
+                        {options && (
+                            <DropdownRadioGroup
+                                setValue={(value) =>
+                                    editComponentProp(propKey, value)
+                                }
+                                value={propValue}
+                            >
+                                {options.map(({ label, value }) => {
+                                    return (
+                                        <DropdownRadioButton value={value}>
+                                            {label}
+                                        </DropdownRadioButton>
+                                    )
+                                })}
+                            </DropdownRadioGroup>
+                        )}
+                    </DropdownContent>
+                </Dropdown>
+            )
+        default:
+            return (
+                <Paragraph className="text-wrap break-words dark:text-red-400">{`Unknown schema type "${type}" - Check PropertySwitcher and SchemaTypes`}</Paragraph>
+            )
+    }
+}
+
+const ComponentProperties = ({
+    selectedComponent,
+    onUpdatePage,
+}: {
+    selectedComponent: PageComponent
+}) => {
+    const registry = formComponentRegistry[selectedComponent.type]
+
+    const editComponentProp = (propKey: string, value: any) => {
+        console.log(propKey, value)
+    }
+
+    return (
+        <div className="flex flex-col gap-2 px-2 py-3">
+            {registry.configSchema.map((schema: Schema, i) => {
+                return (
+                    <PropertySwitcher
+                        key={i}
+                        {...schema}
+                        propValue={selectedComponent.props[schema.propKey]}
+                        editComponentProp={editComponentProp}
+                    />
+                )
+            })}
+        </div>
+    )
 }
 
 const PageProperties = ({
@@ -218,7 +303,6 @@ const PageProperties = ({
     form: Form
 }) => {
     const page = form.pages[currentPage]
-    const [showPageReorder, setShowPageReorder] = useState(false)
 
     const createNewPage = () => {
         onUpdate({
@@ -238,154 +322,111 @@ const PageProperties = ({
         })
     }
 
-    const handleReorderPages = (newOrder: FormPage[]) => {
-        const oldCurrentPage = form.pages[currentPage]
-        const newCurrentPageIndex = newOrder.findIndex(
-            (p) => p === oldCurrentPage
-        )
+    const handleDragEnd = (elementToDrag: number, draggingTo: number) => {
+        var copy = [...form.pages]
+        const temp = copy[elementToDrag]
+        copy = copy.filter((_, i) => i !== elementToDrag)
 
-        onUpdate({ pages: newOrder })
+        copy.splice(draggingTo, 0, temp)
+
+        const oldCurrentPage = form.pages[currentPage]
+        const newCurrentPageIndex = copy.findIndex((p) => p === oldCurrentPage)
+        console.log(elementToDrag, draggingTo)
+
+        onUpdate({ pages: copy })
         onPageChange(newCurrentPageIndex >= 0 ? newCurrentPageIndex : 0)
     }
 
     return (
-        <div className="relative flex flex-col gap-2 p-1">
-            <div>
-                <label className="text-sm font-medium">Form Title</label>
-                <Input
-                    defaultValue={form.title}
-                    onChange={(e) => {
-                        onUpdate({ title: e.currentTarget.value })
-                    }}
-                />
-            </div>
-            <div>
-                <label className="text-sm font-medium">Year</label>
-                <Input
-                    defaultValue={form.year}
-                    numbersOnly
-                    onChange={(e) => {
-                        onUpdate({ year: Number(e.currentTarget.value) })
-                    }}
-                />
-            </div>
-
-            <div>
-                <div className="flex items-center justify-between">
-                    <label className="text-sm font-medium">Pages</label>
-                    <Button
-                        size="xs"
-                        onClick={() => setShowPageReorder(!showPageReorder)}
-                    >
-                        {showPageReorder ? "Done" : "Reorder"}
-                    </Button>
+        <div className="relative flex flex-col">
+            <Paragraph
+                className="border-b border-neutral-700 px-4 py-3 font-semibold"
+                size="sm"
+            >
+                Form Properties
+            </Paragraph>
+            <div className="px-2 py-2">
+                <div>
+                    <label className="text-sm font-medium">Form Title</label>
+                    <Input
+                        defaultValue={form.title}
+                        onChange={(e) => {
+                            onUpdate({ title: e.currentTarget.value })
+                        }}
+                    />
+                </div>
+                <div>
+                    <label className="text-sm font-medium">Year</label>
+                    <Input
+                        defaultValue={form.year}
+                        numbersOnly
+                        onChange={(e) => {
+                            onUpdate({ year: Number(e.currentTarget.value) })
+                        }}
+                    />
                 </div>
 
-                {showPageReorder ? (
-                    <div className="max-h-64 space-y-2 overflow-y-auto p-1">
-                        <Reorder.Group
-                            axis="y"
-                            values={form.pages}
-                            onReorder={handleReorderPages}
-                            layoutScroll
-                        >
-                            {form.pages.map((formPage, index) => (
-                                <Reorder.Item
-                                    key={`${formPage.name}-${index}`}
-                                    value={formPage}
-                                    className="cursor-grab active:cursor-grabbing"
-                                    whileDrag={{
-                                        scale: 1.02,
-                                        boxShadow:
-                                            "0 4px 12px rgba(0,0,0,0.15)",
-                                        zIndex: 10,
-                                    }}
-                                    dragTransition={{
-                                        bounceStiffness: 300,
-                                        bounceDamping: 40,
-                                        power: 0.2,
-                                    }}
-                                    dragElastic={0.05}
-                                >
-                                    <motion.div
-                                        className={cn(
-                                            "flex items-center gap-2 rounded border p-2 text-sm",
-                                            index === currentPage
-                                                ? "border-blue-300 bg-blue-50 dark:border-blue-700 dark:bg-blue-950/20"
-                                                : "border-gray-200 bg-white dark:border-neutral-700 dark:bg-neutral-800"
-                                        )}
-                                        whileHover={{ y: -1 }}
-                                        layout
-                                    >
-                                        <GripVertical className="h-4 w-4 flex-shrink-0 text-gray-400" />
-                                        <span className="flex-1 truncate">
-                                            {formPage.name}
-                                        </span>
-                                        <span className="flex-shrink-0 text-xs text-gray-500">
-                                            {index + 1}
-                                        </span>
-                                    </motion.div>
-                                </Reorder.Item>
-                            ))}
-                        </Reorder.Group>
-
+                <label className="text-sm font-medium">Pages</label>
+                <Dropdown disabled={!page}>
+                    <DropdownButton>
                         <Button
+                            variant="dark"
                             size="lg"
-                            onClick={createNewPage}
-                            className="flex w-full items-center justify-between"
+                            className="flex w-full items-center justify-between text-left"
+                            onClick={() => !page && createNewPage()}
                         >
-                            Add New Page
-                            <Plus className="mr-2 h-4 w-4" />
+                            {page
+                                ? page.name !== ""
+                                    ? page.name
+                                    : "Unnamed"
+                                : "Create New"}
+                            {page ? <DropdownChevron /> : <Plus />}
                         </Button>
-                    </div>
-                ) : (
-                    <Dropdown disabled={!page}>
-                        <DropdownButton>
-                            <Button
-                                variant="dark"
-                                size="lg"
-                                className="flex w-full items-center justify-between text-left"
-                                onClick={() => !page && createNewPage()}
-                            >
-                                {page ? page.name : "Create New"}
-                                {page ? <DropdownChevron /> : <Plus />}
-                            </Button>
-                        </DropdownButton>
-                        <DropdownContent className="absolute left-0 w-full translate-x-0">
+                    </DropdownButton>
+                    <DropdownContent className="absolute left-0 w-full translate-x-0">
+                        <Droppable onDragEnd={handleDragEnd}>
                             {form.pages.map(({ name }, i) => {
                                 return (
-                                    <DropdownItem
-                                        key={name}
-                                        onClick={() => onPageChange(i)}
-                                        className={
-                                            i === currentPage
-                                                ? "bg-blue-50 dark:bg-blue-950/20"
-                                                : ""
-                                        }
-                                    >
-                                        <span className="flex-1">{name}</span>
-                                        <span className="ml-2 text-xs text-gray-500">
-                                            {i + 1}
-                                        </span>
-                                    </DropdownItem>
+                                    <Draggable index={i} key={name}>
+                                        <DropdownItem
+                                            onClick={() => onPageChange(i)}
+                                            className={`w-full ${
+                                                i === currentPage
+                                                    ? "bg-blue-50 dark:bg-blue-950/20"
+                                                    : ""
+                                            }`}
+                                        >
+                                            <span className="flex-1">
+                                                {name !== "" ? name : "Unnamed"}
+                                            </span>
+                                            <span className="ml-2 text-xs text-gray-500">
+                                                {i + 1}
+                                            </span>
+                                        </DropdownItem>
+                                    </Draggable>
                                 )
                             })}
-                            <DropdownDivider />
-                            <DropdownItem onClick={createNewPage}>
-                                <DropdownItemIcon>
-                                    <Plus />
-                                </DropdownItemIcon>{" "}
-                                Create New Page
-                            </DropdownItem>
-                        </DropdownContent>
-                    </Dropdown>
-                )}
+                        </Droppable>
+                        <DropdownDivider />
+                        <DropdownItem onClick={createNewPage}>
+                            <DropdownItemIcon>
+                                <Plus />
+                            </DropdownItemIcon>{" "}
+                            Create New Page
+                        </DropdownItem>
+                    </DropdownContent>
+                </Dropdown>
             </div>
 
-            <Divider className="my-2" />
             {page && (
                 <>
-                    <div>
+                    <Paragraph
+                        className="border-y border-neutral-700 px-4 py-3 font-semibold"
+                        size="sm"
+                    >
+                        Page Properties
+                    </Paragraph>
+                    <div className="flex flex-col p-2">
                         <label className="text-sm font-medium">
                             Page Title
                         </label>
@@ -398,7 +439,6 @@ const PageProperties = ({
                             }
                         />
                     </div>
-                    <Divider className="my-2" />
                 </>
             )}
         </div>
@@ -415,8 +455,10 @@ const ComponentPalette = ({
     onUpdate: (updates: Partial<Form>) => void
     currentPage: number
     form: Form
-    setSelectedComponent: React.Dispatch<React.SetStateAction<string | null>>
-    selectedComponent: string | null
+    setSelectedComponent: React.Dispatch<
+        React.SetStateAction<PageComponent | undefined>
+    >
+    selectedComponent: PageComponent | undefined
 }) => {
     const [activePage, setActivePage] = useState<FormPage | undefined>(
         undefined
@@ -452,8 +494,6 @@ const ComponentPalette = ({
         copy = copy.filter((_, i) => i !== elementToDrag)
 
         copy.splice(draggingTo, 0, temp)
-
-        console.log(copy)
 
         onUpdate({
             pages: form.pages.map((formPage, index) =>
@@ -519,19 +559,20 @@ const ComponentPalette = ({
             <div className="flex flex-col py-1">
                 {activePage && (
                     <Droppable onDragEnd={sortItems}>
-                        {activePage.form.map(({ id, type }, i) => {
-                            const component = formComponentRegistry[type]
+                        {activePage.form.map((comp, i) => {
+                            const component = formComponentRegistry[comp.type]
                             return (
-                                <Draggable index={i}>
+                                <Draggable index={i} key={comp.id}>
                                     <Button
-                                        key={id}
                                         variant="link"
-                                        className={`relative flex items-center gap-2 rounded-none py-2 ${selectedComponent === id ? "dark:bg-blue-200/25 dark:hover:bg-blue-200/15" : ""}`}
+                                        className={`relative flex w-full items-center gap-2 rounded-none py-2 ${selectedComponent && selectedComponent.id === comp.id ? "dark:bg-blue-200/25 dark:hover:bg-blue-200/15" : ""}`}
                                         size="sm"
                                         onClick={() =>
-                                            selectedComponent !== id
-                                                ? setSelectedComponent(id)
-                                                : setSelectedComponent(null)
+                                            selectedComponent?.id !== comp.id
+                                                ? setSelectedComponent(comp)
+                                                : setSelectedComponent(
+                                                      undefined
+                                                  )
                                         }
                                     >
                                         <component.icon className="h-3 w-3 dark:text-neutral-500" />
