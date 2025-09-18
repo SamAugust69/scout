@@ -4,7 +4,13 @@ import {
     ResizablePanel,
     ResizablePanelGroup,
 } from "../ui/resizeable"
-import React, { useEffect, useState, useCallback } from "react"
+import React, {
+    useEffect,
+    useState,
+    useCallback,
+    createContext,
+    useContext,
+} from "react"
 import {
     Dropdown,
     DropdownButton,
@@ -28,13 +34,29 @@ import {
     formComponentRegistry,
     PageComponent,
     Schema,
-    SchemaTypes,
 } from "../form/formComponentRegisry"
 import { Draggable, Droppable } from "../ui/drag"
 
 export type FormPage = {
     name: string
     form: PageComponent[]
+}
+
+type FormBuilderContext = {
+    form: Form
+    activePage: FormPage
+    activePageNumber: number
+}
+
+const FormBuilderContext = createContext<FormBuilderContext | undefined>(
+    undefined
+)
+
+export const useFormBuilderContext = () => {
+    const context = useContext(FormBuilderContext)
+    if (!context)
+        throw new Error("useFormBuilderContext must be used inside FormBuilder")
+    return context
 }
 
 export const FormBuilder = () => {
@@ -68,8 +90,8 @@ export const FormBuilder = () => {
         setHasChanges(false)
     }
 
-    const [selectedComponent, setSelectedComponent] = useState<
-        PageComponent | undefined
+    const [selectedComponentId, setSelectedComponentId] = useState<
+        string | undefined
     >(undefined)
     const [activePage, setActivePage] = useState<number>(0)
 
@@ -77,7 +99,7 @@ export const FormBuilder = () => {
         (e: KeyboardEvent) => {
             switch (e.key) {
                 case "Delete":
-                    if (!selectedComponent || !form) return
+                    if (!selectedComponentId || !form) return
                     // delete component from page
                     const updatedPages = form.pages.map((page, index) =>
                         index === activePage
@@ -85,123 +107,113 @@ export const FormBuilder = () => {
                                   ...page,
                                   form: page.form.filter(
                                       (component) =>
-                                          component.id !== selectedComponent.id
+                                          component.id !== selectedComponentId
                                   ),
                               }
                             : page
                     )
 
                     updateForm({ pages: updatedPages })
-                    setSelectedComponent(undefined)
+                    setSelectedComponentId(undefined)
                     break
             }
         },
-        [selectedComponent, form, activePage, updateForm]
+        [selectedComponentId, form, activePage, updateForm]
     )
 
     useEffect(() => {
         window.addEventListener("keyup", onKeyPress)
 
-        // Fixed cleanup function - it was missing 'return'
         return () => {
             window.removeEventListener("keyup", onKeyPress)
         }
-    }, [onKeyPress]) // Include onKeyPress in dependency array
-
-    if (!id) {
+    }, [onKeyPress])
+    if (!id || !form) {
         return <div>Form Not Found</div>
     }
 
     return (
-        <div className="grid w-full grid-cols-1 grid-rows-[45px_1fr]">
-            <nav className="flex items-center justify-between border-b border-neutral-700 px-4 py-2 dark:bg-[#1b1919]">
-                <div className="flex items-center">
-                    <Link
-                        to={"/form-dashboard"}
-                        className={cn(
-                            clsx(
-                                buttonVariants({
-                                    variant: "link",
-                                    size: "none",
-                                }),
-                                "flex items-center gap-2 text-sm"
-                            )
-                        )}
-                    >
-                        <Menu className="h-6 w-6" /> Go Back
-                    </Link>
-                    <span className="mx-4 block h-full w-0.5 rounded bg-neutral-600" />
-                    <Paragraph>{form?.title}</Paragraph>
-                </div>
-                {hasChanges && (
-                    <Button variant="link" onClick={handleSaveChanges}>
-                        Save Changes
-                    </Button>
-                )}
-            </nav>
-            <ResizablePanelGroup direction="horizontal">
-                <ResizablePanel
-                    minSize={15}
-                    maxSize={25}
-                    defaultSize={15}
-                    style={{
-                        overflow: "visible",
-                    }}
-                    className="border-r border-neutral-700"
-                >
-                    {form && form.pages ? (
-                        <ComponentPalette
-                            currentPage={activePage}
-                            form={form}
-                            onUpdate={updateForm}
-                            selectedComponent={selectedComponent}
-                            setSelectedComponent={setSelectedComponent}
-                        />
-                    ) : (
-                        <div>Loading</div>
+        <FormBuilderContext.Provider
+            value={{
+                activePageNumber: activePage,
+                form,
+                activePage: form.pages[activePage],
+            }}
+        >
+            <div className="grid w-full grid-cols-1 grid-rows-[45px_1fr]">
+                <nav className="flex items-center justify-between border-b border-neutral-700 px-4 py-2 dark:bg-[#1b1919]">
+                    <div className="flex items-center">
+                        <Link
+                            to={"/form-dashboard"}
+                            className={cn(
+                                clsx(
+                                    buttonVariants({
+                                        variant: "link",
+                                        size: "none",
+                                    }),
+                                    "flex items-center gap-2 text-sm"
+                                )
+                            )}
+                        >
+                            <Menu className="h-6 w-6" /> Go Back
+                        </Link>
+                        <span className="mx-4 block h-full w-0.5 rounded bg-neutral-600" />
+                        <Paragraph>{form?.title}</Paragraph>
+                    </div>
+                    {hasChanges && (
+                        <Button variant="link" onClick={handleSaveChanges}>
+                            Save Changes
+                        </Button>
                     )}
-                </ResizablePanel>
-                <ResizableHandle />
-                <ResizablePanel
-                    className="dots relative flex items-center justify-center p-4 text-neutral-700 dark:bg-[#1d1b1b]"
-                    minSize={35}
-                >
-                    {form && form.pages ? (
+                </nav>
+                <ResizablePanelGroup direction="horizontal">
+                    <ResizablePanel
+                        minSize={15}
+                        maxSize={25}
+                        defaultSize={15}
+                        style={{
+                            overflow: "visible",
+                        }}
+                        className="border-r border-neutral-700"
+                    >
+                        <ComponentPalette
+                            onUpdate={updateForm}
+                            selectedComponentId={selectedComponentId}
+                            setSelectedComponentId={setSelectedComponentId}
+                        />
+                    </ResizablePanel>
+                    <ResizableHandle />
+                    <ResizablePanel
+                        className="dots relative flex items-center justify-center p-4 text-neutral-700 dark:bg-[#1d1b1b]"
+                        minSize={35}
+                    >
                         <DynamicForm
                             config={form.pages}
-                            activePage={activePage}
                             setActivePage={setActivePage}
                         />
-                    ) : (
-                        <div>Loading...</div>
-                    )}
-                </ResizablePanel>
-                <ResizableHandle />
-                <ResizablePanel
-                    minSize={20}
-                    maxSize={35}
-                    defaultSize={20}
-                    className="border-l border-neutral-700"
-                >
-                    {form && form.pages ? (
-                        selectedComponent ? (
+                    </ResizablePanel>
+                    <ResizableHandle />
+                    <ResizablePanel
+                        minSize={20}
+                        maxSize={35}
+                        defaultSize={20}
+                        className="border-l border-neutral-700"
+                    >
+                        {selectedComponentId ? (
                             <ComponentProperties
-                                selectedComponent={selectedComponent}
+                                selectedComponentId={selectedComponentId}
+                                updateForm={updateForm}
                             />
                         ) : (
                             <PageProperties
-                                currentPage={activePage}
-                                form={form}
                                 onUpdate={updateForm}
                                 onPageChange={(i) => setActivePage(i)}
                             />
-                        )
-                    ) : (
-                        <div>Loading</div>
-                    )}
-                </ResizablePanel>
-            </ResizablePanelGroup>
-        </div>
+                        )}
+                    </ResizablePanel>
+                </ResizablePanelGroup>
+            </div>
+        </FormBuilderContext.Provider>
     )
 }
 
@@ -221,7 +233,12 @@ const PropertySwitcher = ({
             return (
                 <div>
                     <label>{label}</label>
-                    <Input value={propValue} />
+                    <Input
+                        value={propValue ?? ""}
+                        onChange={(e) =>
+                            editComponentProp(propKey, e.currentTarget.value)
+                        }
+                    />
                 </div>
             )
         case "boolean":
@@ -246,7 +263,10 @@ const PropertySwitcher = ({
                             >
                                 {options.map(({ label, value }) => {
                                     return (
-                                        <DropdownRadioButton value={value}>
+                                        <DropdownRadioButton
+                                            value={value}
+                                            key={label}
+                                        >
                                             {label}
                                         </DropdownRadioButton>
                                     )
@@ -264,45 +284,133 @@ const PropertySwitcher = ({
 }
 
 const ComponentProperties = ({
-    selectedComponent,
-    onUpdatePage,
+    selectedComponentId,
+    updateForm,
 }: {
-    selectedComponent: PageComponent
+    selectedComponentId: string
+    updateForm: (changes: Partial<Form>) => void
 }) => {
-    const registry = formComponentRegistry[selectedComponent.type]
+    const { form, activePageNumber } = useFormBuilderContext()
+    const selectedComponent = form.pages[activePageNumber]?.form.find(
+        (comp) => comp.id === selectedComponentId
+    )
 
-    const editComponentProp = (propKey: string, value: any) => {
-        console.log(propKey, value)
+    if (!selectedComponent) return
+
+    const registry = formComponentRegistry[selectedComponent.type]
+    const { configSchema, name } = registry
+
+    const getComponentPropValue = (
+        component: PageComponent,
+        propKey: string
+    ) => {
+        return (component.props as Record<string, any>)[propKey]
     }
 
+    const editComponentProp = useCallback(
+        (propKey: string, value: any) => {
+            const updatedPages = form.pages.map((page, i) =>
+                i === activePageNumber
+                    ? {
+                          ...page,
+                          form: page.form.map((component) =>
+                              component.id === selectedComponent.id
+                                  ? {
+                                        ...component,
+                                        props: {
+                                            ...component.props,
+                                            [propKey]: value,
+                                        },
+                                    }
+                                  : component
+                          ),
+                      }
+                    : page
+            )
+            updateForm({ pages: updatedPages })
+        },
+        [selectedComponent.id, activePageNumber, form.pages, updateForm]
+    )
+
+    const editComponentJsonKey = useCallback(
+        (value: string) => {
+            const updatedPages = form.pages.map((page, i) =>
+                i === activePageNumber
+                    ? {
+                          ...page,
+                          form: page.form.map((component) =>
+                              component.id === selectedComponent.id
+                                  ? {
+                                        ...component,
+                                        jsonKey: value,
+                                    }
+                                  : component
+                          ),
+                      }
+                    : page
+            )
+            updateForm({ pages: updatedPages })
+        },
+        [selectedComponent.id, activePageNumber, form.pages, updateForm]
+    )
+
+    const doesWrite = (
+        registry as typeof registry & {
+            writesToJSON?: boolean
+        }
+    ).writesToJSON
+
+    useEffect(() => {
+        console.log("tes")
+    }, [selectedComponent])
+
     return (
-        <div className="flex flex-col gap-2 px-2 py-3">
-            {registry.configSchema.map((schema: Schema, i) => {
-                return (
-                    <PropertySwitcher
-                        key={i}
-                        {...schema}
-                        propValue={selectedComponent.props[schema.propKey]}
-                        editComponentProp={editComponentProp}
-                    />
-                )
-            })}
-        </div>
+        <>
+            <div className="flex items-center justify-between border-b border-neutral-700 px-4 py-3">
+                <Paragraph>{name}</Paragraph>
+            </div>
+            <div className="flex flex-col gap-2 px-4 py-3">
+                {doesWrite && (
+                    <div>
+                        <label className="text-sm font-bold">jsonKey</label>
+                        <Input
+                            value={selectedComponent.jsonKey ?? ""}
+                            onChange={(e) =>
+                                editComponentJsonKey(e.currentTarget.value)
+                            }
+                        ></Input>
+                    </div>
+                )}
+                {configSchema.map((schema: Schema, i) => {
+                    return (
+                        <PropertySwitcher
+                            key={i}
+                            {...schema}
+                            propValue={getComponentPropValue(
+                                selectedComponent,
+                                schema.propKey
+                            )}
+                            editComponentProp={editComponentProp}
+                        />
+                    )
+                })}
+            </div>
+        </>
     )
 }
 
 const PageProperties = ({
     onUpdate,
     onPageChange,
-    currentPage,
-    form,
 }: {
     onUpdate: (updates: Partial<Form>) => void
     onPageChange: (pageIndex: number) => void
-    currentPage: number
-    form: Form
 }) => {
-    const page = form.pages[currentPage]
+    const {
+        activePage: page,
+        activePageNumber: activePage,
+        form,
+    } = useFormBuilderContext()
 
     const createNewPage = () => {
         onUpdate({
@@ -329,7 +437,7 @@ const PageProperties = ({
 
         copy.splice(draggingTo, 0, temp)
 
-        const oldCurrentPage = form.pages[currentPage]
+        const oldCurrentPage = form.pages[activePage]
         const newCurrentPageIndex = copy.findIndex((p) => p === oldCurrentPage)
         console.log(elementToDrag, draggingTo)
 
@@ -391,7 +499,7 @@ const PageProperties = ({
                                         <DropdownItem
                                             onClick={() => onPageChange(i)}
                                             className={`w-full ${
-                                                i === currentPage
+                                                i === activePage
                                                     ? "bg-blue-50 dark:bg-blue-950/20"
                                                     : ""
                                             }`}
@@ -433,7 +541,7 @@ const PageProperties = ({
                         <Input
                             value={page.name}
                             onChange={(e) =>
-                                updatePage(currentPage, {
+                                updatePage(activePage, {
                                     name: e.currentTarget.value,
                                 })
                             }
@@ -447,32 +555,27 @@ const PageProperties = ({
 
 const ComponentPalette = ({
     onUpdate,
-    currentPage,
-    form,
-    selectedComponent,
-    setSelectedComponent,
+    selectedComponentId,
+    setSelectedComponentId,
 }: {
     onUpdate: (updates: Partial<Form>) => void
-    currentPage: number
-    form: Form
-    setSelectedComponent: React.Dispatch<
-        React.SetStateAction<PageComponent | undefined>
+    setSelectedComponentId: React.Dispatch<
+        React.SetStateAction<string | undefined>
     >
-    selectedComponent: PageComponent | undefined
+    selectedComponentId: string | undefined
 }) => {
-    const [activePage, setActivePage] = useState<FormPage | undefined>(
-        undefined
-    )
-
-    useEffect(() => {
-        setActivePage(form.pages[currentPage])
-    }, [form, currentPage])
+    const {
+        activePage,
+        activePageNumber: currentPage,
+        form,
+    } = useFormBuilderContext()
 
     const addComponent = (type: keyof typeof formComponentRegistry) => {
         const componentRegistry = formComponentRegistry[type]
         const newComponent: PageComponent = {
             id: crypto.randomUUID(),
             type: type,
+            jsonKey: undefined,
             props: {
                 ...componentRegistry.defaultProps,
             },
@@ -487,12 +590,10 @@ const ComponentPalette = ({
     }
 
     const sortItems = (elementToDrag: number, draggingTo: number) => {
-        if (!activePage) return
-        console.log(" DID IT")
-        var copy = [...activePage.form]
+        const copy = [...activePage.form]
         const temp = copy[elementToDrag]
-        copy = copy.filter((_, i) => i !== elementToDrag)
 
+        copy.splice(elementToDrag, 1)
         copy.splice(draggingTo, 0, temp)
 
         onUpdate({
@@ -565,12 +666,14 @@ const ComponentPalette = ({
                                 <Draggable index={i} key={comp.id}>
                                     <Button
                                         variant="link"
-                                        className={`relative flex w-full items-center gap-2 rounded-none py-2 ${selectedComponent && selectedComponent.id === comp.id ? "dark:bg-blue-200/25 dark:hover:bg-blue-200/15" : ""}`}
+                                        className={`relative flex w-full items-center gap-2 rounded-none py-2 ${selectedComponentId === comp.id ? "dark:bg-blue-200/25 dark:hover:bg-blue-200/15" : ""}`}
                                         size="sm"
                                         onClick={() =>
-                                            selectedComponent?.id !== comp.id
-                                                ? setSelectedComponent(comp)
-                                                : setSelectedComponent(
+                                            selectedComponentId !== comp.id
+                                                ? setSelectedComponentId(
+                                                      comp.id
+                                                  )
+                                                : setSelectedComponentId(
                                                       undefined
                                                   )
                                         }

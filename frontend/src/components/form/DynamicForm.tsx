@@ -1,21 +1,20 @@
 import { cn } from "@/lib/utils"
 import { HTMLAttributes } from "react"
-import { FormPage } from "../pages/FormBuilder"
-import { formComponentRegistry, Schema } from "./formComponentRegisry"
+import { FormPage, useFormBuilderContext } from "../pages/FormBuilder"
+import { formComponentRegistry } from "./formComponentRegisry"
 
 interface DynamicFormInterface {
     config: FormPage[]
-    activePage: number
     setActivePage: React.Dispatch<React.SetStateAction<number>>
 }
 
 export const DynamicForm = ({
     className,
     config,
-    activePage,
     setActivePage,
     ...props
 }: HTMLAttributes<HTMLFormElement> & DynamicFormInterface) => {
+    const { activePageNumber, activePage } = useFormBuilderContext()
     return (
         <form
             className={cn(
@@ -37,7 +36,7 @@ export const DynamicForm = ({
                             >
                                 <div
                                     className={`${
-                                        activePage === i
+                                        activePageNumber === i
                                             ? "border-neutral-400 bg-neutral-600 text-neutral-200"
                                             : "border-0 bg-neutral-500 text-neutral-300"
                                     } flex h-10 w-10 items-center justify-center rounded-full border font-semibold transition-colors duration-100 group-hover:bg-neutral-600`}
@@ -59,10 +58,11 @@ export const DynamicForm = ({
             </div>
             {/* Form Content */}
             <section className="col-span-1 flex flex-col gap-2 rounded p-2 dark:bg-neutral-900/75">
-                {config[activePage] &&
-                    config[activePage].form.map(({ type, props }, i) => {
+                {activePage &&
+                    activePage.form.map(({ type, props }, i) => {
                         const compInfo = formComponentRegistry[type]
                         const Component = compInfo.component
+
                         return <Component {...props} key={i} />
                     })}
             </section>

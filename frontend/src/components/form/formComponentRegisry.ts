@@ -26,6 +26,7 @@ type RegistryItem<P> = {
     component: React.ComponentType<P>
     defaultProps: Partial<P>
     configSchema: Schema[]
+    writesToJSON?: boolean // determines if jsonKey is needed in component properties
     icon?: LucideIcon
 }
 
@@ -34,19 +35,14 @@ export const formComponentRegistry = {
         name: "Text Input",
         component: FormInput,
         icon: TextCursorInputIcon,
+        writesToJSON: true,
         defaultProps: {
             label: "Text Field",
             placeholder: "Placeholder...",
             showStepper: false,
             numbersOnly: false,
-            jsonKey: undefined,
         },
         configSchema: [
-            {
-                propKey: "jsonKey",
-                type: "text",
-                label: "jsonKey",
-            },
             {
                 propKey: "label",
                 type: "text",
@@ -70,17 +66,12 @@ export const formComponentRegistry = {
     toggle: {
         name: "Toggle",
         component: FormToggle,
+        writesToJSON: true,
         defaultProps: {
             label: "Toggle",
             defaultChecked: false,
-            jsonKey: undefined,
         },
         configSchema: [
-            {
-                propKey: "jsonKey",
-                type: "text",
-                label: "jsonKey",
-            },
             {
                 propKey: "label",
                 type: "text",
@@ -140,4 +131,5 @@ export type PageComponent<
     id: string
     type: K
     props: FormComponentRegistry[K]["defaultProps"]
+    jsonKey: string | undefined
 }
