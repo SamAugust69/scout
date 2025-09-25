@@ -378,6 +378,7 @@ const ComponentProperties = ({
                             onChange={(e) =>
                                 editComponentJsonKey(e.currentTarget.value)
                             }
+                            size="sm"
                         ></Input>
                     </div>
                 )}
