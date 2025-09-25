@@ -1,7 +1,7 @@
 import { cn } from "@/lib/utils"
 import React, { InputHTMLAttributes } from "react"
 
-interface InputInterface {
+export interface InputInterface {
     numbersOnly?: boolean
 }
 

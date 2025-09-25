@@ -33,9 +33,11 @@ import { Form, useFormStorage } from "@/lib/useFormStorage"
 import {
     formComponentRegistry,
     PageComponent,
+    PropTypes,
     Schema,
 } from "../form/formComponentRegisry"
 import { Draggable, Droppable } from "../ui/drag"
+import { HeaderPropertyPanel } from "../form/PropertyPanels/Header"
 
 export type FormPage = {
     name: string
@@ -184,13 +186,16 @@ export const FormBuilder = () => {
                     </ResizablePanel>
                     <ResizableHandle />
                     <ResizablePanel
-                        className="dots relative flex items-center justify-center p-4 text-neutral-700 dark:bg-[#1d1b1b]"
+                        className="dots relative flex flex-col items-center justify-center gap-2 p-4 text-neutral-700 dark:bg-[#1d1b1b]"
                         minSize={35}
                     >
-                        <DynamicForm
-                            config={form.pages}
-                            setActivePage={setActivePage}
-                        />
+                        <>
+                            <DynamicForm
+                                config={form.pages}
+                                setActivePage={setActivePage}
+                            />
+                            <DataViewer />
+                        </>
                     </ResizablePanel>
                     <ResizableHandle />
                     <ResizablePanel
@@ -217,6 +222,37 @@ export const FormBuilder = () => {
     )
 }
 
+const DataViewer = () => {
+    const [isOpen, setIsOpen] = useState(true)
+    const data = {
+        test: false,
+        poop: true,
+        hello: {
+            yup: false,
+            sam: "awesome",
+        },
+    }
+    return (
+        <>
+            <Button
+                variant="link"
+                size="sm"
+                className="text-neutral-300"
+                onClick={() => setIsOpen(!isOpen)}
+            >
+                {!isOpen ? "Show" : "Hide"} Data
+            </Button>
+            <div
+                className={`absolute ${!isOpen ? "-bottom-60" : "bottom-13"} mx-2 h-44 w-full max-w-xl rounded border border-neutral-700 p-2 dark:bg-[#272424]`}
+            >
+                <pre className="overflow-x-auto overflow-y-scroll font-mono text-sm whitespace-pre text-neutral-300">
+                    {JSON.stringify(data, null, 2)}
+                </pre>
+            </div>
+        </>
+    )
+}
+
 const PropertySwitcher = ({
     type,
     propKey,
@@ -232,7 +268,7 @@ const PropertySwitcher = ({
         case "text":
             return (
                 <div>
-                    <label>{label}</label>
+                    <label className="text-sm font-bold">{label}</label>
                     <Input
                         value={propValue ?? ""}
                         onChange={(e) =>
@@ -251,7 +287,9 @@ const PropertySwitcher = ({
             return (
                 <Dropdown>
                     <DropdownButton>
-                        <div>test</div>
+                        <Button className="flex w-full items-center justify-between text-left text-sm font-bold dark:bg-neutral-900 dark:text-neutral-300">
+                            {label} <DropdownChevron />
+                        </Button>
                     </DropdownButton>
                     <DropdownContent>
                         {options && (
@@ -276,10 +314,49 @@ const PropertySwitcher = ({
                     </DropdownContent>
                 </Dropdown>
             )
+        case "style-text":
+            console.log(propValue)
+            return (
+                <div>
+                    <label className="text-sm font-bold">{label}</label>
+                    <Input
+                        value={propValue[propKey] ?? ""}
+                        onChange={(e) =>
+                            editComponentProp("style", {
+                                [propKey]: e.currentTarget.value,
+                            })
+                        }
+                    />
+                </div>
+            )
         default:
             return (
                 <Paragraph className="text-wrap break-words dark:text-red-400">{`Unknown schema type "${type}" - Check PropertySwitcher and SchemaTypes`}</Paragraph>
             )
+    }
+}
+
+const PropertyPanelSwitcher = ({
+    type,
+    component,
+    onChange,
+}: {
+    type: keyof typeof formComponentRegistry
+    component: any
+    onChange: (property: string, value: any) => void
+}) => {
+    console.log("HLLO????")
+    switch (type) {
+        case "paragraph":
+            console.log("test")
+            return (
+                <HeaderPropertyPanel
+                    component={component}
+                    onChange={onChange}
+                />
+            )
+        default:
+            return <div>fart</div>
     }
 }
 
@@ -302,9 +379,12 @@ const ComponentProperties = ({
 
     const getComponentPropValue = (
         component: PageComponent,
-        propKey: string
+        propKey: string,
+        propType: PropTypes
     ) => {
-        return (component.props as Record<string, any>)[propKey]
+        return propType === "style-text"
+            ? (component.props as Record<string, any>)["style"]
+            : (component.props as Record<string, any>)[propKey]
     }
 
     const editComponentProp = useCallback(
@@ -381,19 +461,25 @@ const ComponentProperties = ({
                         ></Input>
                     </div>
                 )}
-                {configSchema.map((schema: Schema, i) => {
+                <PropertyPanelSwitcher
+                    type={selectedComponent.type}
+                    component={selectedComponent}
+                    onChange={editComponentProp}
+                />
+                {/* {configSchema.map((schema: Schema, i) => {
                     return (
                         <PropertySwitcher
                             key={i}
                             {...schema}
                             propValue={getComponentPropValue(
                                 selectedComponent,
-                                schema.propKey
+                                schema.propKey,
+                                schema.type
                             )}
                             editComponentProp={editComponentProp}
                         />
                     )
-                })}
+                })} */}
             </div>
         </>
     )
@@ -453,7 +539,7 @@ const PageProperties = ({
             >
                 Form Properties
             </Paragraph>
-            <div className="px-2 py-2">
+            <div className="flex flex-col gap-2 px-4 py-3">
                 <div>
                     <label className="text-sm font-medium">Form Title</label>
                     <Input
@@ -474,56 +560,60 @@ const PageProperties = ({
                     />
                 </div>
 
-                <label className="text-sm font-medium">Pages</label>
-                <Dropdown disabled={!page}>
-                    <DropdownButton>
-                        <Button
-                            variant="dark"
-                            size="lg"
-                            className="flex w-full items-center justify-between text-left"
-                            onClick={() => !page && createNewPage()}
-                        >
-                            {page
-                                ? page.name !== ""
-                                    ? page.name
-                                    : "Unnamed"
-                                : "Create New"}
-                            {page ? <DropdownChevron /> : <Plus />}
-                        </Button>
-                    </DropdownButton>
-                    <DropdownContent className="absolute left-0 w-full translate-x-0">
-                        <Droppable onDragEnd={handleDragEnd}>
-                            {form.pages.map(({ name }, i) => {
-                                return (
-                                    <Draggable index={i} key={name}>
-                                        <DropdownItem
-                                            onClick={() => onPageChange(i)}
-                                            className={`w-full ${
-                                                i === activePage
-                                                    ? "bg-blue-50 dark:bg-blue-950/20"
-                                                    : ""
-                                            }`}
-                                        >
-                                            <span className="flex-1">
-                                                {name !== "" ? name : "Unnamed"}
-                                            </span>
-                                            <span className="ml-2 text-xs text-gray-500">
-                                                {i + 1}
-                                            </span>
-                                        </DropdownItem>
-                                    </Draggable>
-                                )
-                            })}
-                        </Droppable>
-                        <DropdownDivider />
-                        <DropdownItem onClick={createNewPage}>
-                            <DropdownItemIcon>
-                                <Plus />
-                            </DropdownItemIcon>{" "}
-                            Create New Page
-                        </DropdownItem>
-                    </DropdownContent>
-                </Dropdown>
+                <div>
+                    <label className="text-sm font-medium">Pages</label>
+                    <Dropdown disabled={!page}>
+                        <DropdownButton>
+                            <Button
+                                variant="dark"
+                                size="lg"
+                                className="flex w-full items-center justify-between text-left"
+                                onClick={() => !page && createNewPage()}
+                            >
+                                {page
+                                    ? page.name !== ""
+                                        ? page.name
+                                        : "Unnamed"
+                                    : "Create New"}
+                                {page ? <DropdownChevron /> : <Plus />}
+                            </Button>
+                        </DropdownButton>
+                        <DropdownContent className="absolute left-0 w-full translate-x-0">
+                            <Droppable onDragEnd={handleDragEnd}>
+                                {form.pages.map(({ name }, i) => {
+                                    return (
+                                        <Draggable index={i} key={name}>
+                                            <DropdownItem
+                                                onClick={() => onPageChange(i)}
+                                                className={`w-full ${
+                                                    i === activePage
+                                                        ? "bg-blue-50 dark:bg-blue-950/20"
+                                                        : ""
+                                                }`}
+                                            >
+                                                <span className="flex-1">
+                                                    {name !== ""
+                                                        ? name
+                                                        : "Unnamed"}
+                                                </span>
+                                                <span className="ml-2 text-xs text-gray-500">
+                                                    {i + 1}
+                                                </span>
+                                            </DropdownItem>
+                                        </Draggable>
+                                    )
+                                })}
+                            </Droppable>
+                            <DropdownDivider />
+                            <DropdownItem onClick={createNewPage}>
+                                <DropdownItemIcon>
+                                    <Plus />
+                                </DropdownItemIcon>{" "}
+                                Create New Page
+                            </DropdownItem>
+                        </DropdownContent>
+                    </Dropdown>
+                </div>
             </div>
 
             {page && (

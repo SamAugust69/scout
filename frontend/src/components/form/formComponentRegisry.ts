@@ -1,5 +1,6 @@
 import {
     Divide,
+    Heading1,
     LucideIcon,
     SquareCheckBigIcon,
     TextCursorInputIcon,
@@ -11,11 +12,12 @@ import { FormToggle, FormToggleInterface } from "./FormToggle"
 import { Paragraph, paragraphVariants } from "../ui/paragraph"
 import { GetVariantProps } from "@vtechguys/vs"
 import { FormDivider } from "./FormDivider"
+import { Heading, HeadingInterface } from "../ui/heading"
 
-export type SchemaTypes = "text" | "boolean" | "dropdown"
+export type PropTypes = "text" | "boolean" | "dropdown" | "style-text"
 export type Schema = {
     propKey: string
-    type: SchemaTypes
+    type: PropTypes
     label: string
     question?: string
     options?: { label: string; value: string }[]
@@ -90,13 +92,12 @@ export const formComponentRegistry = {
         component: Paragraph,
         defaultProps: {
             children: "Paragraph",
-            size: "default",
         },
         configSchema: [
             {
                 propKey: "children",
                 type: "text",
-                label: "Value",
+                label: "Text",
             },
             {
                 propKey: "size",
@@ -114,6 +115,49 @@ export const formComponentRegistry = {
         React.HTMLAttributes<HTMLParagraphElement> &
             GetVariantProps<typeof paragraphVariants>
     >,
+    header: {
+        name: "Header",
+        component: Heading,
+        defaultProps: {
+            children: "Heading",
+            size: "default",
+            style: {},
+        },
+        configSchema: [
+            {
+                propKey: "color",
+                type: "style-text",
+                label: "Text Color",
+            },
+            {
+                propKey: "children",
+                type: "text",
+                label: "Text",
+            },
+            {
+                propKey: "size",
+                type: "dropdown",
+                label: "Size",
+                options: [
+                    { label: "Small", value: "sm" },
+                    { label: "Default", value: "default" },
+                    { label: "Large", value: "lg" },
+                    { label: "Extra Large", value: "xl" },
+                ],
+            },
+            {
+                propKey: "textAlign",
+                type: "dropdown",
+                label: "Text Alignment",
+                options: [
+                    { label: "Left", value: "left" },
+                    { label: "Center", value: "center" },
+                    { label: "Right", value: "right" },
+                ],
+            },
+        ],
+        icon: Heading1,
+    } satisfies RegistryItem<HeadingInterface>,
     divider: {
         name: "Divider",
         component: FormDivider,

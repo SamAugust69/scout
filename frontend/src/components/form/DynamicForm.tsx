@@ -18,7 +18,7 @@ export const DynamicForm = ({
     return (
         <form
             className={cn(
-                "grid h-full w-full max-w-3xl grid-cols-1 grid-rows-[80px_1fr] gap-2 rounded bg-neutral-200 p-2 dark:bg-[#272424]",
+                "grid h-full w-full grid-cols-1 grid-rows-[80px_1fr] gap-2 rounded bg-neutral-200 p-2 dark:bg-[#272424]",
                 className
             )}
             {...props}
