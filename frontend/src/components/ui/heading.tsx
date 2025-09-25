@@ -11,8 +11,10 @@ export const headingVariants = vs({
             primary: "",
         },
         size: {
-            lg: "text-xl font-bold",
+            sm: "font-semibold",
             default: "text-lg font-semibold",
+            lg: "text-xl font-bold",
+            xl: "text-2xl font-bold",
         },
     },
     defaultVariants: {
@@ -21,7 +23,7 @@ export const headingVariants = vs({
     },
 })
 
-interface HeadingInterface
+export interface HeadingInterface
     extends GetVariantProps<typeof headingVariants>,
         HTMLAttributes<HTMLHeadingElement> {}
 

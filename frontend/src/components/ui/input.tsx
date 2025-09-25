@@ -2,7 +2,7 @@ import { cn } from "@/lib/utils"
 import { GetVariantProps, vs } from "@vtechguys/vs"
 import React, { HTMLAttributes, InputHTMLAttributes } from "react"
 
-interface InputInterface {
+export interface InputInterface {
     numbersOnly?: boolean
 }
 
