@@ -38,6 +38,7 @@ import {
 } from "../form/formComponentRegisry"
 import { Draggable, Droppable } from "../ui/drag"
 import { HeaderPropertyPanel } from "../form/PropertyPanels/Header"
+import { PropTest } from "../form/PropertyPanels/PropertyPanel"
 
 export type FormPage = {
     name: string
@@ -223,7 +224,7 @@ export const FormBuilder = () => {
 }
 
 const DataViewer = () => {
-    const [isOpen, setIsOpen] = useState(true)
+    const [isOpen, setIsOpen] = useState(false)
     const data = {
         test: false,
         poop: true,
@@ -356,7 +357,7 @@ const PropertyPanelSwitcher = ({
                 />
             )
         default:
-            return <div>fart</div>
+            return <PropTest />
     }
 }
 
@@ -449,25 +450,12 @@ const ComponentProperties = ({
             <div className="flex items-center justify-between border-b border-neutral-700 px-4 py-3">
                 <Paragraph>{name}</Paragraph>
             </div>
-            <div className="flex flex-col gap-2 px-4 py-3">
-                {doesWrite && (
-                    <div>
-                        <label className="text-sm font-bold">jsonKey</label>
-                        <Input
-                            value={selectedComponent.jsonKey ?? ""}
-                            onChange={(e) =>
-                                editComponentJsonKey(e.currentTarget.value)
-                            }
-                            size="sm"
-                        ></Input>
-                    </div>
-                )}
-                <PropertyPanelSwitcher
-                    type={selectedComponent.type}
-                    component={selectedComponent}
-                    onChange={editComponentProp}
-                />
-                {/* {configSchema.map((schema: Schema, i) => {
+            <PropertyPanelSwitcher
+                type={selectedComponent.type}
+                component={selectedComponent}
+                onChange={editComponentProp}
+            />
+            {/* {configSchema.map((schema: Schema, i) => {
                     return (
                         <PropertySwitcher
                             key={i}
@@ -481,7 +469,6 @@ const ComponentProperties = ({
                         />
                     )
                 })} */}
-            </div>
         </>
     )
 }
